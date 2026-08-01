@@ -1,0 +1,24 @@
+disease_code,disease_name,period_start,period_end,period_type,period_label,location_code,location_name,location_level,cases,deaths,population,incidence_per_100k,data_status,source_name,source_url,complete_period
+DENGUE,Dengue,2025-12-29,2026-01-04,weekly,2026-W01,BD,Bangladesh,national,261,,,,observed,DGHS HEOC Dengue Dynamic Dashboard,https://dashboard.dghs.gov.bd/pages/heoc_dengue_v1.php,False
+DENGUE,Dengue,2026-01-05,2026-01-11,weekly,2026-W02,BD,Bangladesh,national,316,,,,observed,DGHS HEOC Dengue Dynamic Dashboard,https://dashboard.dghs.gov.bd/pages/heoc_dengue_v1.php,True
+DENGUE,Dengue,2026-01-12,2026-01-18,weekly,2026-W03,BD,Bangladesh,national,203,,,,observed,DGHS HEOC Dengue Dynamic Dashboard,https://dashboard.dghs.gov.bd/pages/heoc_dengue_v1.php,True
+DENGUE,Dengue,2026-01-19,2026-01-25,weekly,2026-W04,BD,Bangladesh,national,179,,,,observed,DGHS HEOC Dengue Dynamic Dashboard,https://dashboard.dghs.gov.bd/pages/heoc_dengue_v1.php,True
+DENGUE,Dengue,2026-01-26,2026-02-01,weekly,2026-W05,BD,Bangladesh,national,136,,,,observed,DGHS HEOC Dengue Dynamic Dashboard,https://dashboard.dghs.gov.bd/pages/heoc_dengue_v1.php,True
+DENGUE,Dengue,2026-02-02,2026-02-08,weekly,2026-W06,BD,Bangladesh,national,108,,,,observed,DGHS HEOC Dengue Dynamic Dashboard,https://dashboard.dghs.gov.bd/pages/heoc_dengue_v1.php,True
+DENGUE,Dengue,2026-02-09,2026-02-15,weekly,2026-W07,BD,Bangladesh,national,106,,,,observed,DGHS HEOC Dengue Dynamic Dashboard,https://dashboard.dghs.gov.bd/pages/heoc_dengue_v1.php,True
+DENGUE,Dengue,2026-02-16,2026-02-22,weekly,2026-W08,BD,Bangladesh,national,123,,,,observed,DGHS HEOC Dengue Dynamic Dashboard,https://dashboard.dghs.gov.bd/pages/heoc_dengue_v1.php,True
+DENGUE,Dengue,2026-02-23,2026-03-01,weekly,2026-W09,BD,Bangladesh,national,68,,,,observed,DGHS HEOC Dengue Dynamic Dashboard,https://dashboard.dghs.gov.bd/pages/heoc_dengue_v1.php,True
+DENGUE,Dengue,2026-03-02,2026-03-08,weekly,2026-W10,BD,Bangladesh,national,71,,,,observed,DGHS HEOC Dengue Dynamic Dashboard,https://dashboard.dghs.gov.bd/pages/heoc_dengue_v1.php,True
+DENGUE,Dengue,2026-03-09,2026-03-15,weekly,2026-W11,BD,Bangladesh,national,83,,,,observed,DGHS HEOC Dengue Dynamic Dashboard,https://dashboard.dghs.gov.bd/pages/heoc_dengue_v1.php,True
+DENGUE,Dengue,2026-03-16,2026-03-22,weekly,2026-W12,BD,Bangladesh,national,49,,,,observed,DGHS HEOC Dengue Dynamic Dashboard,https://dashboard.dghs.gov.bd/pages/heoc_dengue_v1.php,True
+DENGUE,Dengue,2026-03-23,2026-03-29,weekly,2026-W13,BD,Bangladesh,national,90,,,,observed,DGHS HEOC Dengue Dynamic Dashboard,https://dashboard.dghs.gov.bd/pages/heoc_dengue_v1.php,True
+DENGUE,Dengue,2026-03-30,2026-04-05,weekly,2026-W14,BD,Bangladesh,national,147,,,,observed,DGHS HEOC Dengue Dynamic Dashboard,https://dashboard.dghs.gov.bd/pages/heoc_dengue_v1.php,True
+DENGUE,Dengue,2026-04-06,2026-04-12,weekly,2026-W15,BD,Bangladesh,national,131,,,,observed,DGHS HEOC Dengue Dynamic Dashboard,https://dashboard.dghs.gov.bd/pages/heoc_dengue_v1.php,True
+DENGUE,Dengue,2026-04-13,2026-04-19,weekly,2026-W16,BD,Bangladesh,national,177,,,,observed,DGHS HEOC Dengue Dynamic Dashboard,https://dashboard.dghs.gov.bd/pages/heoc_dengue_v1.php,True
+DENGUE,Dengue,2026-04-20,2026-04-26,weekly,2026-W17,BD,Bangladesh,national,155,,,,observed,DGHS HEOC Dengue Dynamic Dashboard,https://dashboard.dghs.gov.bd/pages/heoc_dengue_v1.php,True
+DENGUE,Dengue,2026-04-27,2026-05-03,weekly,2026-W18,BD,Bangladesh,national,116,,,,observed,DGHS HEOC Dengue Dynamic Dashboard,https://dashboard.dghs.gov.bd/pages/heoc_dengue_v1.php,True
+DENGUE,Dengue,2026-05-04,2026-05-10,weekly,2026-W19,BD,Bangladesh,national,169,,,,observed,DGHS HEOC Dengue Dynamic Dashboard,https://dashboard.dghs.gov.bd/pages/heoc_dengue_v1.php,True
+DENGUE,Dengue,2026-05-11,2026-05-17,weekly,2026-W20,BD,Bangladesh,national,215,,,,observed,DGHS HEOC Dengue Dynamic Dashboard,https://dashboard.dghs.gov.bd/pages/heoc_dengue_v1.php,True
+DENGUE,Dengue,2026-05-18,2026-05-24,weekly,2026-W21,BD,Bangladesh,national,167,,,,observed,DGHS HEOC Dengue Dynamic Dashboard,https://dashboard.dghs.gov.bd/pages/heoc_dengue_v1.php,True
+DENGUE,Dengue,2026-05-25,2026-05-31,weekly,2026-W22,BD,Bangladesh,national,127,,,,observed,DGHS HEOC Dengue Dynamic Dashboard,https://dashboard.dghs.gov.bd/pages/heoc_dengue_v1.php,True
+DENGUE,Dengue,2026-06-01,2026-06-07,weekly,2026-W23,BD,Bangladesh,national,262,,,,observed,DGHS HEOC Dengue Dynamic Dashboard,https://dashboard.dghs.gov.bd/pages/heoc_dengue_v1.php,False
