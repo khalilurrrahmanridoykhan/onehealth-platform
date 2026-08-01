@@ -13,6 +13,8 @@ File: `data/raw/dengue_daily_2026.csv`
 
 File: `data/processed/dengue_weekly.csv`
 
+The output combines national records derived from daily observations with division-level records supplied as weekly aggregates.
+
 Empty CSV cells represent values that are unavailable or not applicable. Empty values are serialized as Python `None` after loading.
 
 | Variable | Type | Unit | Missing values | Allowed values and meaning |
@@ -35,6 +37,34 @@ Empty CSV cells represent values that are unavailable or not applicable. Empty v
 | `source_url` | URL string | None | Not allowed | Public location of the source |
 | `complete_period` | Boolean | None | Not allowed | `True` when all seven dates are present; otherwise `False` |
 
+## Raw division-level dengue input
+
+File: `data/raw/dengue_weekly_division_2026.csv`
+
+| Variable | Type | Unit | Missing values | Allowed values and meaning |
+|---|---|---|---|---|
+| `year` | Integer | Calendar year | Not allowed | Valid ISO week-numbering year |
+| `week` | String | Epidemiological week | Not used for calculation | Source display label such as `W01` |
+| `week_num` | Integer | Epidemiological week | Not allowed | Valid ISO week number for the supplied year |
+| `division` | Category | None | Not allowed | Barisal/Barishal, Chattogram, Dhaka, Khulna, Mymensingh, Rajshahi, Rangpur, or Sylhet |
+| `dengue_cases` | Integer | Admitted dengue cases per division-week | Not allowed | Zero or greater |
+
+`Barisal` in the source is normalized to the current display spelling `Barishal`. Weekly source rows are treated as complete reporting periods because the public source provides them as finished weekly aggregates; this does not independently prove facility-level reporting completeness.
+
+## Location codes
+
+| Code | Display name | Level |
+|---|---|---|
+| `BD` | Bangladesh | National |
+| `BD-BAR` | Barishal | Division |
+| `BD-CTG` | Chattogram | Division |
+| `BD-DHA` | Dhaka | Division |
+| `BD-KHU` | Khulna | Division |
+| `BD-MYM` | Mymensingh | Division |
+| `BD-RAJ` | Rajshahi | Division |
+| `BD-RAN` | Rangpur | Division |
+| `BD-SYL` | Sylhet | Division |
+
 ## Alert output
 
 The alert endpoint returns JSON. Missing alerts are represented by HTTP `404` when fewer than five complete weeks are available.
@@ -51,4 +81,3 @@ The alert endpoint returns JSON. Missing alerts are represented by HTTP `404` wh
 | `confidence` | Float | Proportion | Heuristic from `0.50` through `0.95`; not a calibrated probability |
 | `reasons` | Array of strings | None | Human-readable evidence for the classification |
 | `recommended_actions` | Array of strings | None | Suggested verification or routine surveillance actions |
-

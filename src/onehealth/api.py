@@ -86,9 +86,27 @@ def diseases() -> list[dict[str, str]]:
     ]
 
 
+@app.get("/api/v1/locations")
+def locations(disease_code: str | None = None) -> list[dict[str, str]]:
+    selected = [
+        record
+        for record in _records()
+        if disease_code is None or record.disease_code == disease_code.upper()
+    ]
+    unique = {
+        (record.location_code, record.location_name, record.location_level)
+        for record in selected
+    }
+    return [
+        {"code": code, "name": name, "level": level}
+        for code, name, level in sorted(unique)
+    ]
+
+
 @app.get("/api/v1/trends/{disease_code}")
 def trends(
     disease_code: str,
+    location_code: str = "BD",
     complete_only: bool = True,
     limit: int = Query(default=52, ge=1, le=520),
 ) -> list[dict]:
@@ -96,19 +114,49 @@ def trends(
         record
         for record in _records()
         if record.disease_code == disease_code.upper()
+        and record.location_code == location_code.upper()
         and (record.complete_period or not complete_only)
     ]
     if not selected:
-        raise HTTPException(status_code=404, detail="Disease trend not found")
+        raise HTTPException(status_code=404, detail="Disease/location trend not found")
     return [asdict(record) for record in selected[-limit:]]
 
 
 @app.get("/api/v1/alerts/{disease_code}/latest")
-def latest_alert(disease_code: str) -> dict:
+def latest_alert(disease_code: str, location_code: str = "BD") -> dict:
     selected = [
-        record for record in _records() if record.disease_code == disease_code.upper()
+        record
+        for record in _records()
+        if record.disease_code == disease_code.upper()
+        and record.location_code == location_code.upper()
     ]
     alert = generate_latest_alert(selected)
     if alert is None:
         raise HTTPException(status_code=404, detail="Not enough complete periods for an alert")
     return asdict(alert)
+
+
+@app.get("/api/v1/summary/{disease_code}")
+def summary(disease_code: str, location_code: str = "BD") -> dict:
+    selected = [
+        record
+        for record in _records()
+        if record.disease_code == disease_code.upper()
+        and record.location_code == location_code.upper()
+        and record.complete_period
+    ]
+    if not selected:
+        raise HTTPException(status_code=404, detail="Disease/location summary not found")
+    selected.sort(key=lambda record: record.period_start)
+    latest = selected[-1]
+    alert = generate_latest_alert(selected)
+    return {
+        "disease_code": latest.disease_code,
+        "location_code": latest.location_code,
+        "location_name": latest.location_name,
+        "periods": len(selected),
+        "total_cases": sum(record.cases for record in selected),
+        "latest_period": latest.period_label,
+        "latest_cases": latest.cases,
+        "risk_level": alert.risk_level if alert else None,
+    }

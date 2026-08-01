@@ -37,7 +37,19 @@ Never commit `.env`, access tokens, passwords, or production organization-unit U
 
 ## Organization-unit mapping
 
-Edit `dhis2/mappings/dengue.json` and replace the demonstration `BdOrgUnit01` value with the UID of the Bangladesh organization unit in the target DHIS2 instance. Add division mappings when division-level ingestion is implemented.
+Edit `dhis2/mappings/dengue.json` and replace all demonstration organization-unit UIDs with the real UIDs from the target DHIS2 instance. The mapping contains Bangladesh and all eight divisions.
+
+| Local code | Organization unit |
+|---|---|
+| `BD` | Bangladesh |
+| `BD-BAR` | Barishal Division |
+| `BD-CTG` | Chattogram Division |
+| `BD-DHA` | Dhaka Division |
+| `BD-KHU` | Khulna Division |
+| `BD-MYM` | Mymensingh Division |
+| `BD-RAJ` | Rajshahi Division |
+| `BD-RAN` | Rangpur Division |
+| `BD-SYL` | Sylhet Division |
 
 Metadata object UIDs in this project are stable:
 
@@ -80,7 +92,7 @@ After reviewing the generated report and DHIS2 response:
 python scripts/sync_dhis2.py --commit
 ```
 
-The client uses `CREATE_AND_UPDATE`, allowing a corrected source value to update an existing data value. Duplicate disease/location/period records within one local input are rejected before network submission. Partial weeks are excluded.
+The client uses `CREATE_AND_UPDATE`, allowing a corrected source value to update an existing data value. Duplicate disease/location/period records within one local input are rejected before network submission. Partial national weeks are excluded. The current division input consists of source-published weekly aggregates and is treated as complete.
 
 ## Read through the OneHealth API
 
@@ -91,4 +103,3 @@ With `ONEHEALTH_BACKEND=dhis2`, existing endpoints read aggregate values from DH
 - `GET /api/v1/alerts/DENGUE/latest`
 
 Use `ONEHEALTH_BACKEND=csv` for the self-contained demonstration mode.
-

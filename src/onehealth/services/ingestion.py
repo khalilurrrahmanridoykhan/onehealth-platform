@@ -9,6 +9,18 @@ from onehealth.models import SurveillanceRecord
 DENGUE_SOURCE_NAME = "DGHS HEOC Dengue Dynamic Dashboard"
 DENGUE_SOURCE_URL = "https://dashboard.dghs.gov.bd/pages/heoc_dengue_v1.php"
 
+DIVISION_LOCATIONS = {
+    "Barisal": ("BD-BAR", "Barishal"),
+    "Barishal": ("BD-BAR", "Barishal"),
+    "Chattogram": ("BD-CTG", "Chattogram"),
+    "Dhaka": ("BD-DHA", "Dhaka"),
+    "Khulna": ("BD-KHU", "Khulna"),
+    "Mymensingh": ("BD-MYM", "Mymensingh"),
+    "Rajshahi": ("BD-RAJ", "Rajshahi"),
+    "Rangpur": ("BD-RAN", "Rangpur"),
+    "Sylhet": ("BD-SYL", "Sylhet"),
+}
+
 
 def _week_bounds(day: date) -> tuple[date, date]:
     start = day - timedelta(days=day.weekday())
@@ -79,6 +91,61 @@ def aggregate_dengue_weekly(
     return records
 
 
+def read_dengue_division_weekly(path: Path) -> list[SurveillanceRecord]:
+    records: list[SurveillanceRecord] = []
+    seen: set[tuple[int, int, str]] = set()
+    with path.open(encoding="utf-8-sig", newline="") as handle:
+        reader = csv.DictReader(handle)
+        required = {"year", "week_num", "division", "dengue_cases"}
+        if not reader.fieldnames or not required.issubset(reader.fieldnames):
+            raise ValueError(f"Expected columns {sorted(required)} in {path}")
+
+        for line_number, row in enumerate(reader, start=2):
+            try:
+                year = int(row["year"])
+                week = int(row["week_num"])
+                cases = int(row["dengue_cases"])
+                source_division = row["division"].strip()
+                location_code, location_name = DIVISION_LOCATIONS[source_division]
+                week_start = date.fromisocalendar(year, week, 1)
+            except (KeyError, TypeError, ValueError) as exc:
+                raise ValueError(
+                    f"Invalid division-level dengue row at line {line_number}"
+                ) from exc
+            if cases < 0:
+                raise ValueError(f"Cases cannot be negative at line {line_number}")
+
+            key = (year, week, location_code)
+            if key in seen:
+                raise ValueError(f"Duplicate division/week at line {line_number}: {key}")
+            seen.add(key)
+            records.append(
+                SurveillanceRecord(
+                    disease_code="DENGUE",
+                    disease_name="Dengue",
+                    period_start=week_start,
+                    period_end=week_start + timedelta(days=6),
+                    period_type="weekly",
+                    period_label=f"{year}-W{week:02d}",
+                    location_code=location_code,
+                    location_name=location_name,
+                    location_level="division",
+                    cases=cases,
+                    deaths=None,
+                    population=None,
+                    incidence_per_100k=None,
+                    data_status="observed",
+                    source_name=DENGUE_SOURCE_NAME,
+                    source_url=DENGUE_SOURCE_URL,
+                    complete_period=True,
+                )
+            )
+
+    if not records:
+        raise ValueError(f"No division-level dengue observations found in {path}")
+    return sorted(records, key=lambda item: (item.location_code, item.period_start))
+
+
 CSV_FIELDS = (
     "disease_code",
     "disease_name",
@@ -103,7 +170,7 @@ CSV_FIELDS = (
 def write_surveillance_csv(records: list[SurveillanceRecord], path: Path) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", encoding="utf-8", newline="") as handle:
-        writer = csv.DictWriter(handle, fieldnames=CSV_FIELDS)
+        writer = csv.DictWriter(handle, fieldnames=CSV_FIELDS, lineterminator="\n")
         writer.writeheader()
         for record in records:
             writer.writerow(
@@ -114,4 +181,3 @@ def write_surveillance_csv(records: list[SurveillanceRecord], path: Path) -> Non
                     for field in CSV_FIELDS
                 }
             )
-

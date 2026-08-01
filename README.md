@@ -34,6 +34,7 @@ The DHIS2 integration foundation is implemented; live-instance validation and th
 - Validates an existing daily dengue CSV export
 - Aggregates observations into ISO epidemiological weeks
 - Produces a normalized surveillance dataset with source provenance
+- Includes national and eight-division dengue surveillance
 - Detects partial reporting weeks and excludes them from alert calculations
 - Generates explainable alerts using a four-week historical baseline
 - Exposes FastAPI endpoints for diseases, trends, and latest alerts
@@ -50,7 +51,7 @@ The DHIS2 integration foundation is implemented; live-instance validation and th
 | FastAPI service | Implemented |
 | DHIS2 API client and mapping foundation | Implemented |
 | DHIS2 metadata and data-value dry-run synchronization | Implemented |
-| Division-level surveillance | Planned |
+| Division-level dengue surveillance | Implemented |
 | Live DHIS2 instance validation | Blocked until an instance is configured |
 | Customized React dashboard | Planned |
 | Measles integration | Planned |
@@ -120,9 +121,13 @@ The default backend is the committed CSV demonstration. To read from a configure
 |---|---|---|
 | `GET` | `/health` | Service health and version |
 | `GET` | `/api/v1/diseases` | Available diseases |
+| `GET` | `/api/v1/locations?disease_code=DENGUE` | Available national and division locations |
 | `GET` | `/api/v1/trends/DENGUE` | Complete weekly dengue records |
+| `GET` | `/api/v1/trends/DENGUE?location_code=BD-DHA` | Dhaka Division weekly trend |
 | `GET` | `/api/v1/trends/DENGUE?complete_only=false&limit=10` | Include partial weeks and limit results |
 | `GET` | `/api/v1/alerts/DENGUE/latest` | Latest explainable dengue alert |
+| `GET` | `/api/v1/alerts/DENGUE/latest?location_code=BD-DHA` | Latest Dhaka Division alert |
+| `GET` | `/api/v1/summary/DENGUE?location_code=BD-DHA` | Summary metrics for a location |
 
 ## Alert interpretation
 
@@ -179,10 +184,9 @@ Do not commit credentials, protected health information, or identifiable patient
 
 ## Roadmap
 
-1. Add division-level dengue ingestion and stable geographic codes.
-2. Validate the aggregate metadata and synchronization against a live DHIS2 instance.
-3. Define EBS Tracker programs and program stages.
-4. Build the customized React dashboard with trends, maps, and alerts.
+1. Validate national and division metadata synchronization against a live DHIS2 instance.
+2. Define EBS Tracker programs and program stages.
+3. Build the customized React dashboard with trends, maps, and alerts.
 5. Add EBS verification, risk assessment, investigation, and response workflows.
 6. Integrate measles outbreak intelligence.
 7. Integrate AWD, rainfall, and flood-risk indicators.
