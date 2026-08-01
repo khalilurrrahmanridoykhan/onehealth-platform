@@ -46,6 +46,7 @@ services:
     environment:
       ONEHEALTH_DOMAIN: ${ONEHEALTH_DOMAIN:?Set ONEHEALTH_DOMAIN}
       DHIS2_DOMAIN: ${DHIS2_DOMAIN:?Set DHIS2_DOMAIN}
+      DHIS2_BOOTSTRAP_HASH: ${DHIS2_BOOTSTRAP_HASH:?Set DHIS2_BOOTSTRAP_HASH}
     ports: ["80:80", "443:443", "443:443/udp"]
     volumes:
       - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro

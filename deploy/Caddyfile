@@ -6,6 +6,9 @@
 
 {$DHIS2_DOMAIN} {
     encode zstd gzip
+    basic_auth {
+        setup {$DHIS2_BOOTSTRAP_HASH}
+    }
     reverse_proxy dhis2:8080
     header Strict-Transport-Security "max-age=31536000; includeSubDomains"
 }

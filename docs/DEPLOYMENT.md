@@ -15,6 +15,8 @@ The production example runs FastAPI and the compiled dashboard as non-root, read
 cp deploy/production.env.example .env.production
 chmod 600 .env.production
 export ONEHEALTH_DOMAIN=health.example.org
+export DHIS2_DOMAIN=dhis2.example.org
+export DHIS2_BOOTSTRAP_HASH='generated-caddy-password-hash'
 ```
 
 Generate users with `scripts/create_auth_user.py`, use a secret manager where available, and never commit `.env.production`. Begin with EBS reads and writes disabled.
