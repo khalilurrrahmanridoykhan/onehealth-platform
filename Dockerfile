@@ -8,6 +8,7 @@ COPY src ./src
 RUN pip install --no-cache-dir .
 COPY data ./data
 COPY dhis2 ./dhis2
+COPY scripts ./scripts
 USER onehealth
 EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=5s --retries=3 CMD ["python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=3)"]
