@@ -31,6 +31,45 @@
       "relativePeriods": {
         "weeksThisYear": true
       }
+    },
+    {
+      "id": "OhDngDiv001",
+      "name": "Dengue Cases by Division — Week 22",
+      "description": "Comparison of admitted dengue cases across Bangladesh divisions for reporting week 22 of 2026",
+      "type": "COLUMN",
+      "publicAccess": "rw------",
+      "showData": true,
+      "hideEmptyRows": true,
+      "hideEmptyColumns": true,
+      "showDimensionLabels": true,
+      "columns": [
+        { "id": "ou" }
+      ],
+      "rows": [
+        { "id": "dx" }
+      ],
+      "filters": [
+        { "id": "pe" }
+      ],
+      "dataDimensionItems": [
+        {
+          "dataDimensionItemType": "DATA_ELEMENT",
+          "dataElement": { "id": "OhDngCase01" }
+        }
+      ],
+      "organisationUnits": [
+        { "id": "BdDivBar001" },
+        { "id": "BdDivCtg001" },
+        { "id": "BdDivDha001" },
+        { "id": "BdDivKhu001" },
+        { "id": "BdDivMym001" },
+        { "id": "BdDivRaj001" },
+        { "id": "BdDivRan001" },
+        { "id": "BdDivSyl001" }
+      ],
+      "periods": [
+        { "id": "2026W22" }
+      ]
     }
   ],
   "dashboards": [
@@ -49,6 +88,15 @@
           "w": 40,
           "h": 24,
           "visualization": { "id": "OhDngTrend1" }
+        },
+        {
+          "id": "OhDngItem02",
+          "type": "VISUALIZATION",
+          "x": 0,
+          "y": 24,
+          "w": 40,
+          "h": 24,
+          "visualization": { "id": "OhDngDiv001" }
         }
       ]
     }
