@@ -37,16 +37,13 @@ services:
     depends_on: [api]
     expose: ["8080"]
     read_only: true
-    tmpfs: ["/var/cache/nginx"]
+    tmpfs: ["/var/cache/nginx:uid=101,gid=101,mode=0700"]
     security_opt: ["no-new-privileges:true"]
   proxy:
     image: caddy:2-alpine
     restart: unless-stopped
     depends_on: [web, dhis2]
-    environment:
-      ONEHEALTH_DOMAIN: ${ONEHEALTH_DOMAIN:?Set ONEHEALTH_DOMAIN}
-      DHIS2_DOMAIN: ${DHIS2_DOMAIN:?Set DHIS2_DOMAIN}
-      DHIS2_BOOTSTRAP_HASH: ${DHIS2_BOOTSTRAP_HASH:?Set DHIS2_BOOTSTRAP_HASH}
+    env_file: .env.production
     ports: ["80:80", "443:443", "443:443/udp"]
     volumes:
       - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
