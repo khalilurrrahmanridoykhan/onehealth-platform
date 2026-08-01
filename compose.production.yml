@@ -2,7 +2,9 @@ services:
   database:
     image: postgis/postgis:16-3.4
     restart: unless-stopped
-    env_file: .env.production
+    env_file:
+      - path: .env.production
+        format: raw
     volumes: ["dhis2_database:/var/lib/postgresql/data"]
     command: ["postgres", "-c", "max_locks_per_transaction=200"]
     healthcheck:
@@ -26,7 +28,9 @@ services:
   api:
     build: .
     restart: unless-stopped
-    env_file: .env.production
+    env_file:
+      - path: .env.production
+        format: raw
     expose: ["8000"]
     read_only: true
     tmpfs: ["/tmp"]
