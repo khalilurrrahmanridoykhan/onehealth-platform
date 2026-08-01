@@ -36,6 +36,17 @@ h1 { margin: 0; color: #102e26; font-size: clamp(30px, 4vw, 46px); line-height: 
 .location-select { min-width: 230px; }
 .location-select span { display: block; margin-bottom: 7px; color: #61766f; font-size: 12px; font-weight: 700; }
 .location-select select { width: 100%; padding: 11px 38px 11px 13px; border: 1px solid #ccddd7; border-radius: 10px; background: white; color: #18332b; font-weight: 600; }
+.topbar-actions { display: flex; align-items: flex-end; gap: 10px; }
+.session-control { position: relative; }
+.session-control > button, .session-user button { padding: 11px 14px; border: 1px solid #bcd4cc; border-radius: 10px; color: #075845; background: white; font-weight: 700; cursor: pointer; }
+.login-popover { position: absolute; z-index: 5; top: 50px; right: 0; width: 280px; display: grid; gap: 12px; padding: 18px; border: 1px solid #d5e2dd; border-radius: 12px; background: white; box-shadow: 0 18px 45px #173a3025; }
+.login-popover label { color: #60766e; font-size: 11px; font-weight: 700; }
+.login-popover input { width: 100%; margin-top: 5px; padding: 9px; border: 1px solid #d5e2dd; border-radius: 8px; }
+.login-popover button { padding: 10px; border: 0; border-radius: 8px; color: white; background: #087f5b; font-weight: 700; }
+.login-popover p { margin: 0; color: #a52620; font-size: 11px; }
+.session-user { display: flex; align-items: center; gap: 9px; }
+.session-user span, .session-user small { display: block; }
+.session-user span { font-size: 12px; font-weight: 700; }.session-user small { color: #71847d; text-transform: capitalize; }
 
 .summary-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 15px; margin-bottom: 20px; }
 .metric-card { padding: 19px; border: 1px solid #dce8e3; border-radius: 15px; background: #fff; box-shadow: 0 8px 28px #133b300a; }
@@ -169,6 +180,7 @@ td button { padding: 0; border: 0; background: transparent; color: #173a30; font
   main { padding: 25px 16px 45px; }
   .topbar { align-items: stretch; flex-direction: column; }
   .location-select { min-width: 0; }
+  .topbar-actions { align-items: stretch; flex-direction: column; }
   .summary-grid { grid-template-columns: 1fr; }
   .panel-heading { flex-direction: column; }
   .workflow-steps { grid-template-columns: 1fr 1fr; }

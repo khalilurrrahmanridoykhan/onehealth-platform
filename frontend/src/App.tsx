@@ -6,6 +6,7 @@ import { EBSSignalRegistry } from './components/EBSSignalRegistry'
 import { LocationTable } from './components/LocationTable'
 import { RiskMap } from './components/RiskMap'
 import { SummaryCards } from './components/SummaryCards'
+import { SessionControl } from './components/SessionControl'
 import { TrendChart } from './components/TrendChart'
 import type { Alert, Location, OverviewItem, SurveillanceRecord } from './types'
 
@@ -66,12 +67,12 @@ export default function App() {
             <h1>Dengue surveillance</h1>
             <p>Early-warning intelligence for Bangladesh</p>
           </div>
-          <label className="location-select">
+          <div className="topbar-actions"><label className="location-select">
             <span>Reporting location</span>
             <select value={selected} onChange={(event) => setSelected(event.target.value)}>
               {locations.map((location) => <option key={location.code} value={location.code}>{location.name}</option>)}
             </select>
-          </label>
+          </label><SessionControl /></div>
         </header>
 
         {error && <div className="error-banner" role="alert">Could not load surveillance data: {error}</div>}

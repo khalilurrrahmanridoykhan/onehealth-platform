@@ -1,7 +1,9 @@
+import json
 from types import SimpleNamespace
 
 import onehealth.api as api_module
 from fastapi.testclient import TestClient
+from onehealth.auth import User, issue_token, password_hash
 
 from onehealth.api import app
 
@@ -84,7 +86,7 @@ def test_ebs_schema_and_signal_preview(monkeypatch):
     ]
     assert preview.status_code == 200
     assert preview.json()["bundle"]["events"][0]["orgUnit"] == "BdDivDha001"
-    assert commit.status_code == 403
+    assert commit.status_code == 401
 
 
 def test_ebs_follow_up_stage_preview_and_write_guard(monkeypatch):
@@ -109,7 +111,7 @@ def test_ebs_follow_up_stage_preview_and_write_guard(monkeypatch):
     event = preview.json()["bundle"]["events"][0]
     assert event["programStage"] == "OhEbsRas001"
     assert event["enrollment"] == "Bcdefg12345"
-    assert commit.status_code == 403
+    assert commit.status_code == 401
 
 
 def test_ebs_follow_up_stage_rejects_missing_required_fields():
@@ -145,6 +147,8 @@ def test_ebs_status_reports_unconfigured_without_exposing_secrets(monkeypatch):
 
 def test_ebs_signal_search_and_detail_read_from_tracker(monkeypatch):
     monkeypatch.setenv("ONEHEALTH_EBS_READS_ENABLED", "true")
+    monkeypatch.setenv("ONEHEALTH_AUTH_SECRET", "a-secure-test-secret-with-32-characters")
+    headers = {"Authorization": f"Bearer {issue_token(User('viewer', 'viewer'))}"}
     class FakeClient:
         def __enter__(self):
             return self
@@ -180,8 +184,8 @@ def test_ebs_signal_search_and_detail_read_from_tracker(monkeypatch):
         lambda: (SimpleNamespace(base_url="https://dhis.example"), FakeClient()),
     )
 
-    search = client.get("/api/v1/ebs/signals?q=fever")
-    detail = client.get("/api/v1/ebs/signals/Abcdef12345")
+    search = client.get("/api/v1/ebs/signals?q=fever", headers=headers)
+    detail = client.get("/api/v1/ebs/signals/Abcdef12345", headers=headers)
 
     assert search.status_code == 200
     assert search.json()["signals"][0]["signal_id"] == "EBS-2026-0001"
@@ -196,5 +200,30 @@ def test_ebs_registry_reads_are_disabled_by_default(monkeypatch):
 
     response = client.get("/api/v1/ebs/signals")
 
-    assert response.status_code == 403
-    assert "access control" in response.json()["detail"]
+    assert response.status_code == 401
+
+
+def test_login_and_role_based_access(monkeypatch):
+    monkeypatch.setenv("ONEHEALTH_AUTH_SECRET", "a-secure-test-secret-with-32-characters")
+    monkeypatch.setenv("ONEHEALTH_AUTH_USERS", json.dumps([{
+        "username": "analyst", "role": "analyst", "salt": "test-salt",
+        "password_hash": password_hash("correct-password", "test-salt"),
+    }]))
+
+    login = client.post("/api/v1/auth/login", json={"username": "analyst", "password": "correct-password"})
+    token = login.json()["access_token"]
+    me = client.get("/api/v1/auth/me", headers={"Authorization": f"Bearer {token}"})
+    denied_write = client.post(
+        "/api/v1/ebs/signals",
+        headers={"Authorization": f"Bearer {token}"},
+        json={
+            "signal_id": "EBS-2026-RBAC", "title": "Role test signal",
+            "source": "Test source", "signal_type": "CLUSTER",
+            "description": "Role enforcement test", "location_code": "BD-DHA",
+            "detected_on": "2026-08-01",
+        },
+    )
+
+    assert login.status_code == 200
+    assert me.json() == {"username": "analyst", "role": "analyst"}
+    assert denied_write.status_code == 403

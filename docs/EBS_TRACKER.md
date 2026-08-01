@@ -77,7 +77,7 @@ After a detection preview creates an enrollment UID, the custom workspace can bu
 
 The customized registry reads tracked entities and program events from DHIS2, supports local search over signal ID, title, and source, and maps metadata UIDs back to readable stages and fields. `GET /api/v1/ebs/status` reports configuration state without returning credentials.
 
-Registry endpoints are protected by `ONEHEALTH_EBS_READS_ENABLED=false`. Keep this disabled until application authentication, authorization, and deployment access controls are configured. Enabling the flag does not expose DHIS2 credentials to the browser; all DHIS2 requests remain server-side.
+Registry endpoints require an authenticated Viewer or higher and are also protected by `ONEHEALTH_EBS_READS_ENABLED=false`. Tracker writes require a Responder or Admin plus the independent write switch. Enabling either flag does not expose DHIS2 credentials to the browser; all DHIS2 requests remain server-side. See [Authentication and Roles](AUTHENTICATION.md).
 
 ## Safety boundaries
 

@@ -39,6 +39,9 @@ The project follows [Semantic Versioning](https://semver.org/).
 - DHIS2 Tracker entity and event read client
 - Saved EBS signal search, detail, and event-history dashboard
 - Disabled-by-default registry read boundary pending access control
+- PBKDF2 password authentication and signed eight-hour bearer sessions
+- Viewer, Analyst, Responder, and Admin role hierarchy
+- Custom dashboard sign-in and session controls
 
 ## [0.1.0] - 2026-08-01
 

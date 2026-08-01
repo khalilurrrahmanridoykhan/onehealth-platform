@@ -3,11 +3,13 @@ from dataclasses import asdict
 from datetime import date
 from pathlib import Path
 
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import Depends, FastAPI, HTTPException, Query
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
 from onehealth import __version__
+from onehealth.auth import User, authenticate, issue_token, require_role
 from onehealth.config import DEFAULT_DATA_PATH, DEFAULT_DHIS2_MAPPING_PATH, DHIS2Settings
 from onehealth.dhis2 import DHIS2APIError, DHIS2Client, DHIS2Mapping
 from onehealth.dhis2.ebs import (
@@ -31,6 +33,31 @@ app = FastAPI(
     version=__version__,
     description="Disease surveillance trends and explainable early-warning alerts.",
 )
+bearer = HTTPBearer(auto_error=False)
+
+
+class LoginRequest(BaseModel):
+    username: str = Field(min_length=1, max_length=100)
+    password: str = Field(min_length=1, max_length=200)
+
+
+def viewer(credentials: HTTPAuthorizationCredentials | None = Depends(bearer)) -> User:
+    return require_role(credentials, "viewer")
+
+
+def responder(credentials: HTTPAuthorizationCredentials | None = Depends(bearer)) -> User:
+    return require_role(credentials, "responder")
+
+
+@app.post("/api/v1/auth/login")
+def login(request: LoginRequest) -> dict:
+    user = authenticate(request.username, request.password)
+    return {"access_token": issue_token(user), "token_type": "bearer", "user": {"username": user.username, "role": user.role}}
+
+
+@app.get("/api/v1/auth/me")
+def me(user: User = Depends(viewer)) -> dict:
+    return {"username": user.username, "role": user.role}
 
 cors_origins = [
     origin.strip()
@@ -380,6 +407,7 @@ def list_ebs_signals(
     location_code: str | None = Query(default=None, max_length=20),
     page: int = Query(default=1, ge=1),
     page_size: int = Query(default=25, ge=1, le=100),
+    _user: User = Depends(viewer),
 ) -> dict:
     if os.environ.get("ONEHEALTH_EBS_READS_ENABLED", "false").lower() != "true":
         raise HTTPException(
@@ -420,7 +448,7 @@ def list_ebs_signals(
 
 
 @app.get("/api/v1/ebs/signals/{tracked_entity_uid}")
-def get_ebs_signal(tracked_entity_uid: str) -> dict:
+def get_ebs_signal(tracked_entity_uid: str, _user: User = Depends(viewer)) -> dict:
     if os.environ.get("ONEHEALTH_EBS_READS_ENABLED", "false").lower() != "true":
         raise HTTPException(
             status_code=403,
@@ -461,7 +489,7 @@ def preview_ebs_stage(request: EBSStageRequest) -> dict:
 
 
 @app.post("/api/v1/ebs/signals")
-def submit_ebs_signal(request: EBSSignalRequest) -> dict:
+def submit_ebs_signal(request: EBSSignalRequest, _user: User = Depends(responder)) -> dict:
     if os.environ.get("ONEHEALTH_EBS_WRITES_ENABLED", "false").lower() != "true":
         raise HTTPException(
             status_code=403,
@@ -484,7 +512,7 @@ def submit_ebs_signal(request: EBSSignalRequest) -> dict:
 
 
 @app.post("/api/v1/ebs/stages")
-def submit_ebs_stage(request: EBSStageRequest) -> dict:
+def submit_ebs_stage(request: EBSStageRequest, _user: User = Depends(responder)) -> dict:
     if os.environ.get("ONEHEALTH_EBS_WRITES_ENABLED", "false").lower() != "true":
         raise HTTPException(
             status_code=403,

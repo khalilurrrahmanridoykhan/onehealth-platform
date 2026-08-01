@@ -14,7 +14,8 @@ import type {
 } from './types'
 
 async function getJson<T>(path: string): Promise<T> {
-  const response = await fetch(path)
+  const token = localStorage.getItem('onehealth_session')
+  const response = await fetch(path, { headers: token ? { Authorization: `Bearer ${token}` } : {} })
   if (!response.ok) {
     const body = await response.json().catch(() => null) as { detail?: string } | null
     throw new Error(body?.detail ?? `Request failed with HTTP ${response.status}`)
@@ -23,9 +24,10 @@ async function getJson<T>(path: string): Promise<T> {
 }
 
 async function postJson<T>(path: string, payload: unknown): Promise<T> {
+  const token = localStorage.getItem('onehealth_session')
   const response = await fetch(path, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
     body: JSON.stringify(payload),
   })
   if (!response.ok) {
@@ -36,6 +38,8 @@ async function postJson<T>(path: string, payload: unknown): Promise<T> {
 }
 
 export const api = {
+  login: (username: string, password: string) => postJson<{ access_token: string; user: { username: string; role: string } }>('/api/v1/auth/login', { username, password }),
+  me: () => getJson<{ username: string; role: string }>('/api/v1/auth/me'),
   locations: () => getJson<Location[]>('/api/v1/locations?disease_code=DENGUE'),
   overview: () => getJson<OverviewItem[]>('/api/v1/overview/DENGUE'),
   trend: (locationCode: string) =>
