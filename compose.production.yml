@@ -28,6 +28,9 @@ services:
   api:
     build: .
     restart: unless-stopped
+    environment:
+      ONEHEALTH_DATA_PATH: /app/data/processed/dengue_weekly.csv
+      DHIS2_MAPPING_PATH: /app/dhis2/mappings/dengue.json
     env_file:
       - path: .env.production
         format: raw
