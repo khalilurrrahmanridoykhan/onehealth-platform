@@ -53,7 +53,7 @@ The DHIS2 integration foundation is implemented; live-instance validation and th
 | DHIS2 metadata and data-value dry-run synchronization | Implemented |
 | Division-level dengue surveillance | Implemented |
 | Live DHIS2 instance validation | Blocked until an instance is configured |
-| Customized React dashboard | Planned |
+| Customized React surveillance dashboard | Implemented; map and EBS screens planned |
 | EBS Tracker metadata and payload workflow | Implemented; live validation pending |
 | Measles integration | Planned |
 | AWD/environmental-risk integration | Planned |
@@ -118,6 +118,27 @@ The default backend is the committed CSV demonstration. To read from a configure
 
 The six-stage Event-Based Surveillance program is documented in the [EBS Tracker guide](docs/EBS_TRACKER.md).
 
+### Start the customized dashboard
+
+In a second terminal:
+
+```bash
+cd frontend
+npm ci
+npm run dev
+```
+
+Open <http://127.0.0.1:5173>. The Vite development server proxies API requests to FastAPI on port `8000`.
+
+The current dashboard includes:
+
+- Bangladesh and division location selection
+- Latest, expected, percentage-change, and cumulative summary cards
+- Weekly dengue epidemic curve
+- Explainable risk status and recommended actions
+- National and division comparison table
+- Responsive desktop and mobile layouts
+
 ### Available endpoints
 
 | Method | Endpoint | Purpose |
@@ -160,6 +181,7 @@ onehealth-platform/
 ├── data/processed/           Normalized demonstration output
 ├── data/raw/                 Public aggregate source snapshot
 ├── docs/                     Architecture and data documentation
+├── frontend/                 Customized React/TypeScript dashboard
 ├── scripts/                  Command-line ingestion tools
 ├── src/onehealth/            Application package
 │   ├── api.py                FastAPI routes
@@ -189,7 +211,7 @@ Do not commit credentials, protected health information, or identifiable patient
 
 1. Validate national and division metadata synchronization against a live DHIS2 instance.
 2. Validate the EBS Tracker metadata and signal workflow against the live instance.
-3. Build the customized React dashboard with trends, maps, and alerts.
+3. Add the Bangladesh division map and EBS workflow screens to the dashboard.
 5. Add EBS verification, risk assessment, investigation, and response workflows.
 6. Integrate measles outbreak intelligence.
 7. Integrate AWD, rainfall, and flood-risk indicators.

@@ -28,6 +28,10 @@ The project follows [Semantic Versioning](https://semver.org/).
 - EBS signal enrollment and follow-up event payload builders
 - Explicit preview and commit workflow for Tracker signals
 - Tracker metadata, linkage, UID, and HTTP integration tests
+- Customized responsive React and TypeScript surveillance dashboard
+- National and division filters, summary cards, trend chart, risk panel, and comparison table
+- Consolidated disease overview API and configurable CORS policy
+- Locked frontend dependencies, component tests, production build, and CI job
 
 ## [0.1.0] - 2026-08-01
 

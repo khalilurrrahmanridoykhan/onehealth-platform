@@ -20,7 +20,7 @@ Alerts, investigations, and actions
 
 ## Current milestone
 
-The repository currently implements ingestion, the normalized domain model, the alert service, FastAPI, and the DHIS2 aggregate-data integration boundary. It can preview or submit metadata and weekly data-value payloads and can read DHIS2 values through the API. Live-instance validation still requires configured DHIS2 access.
+The repository currently implements ingestion, the normalized domain model, the alert service, FastAPI, the DHIS2 integration boundary, and a customized React surveillance dashboard. It can preview or submit metadata and weekly data-value payloads and can read DHIS2 values through the same API used by the dashboard. Live-instance validation still requires configured DHIS2 access.
 
 FastAPI is intended to become an integration and prediction layer. It is not intended to replace DHIS2 as the target health-data backend.
 

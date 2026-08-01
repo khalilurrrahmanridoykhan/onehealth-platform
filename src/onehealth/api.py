@@ -4,6 +4,7 @@ from datetime import date
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException, Query
+from fastapi.middleware.cors import CORSMiddleware
 
 from onehealth import __version__
 from onehealth.config import DEFAULT_DATA_PATH, DHIS2Settings
@@ -17,6 +18,21 @@ app = FastAPI(
     title="OneHealth Intelligence Platform API",
     version=__version__,
     description="Disease surveillance trends and explainable early-warning alerts.",
+)
+
+cors_origins = [
+    origin.strip()
+    for origin in os.environ.get(
+        "ONEHEALTH_CORS_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173"
+    ).split(",")
+    if origin.strip()
+]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=cors_origins,
+    allow_credentials=False,
+    allow_methods=["GET"],
+    allow_headers=["*"],
 )
 
 
@@ -160,3 +176,41 @@ def summary(disease_code: str, location_code: str = "BD") -> dict:
         "latest_cases": latest.cases,
         "risk_level": alert.risk_level if alert else None,
     }
+
+
+@app.get("/api/v1/overview/{disease_code}")
+def overview(disease_code: str) -> list[dict]:
+    disease_records = [
+        record
+        for record in _records()
+        if record.disease_code == disease_code.upper() and record.complete_period
+    ]
+    if not disease_records:
+        raise HTTPException(status_code=404, detail="Disease overview not found")
+
+    by_location: dict[str, list] = {}
+    for record in disease_records:
+        by_location.setdefault(record.location_code, []).append(record)
+
+    results = []
+    for location_code, records in by_location.items():
+        records.sort(key=lambda record: record.period_start)
+        latest = records[-1]
+        alert = generate_latest_alert(records)
+        results.append(
+            {
+                "location_code": location_code,
+                "location_name": latest.location_name,
+                "location_level": latest.location_level,
+                "periods": len(records),
+                "total_cases": sum(record.cases for record in records),
+                "latest_period": latest.period_label,
+                "latest_cases": latest.cases,
+                "risk_level": alert.risk_level if alert else None,
+                "expected_cases": alert.expected_cases if alert else None,
+            }
+        )
+    return sorted(
+        results,
+        key=lambda item: (item["location_level"] != "national", item["location_name"]),
+    )

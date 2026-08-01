@@ -1,4 +1,4 @@
-.PHONY: install data test reproduce serve dhis2-preview
+.PHONY: install data test frontend-install frontend-test frontend-build reproduce serve frontend-dev dhis2-preview
 
 PYTHON ?= python3
 DENGUE_SOURCE ?= data/raw/dengue_daily_2026.csv
@@ -14,10 +14,22 @@ data:
 test:
 	$(PYTHON) -m pytest -q
 
-reproduce: install data test
+frontend-install:
+	cd frontend && npm ci
+
+frontend-test:
+	cd frontend && npm test
+
+frontend-build:
+	cd frontend && npm run build
+
+reproduce: install data test frontend-install frontend-test frontend-build
 
 serve:
 	$(PYTHON) -m uvicorn onehealth.api:app --reload
+
+frontend-dev:
+	cd frontend && npm run dev
 
 dhis2-preview:
 	$(PYTHON) scripts/sync_dhis2.py --preview

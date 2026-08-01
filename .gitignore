@@ -6,3 +6,7 @@ __pycache__/
 .DS_Store
 .env
 data/sync/
+node_modules/
+frontend/dist/
+frontend/coverage/
+*.tsbuildinfo

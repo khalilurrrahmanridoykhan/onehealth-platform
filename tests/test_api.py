@@ -42,3 +42,14 @@ def test_division_trend_alert_and_summary(monkeypatch):
     assert summary.json()["periods"] == 22
     assert summary.json()["location_name"] == "Dhaka"
 
+
+def test_overview_returns_national_then_eight_divisions(monkeypatch):
+    monkeypatch.setenv("ONEHEALTH_BACKEND", "csv")
+    response = client.get("/api/v1/overview/DENGUE")
+
+    assert response.status_code == 200
+    overview = response.json()
+    assert len(overview) == 9
+    assert overview[0]["location_code"] == "BD"
+    assert overview[0]["location_level"] == "national"
+    assert {item["risk_level"] for item in overview} <= {"LOW", "MEDIUM", "HIGH"}

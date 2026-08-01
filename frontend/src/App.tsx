@@ -1,0 +1,88 @@
+import { useEffect, useMemo, useState } from 'react'
+import { api } from './api'
+import { AlertPanel } from './components/AlertPanel'
+import { LocationTable } from './components/LocationTable'
+import { SummaryCards } from './components/SummaryCards'
+import { TrendChart } from './components/TrendChart'
+import type { Alert, Location, OverviewItem, SurveillanceRecord } from './types'
+
+export default function App() {
+  const [locations, setLocations] = useState<Location[]>([])
+  const [overview, setOverview] = useState<OverviewItem[]>([])
+  const [selected, setSelected] = useState('BD')
+  const [trend, setTrend] = useState<SurveillanceRecord[]>([])
+  const [alert, setAlert] = useState<Alert>()
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string>()
+
+  useEffect(() => {
+    Promise.all([api.locations(), api.overview()])
+      .then(([locationData, overviewData]) => {
+        setLocations(locationData)
+        setOverview(overviewData)
+      })
+      .catch((reason: Error) => setError(reason.message))
+  }, [])
+
+  useEffect(() => {
+    setLoading(true)
+    setError(undefined)
+    Promise.all([api.trend(selected), api.alert(selected)])
+      .then(([trendData, alertData]) => {
+        setTrend(trendData)
+        setAlert(alertData)
+      })
+      .catch((reason: Error) => setError(reason.message))
+      .finally(() => setLoading(false))
+  }, [selected])
+
+  const selectedLocation = locations.find((location) => location.code === selected)
+  const selectedSummary = useMemo(
+    () => overview.find((item) => item.location_code === selected),
+    [overview, selected],
+  )
+
+  return (
+    <div className="app-shell">
+      <aside className="sidebar">
+        <div className="brand-mark">OH</div>
+        <nav aria-label="Primary navigation">
+          <a className="active" href="#dashboard">Dashboard</a>
+          <a href="#surveillance">Surveillance</a>
+          <a href="#alerts">Alerts</a>
+          <a href="#ebs">EBS workflow</a>
+        </nav>
+        <div className="sidebar-status"><span /> Data source configurable<br /><small>CSV or DHIS2</small></div>
+      </aside>
+
+      <main id="dashboard">
+        <header className="topbar">
+          <div>
+            <p className="eyebrow">OneHealth Intelligence Platform</p>
+            <h1>Dengue surveillance</h1>
+            <p>Early-warning intelligence for Bangladesh</p>
+          </div>
+          <label className="location-select">
+            <span>Reporting location</span>
+            <select value={selected} onChange={(event) => setSelected(event.target.value)}>
+              {locations.map((location) => <option key={location.code} value={location.code}>{location.name}</option>)}
+            </select>
+          </label>
+        </header>
+
+        {error && <div className="error-banner" role="alert">Could not load surveillance data: {error}</div>}
+        {loading ? <div className="loading-state">Loading {selectedLocation?.name ?? 'surveillance'} data…</div> : (
+          <>
+            <SummaryCards summary={selectedSummary} alert={alert} />
+            <div className="dashboard-grid" id="surveillance">
+              <TrendChart records={trend} />
+              <AlertPanel alert={alert} />
+            </div>
+            <LocationTable items={overview} selected={selected} onSelect={setSelected} />
+          </>
+        )}
+      </main>
+    </div>
+  )
+}
+
