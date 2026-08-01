@@ -14,6 +14,7 @@
       "shortName": "EBS Signal ID",
       "code": "OH_EBS_SIGNAL_ID",
       "valueType": "TEXT",
+      "aggregationType": "NONE",
       "unique": true,
       "generated": false,
       "orgunitScope": false
@@ -24,6 +25,7 @@
       "shortName": "EBS Signal Title",
       "code": "OH_EBS_SIGNAL_TITLE",
       "valueType": "TEXT",
+      "aggregationType": "NONE",
       "unique": false,
       "generated": false,
       "orgunitScope": false
@@ -34,6 +36,7 @@
       "shortName": "EBS Signal Source",
       "code": "OH_EBS_SIGNAL_SOURCE",
       "valueType": "TEXT",
+      "aggregationType": "NONE",
       "unique": false,
       "generated": false,
       "orgunitScope": false
