@@ -14,12 +14,11 @@ const FIELD_OPTIONS: Record<string, string[]> = {
   impact_score: ['1', '2', '3', '4', '5'],
   risk_level: ['LOW', 'MEDIUM', 'HIGH', 'CRITICAL'],
   investigation_status: ['PLANNED', 'IN_PROGRESS', 'COMPLETED'],
-  samples_collected: ['NO', 'YES'],
   response_status: ['PLANNED', 'IN_PROGRESS', 'COMPLETED'],
 }
 
 const stageLabel = (value: string) => value.replaceAll('_', ' ').replace(/\b\w/g, (letter) => letter.toUpperCase())
-const fieldLabel = (value: string) => stageLabel(value)
+const fieldLabel = (value: string) => value === 'samples_collected' ? 'Samples Collected (count)' : stageLabel(value)
 
 export function EBSWorkspace({ locations }: { locations: Location[] }) {
   const [stages, setStages] = useState<EBSStage[]>([])
@@ -125,7 +124,9 @@ export function EBSWorkspace({ locations }: { locations: Location[] }) {
           {selectedStage.fields.map((field) => (
             <label className={['verification_notes', 'findings', 'recommended_actions', 'outcome', 'lessons_learned'].includes(field) ? 'full-width' : ''} key={field}>
               {fieldLabel(field)}{selectedStage.required_fields.includes(field) ? ' *' : ''}
-              {FIELD_OPTIONS[field] ? (
+              {field === 'samples_collected' ? (
+                <input type="number" min="0" step="1" value={stageValues[field] ?? ''} onChange={(event) => setStageValues((current) => ({ ...current, [field]: event.target.value }))} placeholder="0" />
+              ) : FIELD_OPTIONS[field] ? (
                 <select required={selectedStage.required_fields.includes(field)} value={stageValues[field] ?? ''} onChange={(event) => setStageValues((current) => ({ ...current, [field]: event.target.value }))}>
                   <option value="">Select…</option>{FIELD_OPTIONS[field].map((option) => <option key={option} value={option}>{stageLabel(option.toLowerCase())}</option>)}
                 </select>

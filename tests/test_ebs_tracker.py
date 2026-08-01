@@ -89,6 +89,27 @@ def test_follow_up_stage_maps_fields_and_rejects_unknown_values():
         )
 
 
+def test_investigation_requires_a_non_negative_sample_count():
+    bundle = build_stage_event(
+        stage="investigation",
+        enrollment_uid="Bcdefg12345",
+        org_unit_uid="BdDivDha001",
+        occurred_on=date(2026, 8, 2),
+        values={"investigation_status": "COMPLETED", "samples_collected": "3"},
+    )
+    values = bundle["events"][0]["dataValues"]
+    assert {"dataElement": EBS_DATA_ELEMENTS["samples_collected"], "value": "3"} in values
+
+    with pytest.raises(ValueError, match="whole-number count"):
+        build_stage_event(
+            stage="investigation",
+            enrollment_uid="Bcdefg12345",
+            org_unit_uid="BdDivDha001",
+            occurred_on=date(2026, 8, 2),
+            values={"investigation_status": "COMPLETED", "samples_collected": "YES"},
+        )
+
+
 def test_tracker_client_uses_atomic_synchronous_import():
     def handler(request: httpx.Request) -> httpx.Response:
         assert request.url.path == "/api/tracker"

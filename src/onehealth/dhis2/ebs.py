@@ -183,6 +183,23 @@ def build_stage_event(
             f"Missing required fields for {stage}: {', '.join(missing)}"
         )
 
+    for score_field in ("likelihood_score", "impact_score"):
+        if score_field in values:
+            try:
+                score = int(values[score_field])
+            except (TypeError, ValueError):
+                raise ValueError(f"{score_field} must be an integer from 1 to 5") from None
+            if not 1 <= score <= 5:
+                raise ValueError(f"{score_field} must be an integer from 1 to 5")
+
+    if "samples_collected" in values:
+        try:
+            sample_count = int(values["samples_collected"])
+        except (TypeError, ValueError):
+            raise ValueError("samples_collected must be a whole-number count of 0 or more") from None
+        if sample_count < 0 or str(sample_count) != str(values["samples_collected"]).strip():
+            raise ValueError("samples_collected must be a whole-number count of 0 or more")
+
     event = {
         "event": event_uid or generate_dhis2_uid(),
         "program": EBS_PROGRAM_UID,
