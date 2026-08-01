@@ -10,3 +10,5 @@ node_modules/
 frontend/dist/
 frontend/coverage/
 *.tsbuildinfo
+.env.production
+deploy/dhis2_home/dhis.conf

@@ -1,4 +1,26 @@
 services:
+  database:
+    image: postgis/postgis:16-3.4
+    restart: unless-stopped
+    env_file: .env.production
+    volumes: ["dhis2_database:/var/lib/postgresql/data"]
+    command: ["postgres", "-c", "max_locks_per_transaction=200"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 15s
+      timeout: 5s
+      retries: 20
+    security_opt: ["no-new-privileges:true"]
+  dhis2:
+    image: dhis2/core:2.42.5.1
+    restart: unless-stopped
+    depends_on:
+      database:
+        condition: service_healthy
+    volumes: ["./deploy/dhis2_home:/DHIS2_home:ro"]
+    expose: ["8080"]
+    mem_limit: 2200m
+    security_opt: ["no-new-privileges:true"]
   api:
     build: .
     restart: unless-stopped
@@ -18,9 +40,10 @@ services:
   proxy:
     image: caddy:2-alpine
     restart: unless-stopped
-    depends_on: [web]
+    depends_on: [web, dhis2]
     environment:
       ONEHEALTH_DOMAIN: ${ONEHEALTH_DOMAIN:?Set ONEHEALTH_DOMAIN}
+      DHIS2_DOMAIN: ${DHIS2_DOMAIN:?Set DHIS2_DOMAIN}
     ports: ["80:80", "443:443", "443:443/udp"]
     volumes:
       - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
@@ -28,5 +51,6 @@ services:
       - caddy_config:/config
     security_opt: ["no-new-privileges:true"]
 volumes:
+  dhis2_database:
   caddy_data:
   caddy_config:

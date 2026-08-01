@@ -3,3 +3,9 @@
     reverse_proxy web:8080
     header Strict-Transport-Security "max-age=31536000; includeSubDomains"
 }
+
+{$DHIS2_DOMAIN} {
+    encode zstd gzip
+    reverse_proxy dhis2:8080
+    header Strict-Transport-Security "max-age=31536000; includeSubDomains"
+}
