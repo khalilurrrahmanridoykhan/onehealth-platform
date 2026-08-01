@@ -83,7 +83,7 @@ beforeEach(() => {
 test('renders surveillance metrics and alert guidance', async () => {
   render(<App />)
 
-  expect(screen.getByRole('heading', { name: 'Dengue surveillance' })).toBeInTheDocument()
+  expect(screen.getByRole('heading', { name: 'Dengue intelligence' })).toBeInTheDocument()
   await waitFor(() => expect(screen.getByText('Latest weekly cases')).toBeInTheDocument())
   expect(screen.getAllByText('3,000')).toHaveLength(2)
   expect(screen.getByText('Continue routine weekly surveillance.')).toBeInTheDocument()

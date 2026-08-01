@@ -34,6 +34,7 @@ const RISK_COLOR: Record<RiskLevel | 'UNKNOWN', string> = {
 
 export function RiskMap({ items, selected, onSelect }: Props) {
   const [geoData, setGeoData] = useState<FeatureCollection<Geometry, DivisionProperties>>()
+  const [layer, setLayer] = useState<'risk' | 'cases' | 'deviation'>('risk')
   const summaries = useMemo(
     () => new Map(items.map((item) => [item.location_code, item])),
     [items],
@@ -50,6 +51,22 @@ export function RiskMap({ items, selected, onSelect }: Props) {
     const projection = geoMercator().fitSize([500, 455], geoData)
     return { path: geoPath(projection) }
   }, [geoData])
+  const divisions = items.filter((item) => item.location_level === 'division')
+  const maximumCases = Math.max(...divisions.map((item) => item.latest_cases), 1)
+  const selectedSummary = summaries.get(selected)
+
+  const fillFor = (summary?: OverviewItem) => {
+    if (!summary) return RISK_COLOR.UNKNOWN
+    if (layer === 'risk') return RISK_COLOR[summary.risk_level ?? 'UNKNOWN']
+    if (layer === 'cases') {
+      const intensity = Math.max(.12, summary.latest_cases / maximumCases)
+      return `color-mix(in srgb, #b42318 ${Math.round(intensity * 88)}%, #fff)`
+    }
+    const deviation = summary.expected_cases ? (summary.latest_cases - summary.expected_cases) / summary.expected_cases : 0
+    if (deviation > .5) return '#dc5f58'
+    if (deviation > .2) return '#f4c95d'
+    return '#80d5b3'
+  }
 
   return (
     <section className="panel map-panel">
@@ -58,10 +75,11 @@ export function RiskMap({ items, selected, onSelect }: Props) {
           <p className="eyebrow">Spatial risk</p>
           <h2>Bangladesh division map</h2>
         </div>
-        <div className="map-legend"><span className="low" />Low <span className="medium" />Medium <span className="high" />High</div>
+        <label className="map-layer">Map layer<select value={layer} onChange={(event) => setLayer(event.target.value as typeof layer)}><option value="risk">Alert risk</option><option value="cases">Latest cases</option><option value="deviation">Baseline deviation</option></select></label>
       </div>
       {!geoData || !map ? <div className="map-loading">Loading boundaries…</div> : (
         <svg className="risk-map" viewBox="0 0 500 455" role="img" aria-label="Dengue risk by Bangladesh division">
+          <rect className="map-ocean" width="500" height="455" rx="14" />
           {geoData.features.map((feature) => {
             const locationCode = ISO_TO_LOCATION[feature.properties.shapeISO]
             const summary = summaries.get(locationCode)
@@ -71,7 +89,7 @@ export function RiskMap({ items, selected, onSelect }: Props) {
               <g key={feature.properties.shapeISO}>
                 <path
                   d={map.path(feature) ?? undefined}
-                  fill={RISK_COLOR[risk]}
+                  fill={fillFor(summary)}
                   className={selected === locationCode ? 'map-shape selected' : 'map-shape'}
                   onClick={() => onSelect(locationCode)}
                   tabIndex={0}
@@ -89,7 +107,10 @@ export function RiskMap({ items, selected, onSelect }: Props) {
           })}
         </svg>
       )}
+      <div className="map-footer">
+        <div className="map-legend"><span className="low" />Low <span className="medium" />Watch <span className="high" />High</div>
+        <div className="map-selection"><span>Selected area</span><strong>{selectedSummary?.location_name ?? 'Select a division'}</strong><small>{selectedSummary ? `${selectedSummary.latest_cases.toLocaleString()} cases · ${selectedSummary.risk_level ?? 'Unknown'} risk` : 'Click a boundary to inspect'}</small></div>
+      </div>
     </section>
   )
 }
-
