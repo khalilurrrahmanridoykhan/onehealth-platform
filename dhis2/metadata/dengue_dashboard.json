@@ -137,20 +137,30 @@
       "dashboardItems": [
         {
           "id": "OhDngItem01",
+          "i": "OhDngItem01",
           "type": "VISUALIZATION",
           "x": 0,
           "y": 0,
-          "w": 40,
-          "h": 24,
+          "w": 30,
+          "h": 14,
+          "width": 30,
+          "height": 14,
+          "minH": 8,
+          "firstOfType": true,
           "visualization": { "id": "OhDngTrend1" }
         },
         {
           "id": "OhDngItem02",
+          "i": "OhDngItem02",
           "type": "VISUALIZATION",
-          "x": 0,
-          "y": 24,
-          "w": 40,
-          "h": 24,
+          "x": 30,
+          "y": 0,
+          "w": 30,
+          "h": 14,
+          "width": 30,
+          "height": 14,
+          "minH": 8,
+          "firstOfType": false,
           "visualization": { "id": "OhDngDiv001" }
         }
       ]
