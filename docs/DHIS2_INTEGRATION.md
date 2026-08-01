@@ -78,6 +78,15 @@ Review the DHIS2 import response before committing:
 python scripts/import_dhis2_metadata.py --commit
 ```
 
+Native analytical dashboards are installed from
+`dhis2/metadata/dengue_dashboard.json`. The commit workflow reapplies
+visualizations through DHIS2's dedicated Visualization API so columns, rows,
+filters, and periods are preserved after the general metadata import.
+
+```bash
+python scripts/import_dhis2_metadata.py dhis2/metadata/dengue_dashboard.json --commit
+```
+
 ## Synchronize dengue data
 
 Validate all complete weeks without committing:

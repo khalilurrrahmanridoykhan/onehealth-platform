@@ -103,6 +103,16 @@ class DHIS2Client:
             payload=data_value_set,
         )
 
+    def update_visualization(
+        self, uid: str, visualization: Mapping[str, Any]
+    ) -> dict[str, Any]:
+        return self._request("PUT", f"visualizations/{uid}", payload=visualization)
+
+    def update_dashboard(
+        self, uid: str, dashboard: Mapping[str, Any]
+    ) -> dict[str, Any]:
+        return self._request("PUT", f"dashboards/{uid}", payload=dashboard)
+
     def get_data_values(
         self,
         *,

@@ -58,3 +58,24 @@ def test_tracker_entity_and_event_reads_use_program_filters():
     assert requests[0].url.params["orgUnit"] == "BdDivDha001"
     assert requests[1].url.path == "/api/tracker/events"
     assert requests[1].url.params["trackedEntity"] == "Abcdef12345"
+
+
+def test_analytical_objects_use_dedicated_update_endpoints():
+    requests: list[httpx.Request] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        requests.append(request)
+        return httpx.Response(200, json={"status": "OK"})
+
+    with DHIS2Client(
+        "https://dhis.example",
+        api_token="test-token",
+        transport=httpx.MockTransport(handler),
+    ) as client:
+        client.update_visualization("OhDngTrend1", {"id": "OhDngTrend1"})
+        client.update_dashboard("OhDngDash01", {"id": "OhDngDash01"})
+
+    assert requests[0].method == "PUT"
+    assert requests[0].url.path == "/api/visualizations/OhDngTrend1"
+    assert requests[1].method == "PUT"
+    assert requests[1].url.path == "/api/dashboards/OhDngDash01"

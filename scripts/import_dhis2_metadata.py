@@ -35,8 +35,18 @@ def main() -> None:
         print(f"Connected to DHIS2 {info.get('version', 'unknown version')}")
         result = client.import_metadata(metadata, dry_run=not args.commit)
         print(json.dumps(result, indent=2))
+        if args.commit:
+            # DHIS2's generic metadata importer can omit visualization dimension
+            # layouts. Reapply analytical objects through their dedicated APIs.
+            for visualization in metadata.get("visualizations", []):
+                uid = visualization["id"]
+                client.update_visualization(uid, visualization)
+                print(f"Updated visualization dimensions: {uid}")
+            for dashboard in metadata.get("dashboards", []):
+                uid = dashboard["id"]
+                client.update_dashboard(uid, dashboard)
+                print(f"Updated dashboard layout: {uid}")
 
 
 if __name__ == "__main__":
     main()
-
