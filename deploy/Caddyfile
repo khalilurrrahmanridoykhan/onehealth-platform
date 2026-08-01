@@ -14,7 +14,7 @@
         # Validate the gate here, then let DHIS2 handle its own form session.
         header_up -Authorization
         # DHIS2/Tomcat may emit an internal HTTP redirect behind TLS termination.
-        header_down Location "^http://dhis2\\.krrkhan\\.com/(.*)$" "https://dhis2.krrkhan.com/$1"
+        header_down Location "^http://" "https://"
     }
     header Strict-Transport-Security "max-age=31536000; includeSubDomains"
 }
