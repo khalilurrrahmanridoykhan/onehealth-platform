@@ -83,6 +83,13 @@ class DHIS2Client:
     def system_info(self) -> dict[str, Any]:
         return self._request("GET", "system/info")
 
+    def current_user(self) -> dict[str, Any]:
+        return self._request(
+            "GET",
+            "me",
+            params={"fields": "id,username,displayName,authorities"},
+        )
+
     def import_metadata(
         self, metadata: Mapping[str, Any], *, dry_run: bool = True
     ) -> dict[str, Any]:

@@ -51,7 +51,31 @@ def responder(credentials: HTTPAuthorizationCredentials | None = Depends(bearer)
 
 @app.post("/api/v1/auth/login")
 def login(request: LoginRequest) -> dict:
-    user = authenticate(request.username, request.password)
+    try:
+        user = authenticate(request.username, request.password)
+    except HTTPException as local_error:
+        if local_error.status_code != 401:
+            raise
+        try:
+            settings = DHIS2Settings.from_env()
+            with DHIS2Client(
+                settings.base_url,
+                username=request.username,
+                password=request.password,
+                verify_ssl=settings.verify_ssl,
+                timeout_seconds=settings.timeout_seconds,
+            ) as client:
+                profile = client.current_user()
+        except (ValueError, OSError, DHIS2APIError):
+            raise HTTPException(401, "Invalid username or password") from None
+        authorities = set(profile.get("authorities") or [])
+        if "ALL" in authorities:
+            role = "admin"
+        elif {"F_PROGRAMSTAGE_ADD", "F_TRACKED_ENTITY_INSTANCE_ADD"} & authorities:
+            role = "responder"
+        else:
+            role = "viewer"
+        user = User(str(profile.get("username") or request.username), role)
     return {"access_token": issue_token(user), "token_type": "bearer", "user": {"username": user.username, "role": user.role}}
 
 

@@ -275,3 +275,38 @@ def test_login_and_role_based_access(monkeypatch):
     assert login.status_code == 200
     assert me.json() == {"username": "analyst", "role": "analyst"}
     assert denied_write.status_code == 403
+
+
+def test_login_accepts_dhis2_superuser_credentials(monkeypatch):
+    monkeypatch.setenv("ONEHEALTH_AUTH_SECRET", "a-secure-test-secret-with-32-characters")
+    monkeypatch.setenv("ONEHEALTH_AUTH_USERS", "[]")
+    monkeypatch.setattr(
+        api_module.DHIS2Settings,
+        "from_env",
+        lambda: SimpleNamespace(
+            base_url="https://dhis.example", verify_ssl=True, timeout_seconds=30,
+        ),
+    )
+
+    class FakeClient:
+        def __init__(self, *_args, **kwargs):
+            assert kwargs["username"] == "admin"
+            assert kwargs["password"] == "dhis-password"
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_args):
+            return None
+
+        def current_user(self):
+            return {"username": "admin", "authorities": ["ALL"]}
+
+    monkeypatch.setattr(api_module, "DHIS2Client", FakeClient)
+    response = client.post(
+        "/api/v1/auth/login",
+        json={"username": "admin", "password": "dhis-password"},
+    )
+
+    assert response.status_code == 200
+    assert response.json()["user"] == {"username": "admin", "role": "admin"}

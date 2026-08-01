@@ -44,6 +44,7 @@ h1 { margin: 0; color: #102e26; font-size: clamp(30px, 4vw, 46px); line-height: 
 .session-control > button, .session-user button { padding: 11px 14px; border: 1px solid #bcd4cc; border-radius: 10px; color: #075845; background: white; font-weight: 700; cursor: pointer; }
 .login-popover { position: absolute; z-index: 5; top: 50px; right: 0; width: 280px; display: grid; gap: 12px; padding: 18px; border: 1px solid #d5e2dd; border-radius: 12px; background: white; box-shadow: 0 18px 45px #173a3025; }
 .login-popover label { color: #60766e; font-size: 11px; font-weight: 700; }
+.login-popover > small { margin-top: -6px; color: #71847d; font-size: 10px; }
 .login-popover input { width: 100%; margin-top: 5px; padding: 9px; border: 1px solid #d5e2dd; border-radius: 8px; }
 .login-popover button { padding: 10px; border: 0; border-radius: 8px; color: white; background: #087f5b; font-weight: 700; }
 .login-popover p { margin: 0; color: #a52620; font-size: 11px; }

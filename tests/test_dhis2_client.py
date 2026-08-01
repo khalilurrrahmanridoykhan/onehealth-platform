@@ -17,6 +17,21 @@ def test_api_token_and_system_info_request():
         assert client.system_info()["version"] == "42.0"
 
 
+def test_current_user_requests_only_authorization_profile_fields():
+    def handler(request: httpx.Request) -> httpx.Response:
+        assert request.url.path == "/api/me"
+        assert request.url.params["fields"] == "id,username,displayName,authorities"
+        return httpx.Response(200, json={"username": "admin", "authorities": ["ALL"]})
+
+    with DHIS2Client(
+        "https://dhis.example",
+        username="admin",
+        password="password",
+        transport=httpx.MockTransport(handler),
+    ) as client:
+        assert client.current_user()["authorities"] == ["ALL"]
+
+
 def test_data_value_import_uses_dry_run_and_update_strategy():
     def handler(request: httpx.Request) -> httpx.Response:
         assert request.url.path == "/api/dataValueSets"
