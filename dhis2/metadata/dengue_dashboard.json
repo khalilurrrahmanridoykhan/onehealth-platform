@@ -11,13 +11,48 @@
       "hideEmptyColumns": true,
       "showDimensionLabels": true,
       "columns": [
-        { "id": "dx" }
+        {
+          "dimension": "dx",
+          "items": [
+            { "id": "OhDngCase01", "dimensionItemType": "DATA_ELEMENT" }
+          ]
+        }
       ],
       "rows": [
-        { "id": "pe" }
+        {
+          "dimension": "pe",
+          "items": [
+            { "id": "2026W2", "dimensionItemType": "PERIOD" },
+            { "id": "2026W3", "dimensionItemType": "PERIOD" },
+            { "id": "2026W4", "dimensionItemType": "PERIOD" },
+            { "id": "2026W5", "dimensionItemType": "PERIOD" },
+            { "id": "2026W6", "dimensionItemType": "PERIOD" },
+            { "id": "2026W7", "dimensionItemType": "PERIOD" },
+            { "id": "2026W8", "dimensionItemType": "PERIOD" },
+            { "id": "2026W9", "dimensionItemType": "PERIOD" },
+            { "id": "2026W10", "dimensionItemType": "PERIOD" },
+            { "id": "2026W11", "dimensionItemType": "PERIOD" },
+            { "id": "2026W12", "dimensionItemType": "PERIOD" },
+            { "id": "2026W13", "dimensionItemType": "PERIOD" },
+            { "id": "2026W14", "dimensionItemType": "PERIOD" },
+            { "id": "2026W15", "dimensionItemType": "PERIOD" },
+            { "id": "2026W16", "dimensionItemType": "PERIOD" },
+            { "id": "2026W17", "dimensionItemType": "PERIOD" },
+            { "id": "2026W18", "dimensionItemType": "PERIOD" },
+            { "id": "2026W19", "dimensionItemType": "PERIOD" },
+            { "id": "2026W20", "dimensionItemType": "PERIOD" },
+            { "id": "2026W21", "dimensionItemType": "PERIOD" },
+            { "id": "2026W22", "dimensionItemType": "PERIOD" }
+          ]
+        }
       ],
       "filters": [
-        { "id": "ou" }
+        {
+          "dimension": "ou",
+          "items": [
+            { "id": "BdOrgUnit01", "dimensionItemType": "ORGANISATION_UNIT" }
+          ]
+        }
       ],
       "dataDimensionItems": [
         {
@@ -28,9 +63,7 @@
       "organisationUnits": [
         { "id": "BdOrgUnit01" }
       ],
-      "relativePeriods": {
-        "weeksThisYear": true
-      }
+      "relativePeriods": {}
     },
     {
       "id": "OhDngDiv001",
@@ -43,13 +76,35 @@
       "hideEmptyColumns": true,
       "showDimensionLabels": true,
       "columns": [
-        { "id": "ou" }
+        {
+          "dimension": "ou",
+          "items": [
+            { "id": "BdDivBar001", "dimensionItemType": "ORGANISATION_UNIT" },
+            { "id": "BdDivCtg001", "dimensionItemType": "ORGANISATION_UNIT" },
+            { "id": "BdDivDha001", "dimensionItemType": "ORGANISATION_UNIT" },
+            { "id": "BdDivKhu001", "dimensionItemType": "ORGANISATION_UNIT" },
+            { "id": "BdDivMym001", "dimensionItemType": "ORGANISATION_UNIT" },
+            { "id": "BdDivRaj001", "dimensionItemType": "ORGANISATION_UNIT" },
+            { "id": "BdDivRan001", "dimensionItemType": "ORGANISATION_UNIT" },
+            { "id": "BdDivSyl001", "dimensionItemType": "ORGANISATION_UNIT" }
+          ]
+        }
       ],
       "rows": [
-        { "id": "dx" }
+        {
+          "dimension": "dx",
+          "items": [
+            { "id": "OhDngCase01", "dimensionItemType": "DATA_ELEMENT" }
+          ]
+        }
       ],
       "filters": [
-        { "id": "pe" }
+        {
+          "dimension": "pe",
+          "items": [
+            { "id": "2026W22", "dimensionItemType": "PERIOD" }
+          ]
+        }
       ],
       "dataDimensionItems": [
         {
