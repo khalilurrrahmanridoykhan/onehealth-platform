@@ -34,3 +34,27 @@ def test_data_value_import_uses_dry_run_and_update_strategy():
         )
 
     assert result["status"] == "SUCCESS"
+
+
+def test_tracker_entity_and_event_reads_use_program_filters():
+    requests: list[httpx.Request] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        requests.append(request)
+        return httpx.Response(200, json={"instances": []})
+
+    with DHIS2Client(
+        "https://dhis.example",
+        api_token="test-token",
+        transport=httpx.MockTransport(handler),
+    ) as client:
+        client.get_tracked_entities(program="OhEbsProg01", org_unit="BdDivDha001")
+        client.get_tracker_events(
+            tracked_entity_uid="Abcdef12345", program="OhEbsProg01"
+        )
+
+    assert requests[0].url.path == "/api/tracker/trackedEntities"
+    assert requests[0].url.params["program"] == "OhEbsProg01"
+    assert requests[0].url.params["orgUnit"] == "BdDivDha001"
+    assert requests[1].url.path == "/api/tracker/events"
+    assert requests[1].url.params["trackedEntity"] == "Abcdef12345"

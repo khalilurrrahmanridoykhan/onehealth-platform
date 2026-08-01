@@ -1,3 +1,6 @@
+from types import SimpleNamespace
+
+import onehealth.api as api_module
 from fastapi.testclient import TestClient
 
 from onehealth.api import app
@@ -123,3 +126,75 @@ def test_ebs_follow_up_stage_rejects_missing_required_fields():
 
     assert response.status_code == 422
     assert "verification_status" in response.json()["detail"]
+
+
+def test_ebs_status_reports_unconfigured_without_exposing_secrets(monkeypatch):
+    for name in ("DHIS2_BASE_URL", "DHIS2_API_TOKEN", "DHIS2_USERNAME", "DHIS2_PASSWORD"):
+        monkeypatch.delenv(name, raising=False)
+
+    response = client.get("/api/v1/ebs/status")
+
+    assert response.status_code == 200
+    assert response.json() == {
+        "dhis2_configured": False,
+        "reads_enabled": False,
+        "writes_enabled": False,
+        "program_uid": "OhEbsProg01",
+    }
+
+
+def test_ebs_signal_search_and_detail_read_from_tracker(monkeypatch):
+    monkeypatch.setenv("ONEHEALTH_EBS_READS_ENABLED", "true")
+    class FakeClient:
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_):
+            return None
+
+        def get_tracked_entities(self, **_):
+            return {"instances": [{
+                "trackedEntity": "Abcdef12345", "orgUnit": "BdDivDha001",
+                "createdAt": "2026-08-01T10:00:00.000", "updatedAt": "2026-08-02T10:00:00.000",
+                "attributes": [
+                    {"attribute": "OhEbsId0001", "value": "EBS-2026-0001"},
+                    {"attribute": "OhEbsTit001", "value": "Unusual fever cluster"},
+                    {"attribute": "OhEbsSrc001", "value": "Community worker"},
+                ],
+            }], "pager": {"page": 1, "pageSize": 25, "total": 1}}
+
+        def get_tracked_entity(self, uid):
+            entity = self.get_tracked_entities()["instances"][0]
+            return {**entity, "trackedEntity": uid, "enrollments": [{"enrollment": "Bcdefg12345"}]}
+
+        def get_tracker_events(self, **_):
+            return {"instances": [{
+                "event": "Cdefgh12345", "programStage": "OhEbsVer001", "status": "COMPLETED",
+                "occurredAt": "2026-08-02T00:00:00.000", "updatedAt": "2026-08-02T10:00:00.000",
+                "dataValues": [{"dataElement": "OhEbsVrf001", "value": "VERIFIED"}],
+            }]}
+
+    monkeypatch.setattr(
+        api_module,
+        "_settings_and_client",
+        lambda: (SimpleNamespace(base_url="https://dhis.example"), FakeClient()),
+    )
+
+    search = client.get("/api/v1/ebs/signals?q=fever")
+    detail = client.get("/api/v1/ebs/signals/Abcdef12345")
+
+    assert search.status_code == 200
+    assert search.json()["signals"][0]["signal_id"] == "EBS-2026-0001"
+    assert detail.status_code == 200
+    assert detail.json()["enrollment_uid"] == "Bcdefg12345"
+    assert detail.json()["events"][0]["stage"] == "verification"
+    assert detail.json()["events"][0]["values"] == {"verification_status": "VERIFIED"}
+
+
+def test_ebs_registry_reads_are_disabled_by_default(monkeypatch):
+    monkeypatch.delenv("ONEHEALTH_EBS_READS_ENABLED", raising=False)
+
+    response = client.get("/api/v1/ebs/signals")
+
+    assert response.status_code == 403
+    assert "access control" in response.json()["detail"]

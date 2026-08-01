@@ -137,3 +137,43 @@ class DHIS2Client:
             payload=bundle,
         )
 
+    def get_tracked_entities(
+        self,
+        *,
+        program: str,
+        org_unit: str | None = None,
+        page: int = 1,
+        page_size: int = 50,
+    ) -> dict[str, Any]:
+        params: dict[str, Any] = {
+            "program": program,
+            "page": page,
+            "pageSize": page_size,
+            "totalPages": "true",
+            "fields": "trackedEntity,orgUnit,createdAt,updatedAt,attributes",
+        }
+        if org_unit:
+            params.update({"orgUnit": org_unit, "ouMode": "SELECTED"})
+        return self._request("GET", "tracker/trackedEntities", params=params)
+
+    def get_tracked_entity(self, tracked_entity_uid: str) -> dict[str, Any]:
+        return self._request(
+            "GET",
+            f"tracker/trackedEntities/{tracked_entity_uid}",
+            params={"fields": "trackedEntity,orgUnit,createdAt,updatedAt,attributes,enrollments"},
+        )
+
+    def get_tracker_events(
+        self, *, tracked_entity_uid: str, program: str
+    ) -> dict[str, Any]:
+        return self._request(
+            "GET",
+            "tracker/events",
+            params={
+                "trackedEntity": tracked_entity_uid,
+                "program": program,
+                "fields": "event,programStage,enrollment,orgUnit,status,occurredAt,createdAt,updatedAt,dataValues",
+                "order": "occurredAt:asc",
+                "pageSize": 100,
+            },
+        )

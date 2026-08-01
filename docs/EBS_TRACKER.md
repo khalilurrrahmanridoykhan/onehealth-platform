@@ -73,6 +73,12 @@ The custom frontend reads the workflow definition from `GET /api/v1/ebs/schema` 
 
 After a detection preview creates an enrollment UID, the custom workspace can build verification, risk-assessment, investigation, response, and closure event previews through `POST /api/v1/ebs/stages/preview`. Required fields and allowed stage fields are enforced by the backend. The matching `POST /api/v1/ebs/stages` write endpoint uses the same disabled-by-default safety setting.
 
+## Saved signal registry
+
+The customized registry reads tracked entities and program events from DHIS2, supports local search over signal ID, title, and source, and maps metadata UIDs back to readable stages and fields. `GET /api/v1/ebs/status` reports configuration state without returning credentials.
+
+Registry endpoints are protected by `ONEHEALTH_EBS_READS_ENABLED=false`. Keep this disabled until application authentication, authorization, and deployment access controls are configured. Enabling the flag does not expose DHIS2 credentials to the browser; all DHIS2 requests remain server-side.
+
 ## Safety boundaries
 
 - The current workflow is for aggregate or non-identifiable event signals.

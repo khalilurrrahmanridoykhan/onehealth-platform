@@ -93,3 +93,34 @@ export interface EBSStagePreview {
     }>
   }
 }
+
+export interface EBSConnectionStatus {
+  dhis2_configured: boolean
+  reads_enabled: boolean
+  writes_enabled: boolean
+  program_uid: string
+}
+
+export interface EBSSavedSignal {
+  tracked_entity_uid: string
+  org_unit_uid: string
+  signal_id: string
+  title: string
+  source: string
+  created_at: string | null
+  updated_at: string | null
+}
+
+export interface EBSSignalEvent {
+  event_uid: string
+  stage: string
+  status: string
+  occurred_at: string | null
+  updated_at: string | null
+  values: Record<string, string | number>
+}
+
+export interface EBSSignalDetail extends EBSSavedSignal {
+  enrollment_uid: string | null
+  events: EBSSignalEvent[]
+}

@@ -36,6 +36,9 @@ The project follows [Semantic Versioning](https://semver.org/).
 - Write-disabled-by-default API boundary for DHIS2 Tracker signal submission
 - Verification, risk assessment, investigation, response, and closure preview forms
 - DHIS2-compatible follow-up stage event API with required-field validation
+- DHIS2 Tracker entity and event read client
+- Saved EBS signal search, detail, and event-history dashboard
+- Disabled-by-default registry read boundary pending access control
 
 ## [0.1.0] - 2026-08-01
 

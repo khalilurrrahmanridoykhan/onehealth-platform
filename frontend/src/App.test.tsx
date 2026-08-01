@@ -61,6 +61,17 @@ beforeEach(() => {
         dataValues: [{ dataElement: 'OhEbsVrf001', value: 'VERIFIED' }],
       }] },
     }
+    else if (url.includes('/ebs/status')) body = { dhis2_configured: true, reads_enabled: true, writes_enabled: false, program_uid: 'OhEbsProg01' }
+    else if (url.includes('/ebs/signals/Abcdef12345')) body = {
+      tracked_entity_uid: 'Abcdef12345', org_unit_uid: 'BdDivDha001', enrollment_uid: 'Bcdefg12345',
+      signal_id: 'EBS-2026-0001', title: 'Unusual fever cluster', source: 'Community worker',
+      created_at: '2026-08-01T10:00:00.000', updated_at: '2026-08-02T10:00:00.000',
+      events: [{ event_uid: 'Cdefgh12345', stage: 'verification', status: 'COMPLETED', occurred_at: '2026-08-02T00:00:00.000', updated_at: '2026-08-02T10:00:00.000', values: { verification_status: 'VERIFIED' } }],
+    }
+    else if (url.includes('/ebs/signals?')) body = { signals: [{
+      tracked_entity_uid: 'Abcdef12345', org_unit_uid: 'BdDivDha001', signal_id: 'EBS-2026-0001',
+      title: 'Unusual fever cluster', source: 'Community worker', created_at: '2026-08-01T10:00:00.000', updated_at: '2026-08-02T10:00:00.000',
+    }] }
     else if (url.includes('/locations')) body = locations
     else if (url.includes('/overview')) body = overview
     else if (url.includes('/trends')) body = trend
@@ -115,4 +126,16 @@ test('previews a verification event for the detection enrollment', async () => {
 
   await waitFor(() => expect(screen.getByText('Verification event ready')).toBeInTheDocument())
   expect(screen.getByText('1 field values · completed event')).toBeInTheDocument()
+})
+
+test('loads a saved DHIS2 signal and displays its event history', async () => {
+  render(<App />)
+  await waitFor(() => expect(screen.getByRole('button', { name: /EBS-2026-0001/i })).toBeInTheDocument())
+
+  fireEvent.click(screen.getByRole('button', { name: /EBS-2026-0001/i }))
+
+  await waitFor(() => expect(screen.getByRole('heading', { name: 'Unusual fever cluster' })).toBeInTheDocument())
+  expect(screen.getAllByText('Verification')).toHaveLength(2)
+  expect(screen.getByText(/Verification Status:/)).toBeInTheDocument()
+  expect(screen.getByText((_, element) => element?.tagName === 'P' && element.textContent?.includes('VERIFIED') === true)).toBeInTheDocument()
 })

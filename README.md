@@ -141,6 +141,7 @@ The current dashboard includes:
 - National and division comparison table
 - Interactive division risk map linked to location selection
 - Six-stage EBS workflow with safe detection and follow-up event previews
+- Protected DHIS2 signal registry with search, detail, and event history
 - Responsive desktop and mobile layouts
 
 ### Available endpoints
@@ -157,6 +158,9 @@ The current dashboard includes:
 | `GET` | `/api/v1/alerts/DENGUE/latest?location_code=BD-DHA` | Latest Dhaka Division alert |
 | `GET` | `/api/v1/summary/DENGUE?location_code=BD-DHA` | Summary metrics for a location |
 | `GET` | `/api/v1/ebs/schema` | EBS program-stage schema for the custom UI |
+| `GET` | `/api/v1/ebs/status` | Non-secret DHIS2 registry readiness and safety status |
+| `GET` | `/api/v1/ebs/signals` | Search saved Tracker signals when protected reads are enabled |
+| `GET` | `/api/v1/ebs/signals/{uid}` | Read a saved signal and mapped event timeline |
 | `POST` | `/api/v1/ebs/signals/preview` | Validate and preview a DHIS2 Tracker signal payload |
 | `POST` | `/api/v1/ebs/signals` | Submit a signal only when EBS writes are explicitly enabled |
 | `POST` | `/api/v1/ebs/stages/preview` | Validate and preview a follow-up Tracker stage event |
@@ -221,8 +225,8 @@ Do not commit credentials, protected health information, or identifiable patient
 1. Validate national and division metadata synchronization against a live DHIS2 instance.
 2. Validate the EBS Tracker metadata and signal workflow against the live instance.
 3. Validate EBS signal submission with controlled test data on the live instance.
-4. Add EBS signal search, saved workflow state, and audit history from DHIS2.
-5. Add authentication and role-based access before enabling operational writes.
+4. Add authentication and role-based access before enabling operational reads or writes.
+5. Validate saved signal search and history against a controlled live instance.
 6. Integrate measles outbreak intelligence.
 7. Integrate AWD, rainfall, and flood-risk indicators.
 8. Validate alert methods with public-health experts before operational use.

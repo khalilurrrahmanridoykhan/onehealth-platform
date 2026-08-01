@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { api } from './api'
 import { AlertPanel } from './components/AlertPanel'
 import { EBSWorkspace } from './components/EBSWorkspace'
+import { EBSSignalRegistry } from './components/EBSSignalRegistry'
 import { LocationTable } from './components/LocationTable'
 import { RiskMap } from './components/RiskMap'
 import { SummaryCards } from './components/SummaryCards'
@@ -53,6 +54,7 @@ export default function App() {
           <a href="#surveillance">Surveillance</a>
           <a href="#alerts">Alerts</a>
           <a href="#ebs">EBS workflow</a>
+          <a href="#ebs-registry">Signal registry</a>
         </nav>
         <div className="sidebar-status"><span /> Data source configurable<br /><small>CSV or DHIS2</small></div>
       </aside>
@@ -85,6 +87,7 @@ export default function App() {
               <LocationTable items={overview} selected={selected} onSelect={setSelected} />
             </div>
             <EBSWorkspace locations={locations} />
+            <EBSSignalRegistry />
           </>
         )}
       </main>

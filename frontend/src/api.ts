@@ -1,6 +1,9 @@
 import type {
   Alert,
   EBSPreview,
+  EBSConnectionStatus,
+  EBSSavedSignal,
+  EBSSignalDetail,
   EBSSignalDraft,
   EBSStage,
   EBSStageDraft,
@@ -48,4 +51,9 @@ export const api = {
     postJson<EBSPreview>('/api/v1/ebs/signals/preview', signal),
   previewStage: (stage: EBSStageDraft) =>
     postJson<EBSStagePreview>('/api/v1/ebs/stages/preview', stage),
+  ebsStatus: () => getJson<EBSConnectionStatus>('/api/v1/ebs/status'),
+  savedSignals: (query = '') =>
+    getJson<{ signals: EBSSavedSignal[] }>(`/api/v1/ebs/signals?q=${encodeURIComponent(query)}`),
+  savedSignal: (trackedEntityUid: string) =>
+    getJson<EBSSignalDetail>(`/api/v1/ebs/signals/${encodeURIComponent(trackedEntityUid)}`),
 }

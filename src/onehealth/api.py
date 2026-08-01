@@ -11,6 +11,9 @@ from onehealth import __version__
 from onehealth.config import DEFAULT_DATA_PATH, DEFAULT_DHIS2_MAPPING_PATH, DHIS2Settings
 from onehealth.dhis2 import DHIS2APIError, DHIS2Client, DHIS2Mapping
 from onehealth.dhis2.ebs import (
+    EBS_ATTRIBUTES,
+    EBS_DATA_ELEMENTS,
+    EBS_PROGRAM_UID,
     EBS_REQUIRED_FIELDS,
     EBS_STAGE_FIELDS,
     EBS_STAGES,
@@ -304,6 +307,146 @@ def ebs_schema() -> dict:
             }
             for stage in order
         ]
+    }
+
+
+def _tracker_items(response: dict, legacy_key: str) -> list[dict]:
+    items = response.get("instances", response.get(legacy_key, []))
+    return items if isinstance(items, list) else []
+
+
+def _attribute_values(entity: dict) -> dict[str, str]:
+    by_uid = {
+        item.get("attribute"): str(item.get("value", ""))
+        for item in entity.get("attributes", [])
+        if isinstance(item, dict)
+    }
+    return {name: by_uid.get(uid, "") for name, uid in EBS_ATTRIBUTES.items()}
+
+
+def _event_view(event: dict) -> dict:
+    stage_by_uid = {uid: code for code, uid in EBS_STAGES.items()}
+    field_by_uid = {uid: code for code, uid in EBS_DATA_ELEMENTS.items()}
+    values = {
+        field_by_uid.get(item.get("dataElement"), item.get("dataElement", "unknown")): item.get("value")
+        for item in event.get("dataValues", [])
+        if isinstance(item, dict)
+    }
+    return {
+        "event_uid": event.get("event"),
+        "stage": stage_by_uid.get(event.get("programStage"), "unknown"),
+        "status": event.get("status"),
+        "occurred_at": event.get("occurredAt"),
+        "updated_at": event.get("updatedAt"),
+        "values": values,
+    }
+
+
+def _settings_and_client() -> tuple[DHIS2Settings, DHIS2Client]:
+    settings = DHIS2Settings.from_env()
+    return settings, DHIS2Client(
+        settings.base_url,
+        api_token=settings.api_token,
+        username=settings.username,
+        password=settings.password,
+        verify_ssl=settings.verify_ssl,
+        timeout_seconds=settings.timeout_seconds,
+    )
+
+
+@app.get("/api/v1/ebs/status")
+def ebs_status() -> dict:
+    configured = bool(
+        os.environ.get("DHIS2_BASE_URL", "").strip()
+        and (
+            os.environ.get("DHIS2_API_TOKEN", "").strip()
+            or (
+                os.environ.get("DHIS2_USERNAME", "").strip()
+                and os.environ.get("DHIS2_PASSWORD", "").strip()
+            )
+        )
+    )
+    return {
+        "dhis2_configured": configured,
+        "reads_enabled": os.environ.get("ONEHEALTH_EBS_READS_ENABLED", "false").lower() == "true",
+        "writes_enabled": os.environ.get("ONEHEALTH_EBS_WRITES_ENABLED", "false").lower() == "true",
+        "program_uid": EBS_PROGRAM_UID,
+    }
+
+
+@app.get("/api/v1/ebs/signals")
+def list_ebs_signals(
+    q: str | None = Query(default=None, max_length=100),
+    location_code: str | None = Query(default=None, max_length=20),
+    page: int = Query(default=1, ge=1),
+    page_size: int = Query(default=25, ge=1, le=100),
+) -> dict:
+    if os.environ.get("ONEHEALTH_EBS_READS_ENABLED", "false").lower() != "true":
+        raise HTTPException(
+            status_code=403,
+            detail="EBS registry reads are disabled until access control is configured.",
+        )
+    try:
+        settings, client = _settings_and_client()
+        org_unit = _ebs_org_unit_uid(location_code) if location_code else None
+        with client:
+            response = client.get_tracked_entities(
+                program=EBS_PROGRAM_UID,
+                org_unit=org_unit,
+                page=page,
+                page_size=page_size,
+            )
+    except (ValueError, OSError, DHIS2APIError) as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
+
+    signals = []
+    query = (q or "").casefold()
+    for entity in _tracker_items(response, "trackedEntities"):
+        attributes = _attribute_values(entity)
+        if query and query not in " ".join(attributes.values()).casefold():
+            continue
+        signals.append(
+            {
+                "tracked_entity_uid": entity.get("trackedEntity"),
+                "org_unit_uid": entity.get("orgUnit"),
+                "signal_id": attributes["signal_id"],
+                "title": attributes["title"],
+                "source": attributes["source"],
+                "created_at": entity.get("createdAt"),
+                "updated_at": entity.get("updatedAt"),
+            }
+        )
+    return {"signals": signals, "pager": response.get("pager"), "dhis2_url": settings.base_url}
+
+
+@app.get("/api/v1/ebs/signals/{tracked_entity_uid}")
+def get_ebs_signal(tracked_entity_uid: str) -> dict:
+    if os.environ.get("ONEHEALTH_EBS_READS_ENABLED", "false").lower() != "true":
+        raise HTTPException(
+            status_code=403,
+            detail="EBS registry reads are disabled until access control is configured.",
+        )
+    try:
+        _, client = _settings_and_client()
+        with client:
+            entity = client.get_tracked_entity(tracked_entity_uid)
+            event_response = client.get_tracker_events(
+                tracked_entity_uid=tracked_entity_uid,
+                program=EBS_PROGRAM_UID,
+            )
+    except (ValueError, OSError, DHIS2APIError) as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
+    attributes = _attribute_values(entity)
+    events = [_event_view(event) for event in _tracker_items(event_response, "events")]
+    enrollments = entity.get("enrollments", [])
+    return {
+        "tracked_entity_uid": entity.get("trackedEntity", tracked_entity_uid),
+        "org_unit_uid": entity.get("orgUnit"),
+        **attributes,
+        "enrollment_uid": enrollments[0].get("enrollment") if enrollments else None,
+        "created_at": entity.get("createdAt"),
+        "updated_at": entity.get("updatedAt"),
+        "events": events,
     }
 
 
