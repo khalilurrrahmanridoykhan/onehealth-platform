@@ -43,7 +43,9 @@ services:
     image: caddy:2-alpine
     restart: unless-stopped
     depends_on: [web, dhis2]
-    env_file: .env.production
+    env_file:
+      - path: .env.production
+        format: raw
     ports: ["80:80", "443:443", "443:443/udp"]
     volumes:
       - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
