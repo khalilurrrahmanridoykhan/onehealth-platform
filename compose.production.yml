@@ -19,7 +19,7 @@ services:
     depends_on:
       database:
         condition: service_healthy
-    volumes: ["./deploy/dhis2_home:/DHIS2_home:ro"]
+    volumes: ["./deploy/dhis2_home/dhis.conf:/opt/dhis2/dhis.conf:ro"]
     expose: ["8080"]
     mem_limit: 2200m
     security_opt: ["no-new-privileges:true"]
@@ -37,7 +37,9 @@ services:
     depends_on: [api]
     expose: ["8080"]
     read_only: true
-    tmpfs: ["/var/cache/nginx:uid=101,gid=101,mode=0700"]
+    tmpfs:
+      - "/var/cache/nginx:uid=101,gid=101,mode=0700"
+      - "/tmp:uid=101,gid=101,mode=0700"
     security_opt: ["no-new-privileges:true"]
   proxy:
     image: caddy:2-alpine
