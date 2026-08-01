@@ -7,6 +7,12 @@ from typing import Any
 
 EBS_TRACKED_ENTITY_TYPE_UID = "OhEbsSig001"
 EBS_PROGRAM_UID = "OhEbsProg01"
+BANGLADESH_UTC_OFFSET = "+06:00"
+
+
+def _bangladesh_midnight(value: date) -> str:
+    """Represent a Bangladesh reporting date without shifting it into the future in UTC."""
+    return f"{value.isoformat()}T00:00:00.000{BANGLADESH_UTC_OFFSET}"
 
 EBS_ATTRIBUTES = {
     "signal_id": "OhEbsId0001",
@@ -94,7 +100,7 @@ def build_signal_bundle(
     tracked_entity_uid = tracked_entity_uid or generate_dhis2_uid()
     enrollment_uid = enrollment_uid or generate_dhis2_uid()
     event_uid = event_uid or generate_dhis2_uid()
-    occurred_at = f"{signal.detected_on.isoformat()}T00:00:00.000"
+    occurred_at = _bangladesh_midnight(signal.detected_on)
 
     return {
         "trackedEntities": [
@@ -184,7 +190,7 @@ def build_stage_event(
         "enrollment": enrollment_uid,
         "orgUnit": org_unit_uid,
         "status": status,
-        "occurredAt": f"{occurred_on.isoformat()}T00:00:00.000",
+        "occurredAt": _bangladesh_midnight(occurred_on),
         "dataValues": [
             {"dataElement": EBS_DATA_ELEMENTS[field], "value": str(value)}
             for field, value in values.items()

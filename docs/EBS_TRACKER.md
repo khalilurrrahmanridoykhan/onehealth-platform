@@ -69,6 +69,8 @@ Replace the demonstration organization-unit UID with a real UID before submittin
 
 The custom frontend reads the workflow definition from `GET /api/v1/ebs/schema` and validates signal input with `POST /api/v1/ebs/signals/preview`. Preview mode returns the DHIS2 Tracker enrollment and detection-event payload without making a network write.
 
+Tracker enrollment and event timestamps carry an explicit `+06:00` offset so Bangladesh reporting dates are not misclassified as future UTC dates by DHIS2.
+
 `POST /api/v1/ebs/signals` is protected by `ONEHEALTH_EBS_WRITES_ENABLED`. It defaults to `false`; enable it only after installing the metadata, replacing demonstration organization-unit UIDs, configuring credentials, and completing a reviewed live-instance dry run.
 
 After a detection preview creates an enrollment UID, the custom workspace can build verification, risk-assessment, investigation, response, and closure event previews through `POST /api/v1/ebs/stages/preview`. Required fields and allowed stage fields are enforced by the backend. The matching `POST /api/v1/ebs/stages` write endpoint uses the same disabled-by-default safety setting.

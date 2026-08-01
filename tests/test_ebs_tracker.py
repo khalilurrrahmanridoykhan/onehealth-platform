@@ -48,6 +48,8 @@ def test_detection_bundle_links_entity_enrollment_and_event():
     assert event["programStage"] == EBS_STAGES["detection"]
     assert event["orgUnit"] == "BdDivDha001"
     assert event["status"] == "COMPLETED"
+    assert enrollment["enrolledAt"] == "2026-08-01T00:00:00.000+06:00"
+    assert event["occurredAt"] == "2026-08-01T00:00:00.000+06:00"
 
 
 def test_follow_up_stage_maps_fields_and_rejects_unknown_values():
@@ -61,6 +63,7 @@ def test_follow_up_stage_maps_fields_and_rejects_unknown_values():
     )
     event = bundle["events"][0]
     assert event["programStage"] == EBS_STAGES["risk_assessment"]
+    assert event["occurredAt"] == "2026-08-02T00:00:00.000+06:00"
     assert event["dataValues"] == [
         {"dataElement": EBS_DATA_ELEMENTS["likelihood_score"], "value": "4"},
         {"dataElement": EBS_DATA_ELEMENTS["impact_score"], "value": "5"},
