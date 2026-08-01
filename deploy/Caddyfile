@@ -9,6 +9,10 @@
     basic_auth {
         setup {$DHIS2_BOOTSTRAP_HASH}
     }
-    reverse_proxy dhis2:8080
+    reverse_proxy dhis2:8080 {
+        # The temporary bootstrap gate and DHIS2 both use Authorization.
+        # Validate the gate here, then let DHIS2 handle its own form session.
+        header_up -Authorization
+    }
     header Strict-Transport-Security "max-age=31536000; includeSubDomains"
 }
