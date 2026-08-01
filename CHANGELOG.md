@@ -8,9 +8,18 @@ The project follows [Semantic Versioning](https://semver.org/).
 
 ### Planned
 
-- DHIS2 metadata mapping and synchronization
+- Live DHIS2 validation and EBS Tracker metadata
 - Customized React surveillance dashboard
 - Division-level dengue mapping
+
+### Added
+
+- DHIS2 Web API client with token and basic authentication
+- Aggregate dengue metadata package and configurable UID mapping
+- Preview, dry-run, and committed data-value synchronization modes
+- Duplicate-period protection and synchronization reporting
+- DHIS2-backed reads for existing trend and alert endpoints
+- Mocked DHIS2 integration tests
 
 ## [0.1.0] - 2026-08-01
 
@@ -26,4 +35,3 @@ The project follows [Semantic Versioning](https://semver.org/).
 
 [Unreleased]: https://github.com/khalilurrrahmanridoykhan/onehealth-platform/compare/v0.1.0...HEAD
 [0.1.0]: https://github.com/khalilurrrahmanridoykhan/onehealth-platform/releases/tag/v0.1.0
-

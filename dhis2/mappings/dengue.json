@@ -1,0 +1,13 @@
+{
+  "diseaseCode": "DENGUE",
+  "diseaseName": "Dengue",
+  "dataSetUid": "OhDngWeek01",
+  "casesDataElementUid": "OhDngCase01",
+  "locations": {
+    "BD": {
+      "uid": "BdOrgUnit01",
+      "name": "Bangladesh",
+      "level": "national"
+    }
+  }
+}

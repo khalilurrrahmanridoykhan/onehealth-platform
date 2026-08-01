@@ -20,7 +20,7 @@ Alerts, investigations, and actions
 
 ## Current milestone
 
-The repository currently implements the ingestion, normalized domain model, alert service, and FastAPI layer. Normalized demonstration data is stored as CSV while DHIS2 metadata and synchronization are developed.
+The repository currently implements ingestion, the normalized domain model, the alert service, FastAPI, and the DHIS2 aggregate-data integration boundary. It can preview or submit metadata and weekly data-value payloads and can read DHIS2 values through the API. Live-instance validation still requires configured DHIS2 access.
 
 FastAPI is intended to become an integration and prediction layer. It is not intended to replace DHIS2 as the target health-data backend.
 
@@ -50,4 +50,3 @@ FastAPI is intended to become an integration and prediction layer. It is not int
 4. Keep prediction explanations alongside predictions.
 5. Avoid storing patient identifiers in the research prototype.
 6. Treat alert thresholds as configurable and subject to validation.
-

@@ -1,11 +1,14 @@
 import os
 from dataclasses import asdict
+from datetime import date
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException, Query
 
 from onehealth import __version__
-from onehealth.config import DEFAULT_DATA_PATH
+from onehealth.config import DEFAULT_DATA_PATH, DHIS2Settings
+from onehealth.dhis2 import DHIS2APIError, DHIS2Client, DHIS2Mapping
+from onehealth.dhis2.sync import records_from_dhis2
 from onehealth.services.alerts import generate_latest_alert
 from onehealth.services.surveillance import load_surveillance_records
 
@@ -22,11 +25,49 @@ def _data_path() -> Path:
 
 
 def _records():
-    records = load_surveillance_records(_data_path())
+    backend = os.environ.get("ONEHEALTH_BACKEND", "csv").strip().lower()
+    if backend == "dhis2":
+        try:
+            settings = DHIS2Settings.from_env()
+            mapping = DHIS2Mapping.from_path(settings.mapping_path)
+            start_date = os.environ.get("DHIS2_START_DATE", "2020-01-01")
+            end_date = os.environ.get("DHIS2_END_DATE", date.today().isoformat())
+            responses = []
+            with DHIS2Client(
+                settings.base_url,
+                api_token=settings.api_token,
+                username=settings.username,
+                password=settings.password,
+                verify_ssl=settings.verify_ssl,
+                timeout_seconds=settings.timeout_seconds,
+            ) as client:
+                for location in mapping.locations.values():
+                    responses.append(
+                        client.get_data_values(
+                            data_set=mapping.data_set_uid,
+                            org_unit=location.uid,
+                            start_date=start_date,
+                            end_date=end_date,
+                        )
+                    )
+            records = [
+                record
+                for response in responses
+                for record in records_from_dhis2(response, mapping)
+            ]
+        except (ValueError, OSError, DHIS2APIError) as exc:
+            raise HTTPException(status_code=503, detail=str(exc)) from exc
+    elif backend == "csv":
+        records = load_surveillance_records(_data_path())
+    else:
+        raise HTTPException(
+            status_code=503,
+            detail="ONEHEALTH_BACKEND must be csv or dhis2",
+        )
     if not records:
         raise HTTPException(
             status_code=503,
-            detail="No processed surveillance data. Run the dengue import first.",
+            detail="No surveillance data returned by the configured backend.",
         )
     return records
 
@@ -71,4 +112,3 @@ def latest_alert(disease_code: str) -> dict:
     if alert is None:
         raise HTTPException(status_code=404, detail="Not enough complete periods for an alert")
     return asdict(alert)
-

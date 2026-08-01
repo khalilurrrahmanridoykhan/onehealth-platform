@@ -1,4 +1,4 @@
-.PHONY: install data test reproduce serve
+.PHONY: install data test reproduce serve dhis2-preview
 
 PYTHON ?= python3
 DENGUE_SOURCE ?= data/raw/dengue_daily_2026.csv
@@ -17,4 +17,7 @@ reproduce: install data test
 
 serve:
 	$(PYTHON) -m uvicorn onehealth.api:app --reload
+
+dhis2-preview:
+	$(PYTHON) scripts/sync_dhis2.py --preview
 

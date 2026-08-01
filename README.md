@@ -27,7 +27,7 @@ Research datasets and surveillance sources
  Customized dashboard, alerts, and actions
 ```
 
-DHIS2 integration and the customized frontend are part of the roadmap. The current milestone implements the reusable ingestion, surveillance, API, and alert foundation.
+The DHIS2 integration foundation is implemented; live-instance validation and the customized frontend remain on the roadmap.
 
 ## Current capabilities
 
@@ -37,6 +37,7 @@ DHIS2 integration and the customized frontend are part of the roadmap. The curre
 - Detects partial reporting weeks and excludes them from alert calculations
 - Generates explainable alerts using a four-week historical baseline
 - Exposes FastAPI endpoints for diseases, trends, and latest alerts
+- Previews, validates, submits, and reads DHIS2 aggregate surveillance payloads
 - Includes automated tests and continuous integration
 
 ## Project status
@@ -47,8 +48,10 @@ DHIS2 integration and the customized frontend are part of the roadmap. The curre
 | Weekly surveillance data model | Implemented |
 | Explainable baseline alerts | Implemented |
 | FastAPI service | Implemented |
+| DHIS2 API client and mapping foundation | Implemented |
+| DHIS2 metadata and data-value dry-run synchronization | Implemented |
 | Division-level surveillance | Planned |
-| DHIS2 metadata and synchronization | Planned |
+| Live DHIS2 instance validation | Blocked until an instance is configured |
 | Customized React dashboard | Planned |
 | Measles integration | Planned |
 | AWD/environmental-risk integration | Planned |
@@ -108,6 +111,8 @@ uvicorn onehealth.api:app --reload
 - API: <http://127.0.0.1:8000>
 - Interactive documentation: <http://127.0.0.1:8000/docs>
 - OpenAPI schema: <http://127.0.0.1:8000/openapi.json>
+
+The default backend is the committed CSV demonstration. To read from a configured DHIS2 instance, follow the [DHIS2 integration guide](docs/DHIS2_INTEGRATION.md) and set `ONEHEALTH_BACKEND=dhis2`.
 
 ### Available endpoints
 
@@ -175,8 +180,8 @@ Do not commit credentials, protected health information, or identifiable patient
 ## Roadmap
 
 1. Add division-level dengue ingestion and stable geographic codes.
-2. Define DHIS2 organization units, data elements, programs, and mappings.
-3. Implement authenticated DHIS2 synchronization and duplicate protection.
+2. Validate the aggregate metadata and synchronization against a live DHIS2 instance.
+3. Define EBS Tracker programs and program stages.
 4. Build the customized React dashboard with trends, maps, and alerts.
 5. Add EBS verification, risk assessment, investigation, and response workflows.
 6. Integrate measles outbreak intelligence.
