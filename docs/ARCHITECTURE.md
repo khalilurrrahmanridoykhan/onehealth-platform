@@ -1,0 +1,53 @@
+# Architecture
+
+## Target architecture
+
+```text
+DGHS and research data sources
+              ↓
+     Ingestion adapters
+              ↓
+       Validation layer
+              ↓
+ DHIS2 health-data backend
+              ↓
+Integration and prediction API
+              ↓
+Customized React dashboard
+              ↓
+Alerts, investigations, and actions
+```
+
+## Current milestone
+
+The repository currently implements the ingestion, normalized domain model, alert service, and FastAPI layer. Normalized demonstration data is stored as CSV while DHIS2 metadata and synchronization are developed.
+
+FastAPI is intended to become an integration and prediction layer. It is not intended to replace DHIS2 as the target health-data backend.
+
+## Planned DHIS2 responsibilities
+
+- Organization units and geographic hierarchy
+- Disease indicators and aggregate surveillance values
+- EBS signals and verification status
+- Risk assessments and investigations
+- Alert records and response actions where appropriate
+- User roles and auditable program workflows
+
+## Planned application responsibilities
+
+- Source-specific ingestion and validation
+- DHIS2 API synchronization
+- Prediction and explainable alert generation
+- Customized dashboard experience
+- Map, trend, and alert visualization
+- Notification integrations
+
+## Design principles
+
+1. Preserve provenance for every observation.
+2. Separate observed, estimated, modelled, and synthetic data.
+3. Exclude incomplete periods from automated alert decisions by default.
+4. Keep prediction explanations alongside predictions.
+5. Avoid storing patient identifiers in the research prototype.
+6. Treat alert thresholds as configurable and subject to validation.
+
