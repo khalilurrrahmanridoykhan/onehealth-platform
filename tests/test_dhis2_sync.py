@@ -1,3 +1,4 @@
+from dataclasses import replace
 from datetime import date, timedelta
 
 import pytest
@@ -77,6 +78,12 @@ def test_duplicate_period_is_rejected():
         records_to_data_value_sets([record(), record()], MAPPING)
 
 
+def test_national_records_can_use_a_separate_data_element():
+    mapping = replace(MAPPING, national_cases_data_element_uid="OhDngNat001")
+    payload = records_to_data_value_sets([record()], mapping)[0]
+    assert payload["dataValues"][0]["dataElement"] == "OhDngNat001"
+
+
 def test_dhis2_values_become_surveillance_records():
     response = {
         "dataValues": [
@@ -93,4 +100,3 @@ def test_dhis2_values_become_surveillance_records():
     assert records[0].period_label == "2026-W02"
     assert records[0].cases == 70
     assert records[0].source_name == "DHIS2"
-

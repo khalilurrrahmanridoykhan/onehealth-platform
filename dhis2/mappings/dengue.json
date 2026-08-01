@@ -3,6 +3,7 @@
   "diseaseName": "Dengue",
   "dataSetUid": "OhDngWeek01",
   "casesDataElementUid": "OhDngCase01",
+  "nationalCasesDataElementUid": "OhDngNat001",
   "locations": {
     "BD": {
       "uid": "BdOrgUnit01",

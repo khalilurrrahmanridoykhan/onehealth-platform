@@ -44,7 +44,7 @@ def records_to_data_value_sets(
                 "completeDate": record.period_end.isoformat(),
                 "dataValues": [
                     {
-                        "dataElement": mapping.cases_data_element_uid,
+                        "dataElement": mapping.cases_uid_for_location(location),
                         "value": str(record.cases),
                         "comment": f"Source: {record.source_name}",
                     }
@@ -91,10 +91,10 @@ def records_from_dhis2(
 ) -> list[SurveillanceRecord]:
     records: list[SurveillanceRecord] = []
     for value in response.get("dataValues", []):
-        if value.get("dataElement") != mapping.cases_data_element_uid:
-            continue
         location_code = mapping.code_for_uid(value["orgUnit"])
         location = mapping.location_for_code(location_code)
+        if value.get("dataElement") != mapping.cases_uid_for_location(location):
+            continue
         start, end, label = dhis2_week_bounds(value["period"])
         records.append(
             SurveillanceRecord(
@@ -118,4 +118,3 @@ def records_from_dhis2(
             )
         )
     return sorted(records, key=lambda record: record.period_start)
-

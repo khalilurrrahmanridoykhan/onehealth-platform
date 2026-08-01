@@ -75,10 +75,21 @@
   "dataElements": [
     {
       "id": "OhDngCase01",
-      "name": "OneHealth Dengue admitted cases",
-      "shortName": "OH Dengue cases",
-      "code": "OH_DENGUE_CASES",
-      "description": "Weekly admitted dengue cases imported by the OneHealth Intelligence Platform",
+      "name": "OneHealth Dengue division admitted cases",
+      "shortName": "OH Dengue division cases",
+      "code": "OH_DENGUE_DIVISION_CASES",
+      "description": "Weekly division-level admitted dengue cases imported by the OneHealth Intelligence Platform",
+      "domainType": "AGGREGATE",
+      "valueType": "INTEGER_ZERO_OR_POSITIVE",
+      "aggregationType": "SUM",
+      "zeroIsSignificant": true
+    },
+    {
+      "id": "OhDngNat001",
+      "name": "OneHealth Dengue national reported cases",
+      "shortName": "OH Dengue national cases",
+      "code": "OH_DENGUE_NATIONAL_CASES",
+      "description": "Weekly national reported dengue cases imported by the OneHealth Intelligence Platform without summing division reports",
       "domainType": "AGGREGATE",
       "valueType": "INTEGER_ZERO_OR_POSITIVE",
       "aggregationType": "SUM",
@@ -108,6 +119,11 @@
         {
           "dataElement": {
             "id": "OhDngCase01"
+          }
+        },
+        {
+          "dataElement": {
+            "id": "OhDngNat001"
           }
         }
       ]

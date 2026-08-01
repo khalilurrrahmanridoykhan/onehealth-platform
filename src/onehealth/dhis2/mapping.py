@@ -17,6 +17,7 @@ class DHIS2Mapping:
     data_set_uid: str
     cases_data_element_uid: str
     locations: dict[str, LocationMapping]
+    national_cases_data_element_uid: str | None = None
 
     @classmethod
     def from_path(cls, path: Path) -> "DHIS2Mapping":
@@ -35,7 +36,13 @@ class DHIS2Mapping:
             data_set_uid=raw["dataSetUid"],
             cases_data_element_uid=raw["casesDataElementUid"],
             locations=locations,
+            national_cases_data_element_uid=raw.get("nationalCasesDataElementUid"),
         )
+
+    def cases_uid_for_location(self, location: LocationMapping) -> str:
+        if location.level == "national" and self.national_cases_data_element_uid:
+            return self.national_cases_data_element_uid
+        return self.cases_data_element_uid
 
     def location_for_code(self, code: str) -> LocationMapping:
         try:
@@ -48,4 +55,3 @@ class DHIS2Mapping:
             if location.uid == uid:
                 return code
         raise ValueError(f"No local location mapping for DHIS2 organization unit {uid}")
-
