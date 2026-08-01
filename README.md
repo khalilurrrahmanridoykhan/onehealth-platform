@@ -29,6 +29,37 @@ Research datasets and surveillance sources
 
 The DHIS2 integration foundation and customized frontend are implemented. Live-instance validation remains on the roadmap.
 
+## DHIS2-backed architecture in practice
+
+This project follows an established DHIS2 implementation pattern: DHIS2 acts as the health-data backend and system of record, while a purpose-built web application provides a more flexible user experience and additional decision-support functions.
+
+```text
+DHIS2 aggregate data and Tracker records
+                    ↓ Web API
+       OneHealth integration services
+                    ↓
+ Customized maps, predictions, alerts,
+ comparisons, EBS workflow, and response tools
+```
+
+In this architecture, DHIS2 manages organisation units, aggregate surveillance data, Tracker enrollments and events, metadata, users, permissions, and audit history. The customized OneHealth application adds Bangladesh boundary maps, prediction and risk models, explainable alerts, geographic and period comparisons, signal triage, response queues, recommended actions, and a role-specific interface. DHIS2 supports this model through its open Web API and custom application platform; see the official [DHIS2 architecture](https://dhis2.org/architecture/) and [application platform](https://dhis2.org/applications/) documentation.
+
+### Similar implementations
+
+| Country/organisation | Programme | How it relates to your project |
+|---|---|---|
+| Indonesia | National One Health and e-Zoonosis | Uses a customized DHIS2 mobile application for zoonotic case reporting, investigation and logistics planning. |
+| Tanzania | Electronic Event-Based Surveillance | Community and government sectors report unusual events, investigate signals and coordinate responses across health, livestock and environmental sectors. |
+| Zanzibar | Animal-health and One Health EBS | Community workers, veterinarians and district staff report and verify unusual health events using DHIS2 mobile workflows. |
+| Sri Lanka | COVID-19 surveillance | Used DHIS2 Tracker for suspected cases, laboratory results, contact tracing and outcomes. |
+| Africa CDC | Event-Based Surveillance | Customized DHIS2 for regional event detection and management, including integration possibilities with WHO EIOS. |
+| Burkina Faso | One Health platform | Uses DHIS2 for cross-sector One Health surveillance. |
+
+These examples are described in the official [DHIS2 One Health](https://dhis2.org/one-health/), [disease surveillance](https://dhis2.org/disease-surveillance/), and [COVID-19 surveillance](https://dhis2.org/covid-surveillance/) resources. DHIS2 also documents Tracker and Event use across more than 75 countries for programmes including malaria, tuberculosis, HIV, disease surveillance, and maternal and child health; see [DHIS2 Tracker](https://dhis2.org/tracker/). A detailed reference design for integrated animal and human event-based surveillance is available in the [DHIS2 Animal Health EBS design guide](https://docs.dhis2.org/en/implement/health/animal-health/event-based-surveillance/design.html).
+
+> [!NOTE]
+> This repository is an independent demonstration and research implementation for Bangladesh. It must not be represented as an official DGHS or Government of Bangladesh system unless it is formally reviewed, approved, and adopted by the responsible authorities.
+
 ## Current capabilities
 
 - Validates an existing daily dengue CSV export
