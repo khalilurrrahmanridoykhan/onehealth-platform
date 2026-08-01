@@ -2,6 +2,8 @@
 
 The normalized record is designed to support multiple diseases, reporting periods, and geographic levels before mapping to DHIS2 metadata.
 
+For variable types, units, allowed values, and missing-value conventions, see the complete [data dictionary](DATA_DICTIONARY.md).
+
 | Field | Meaning |
 |---|---|
 | `disease_code` | Stable machine-readable disease identifier |
@@ -33,4 +35,3 @@ The next design step will map:
 - generated alerts to auditable event or tracked-entity records
 
 Mappings should be configuration-driven so the application can work with different DHIS2 instances without hardcoded UIDs.
-

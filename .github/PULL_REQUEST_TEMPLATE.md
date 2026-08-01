@@ -14,9 +14,9 @@ Describe what changed and why.
 - [ ] Tests added or updated
 - [ ] `pytest` passes locally
 - [ ] Documentation updated
+- [ ] `make reproduce` succeeds when reproducible outputs change
 - [ ] No credentials or identifiable patient data included
 
 ## Screenshots or API examples
 
 Add these when relevant.
-

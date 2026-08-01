@@ -91,6 +91,14 @@ date,dengue_cases_daily
 
 Normalized output is written to `data/processed/dengue_weekly.csv`. Boundary weeks are retained for transparency, while incomplete weeks are excluded from alerts.
 
+### Reproduce the current output
+
+Install the project, regenerate the normalized dengue dataset from the committed aggregate source snapshot, and run all tests with one command:
+
+```bash
+make reproduce
+```
+
 ### Start the API
 
 ```bash
@@ -137,6 +145,7 @@ CI runs the test suite on supported Python versions for every push and pull requ
 onehealth-platform/
 ├── .github/                  Community templates and CI
 ├── data/processed/           Normalized demonstration output
+├── data/raw/                 Public aggregate source snapshot
 ├── docs/                     Architecture and data documentation
 ├── scripts/                  Command-line ingestion tools
 ├── src/onehealth/            Application package
@@ -149,6 +158,17 @@ onehealth-platform/
 ## Data provenance and privacy
 
 The included demonstration dataset is derived from publicly accessible, aggregate DGHS Bangladesh dengue reporting. It contains no names, patient identifiers, or individual-level health records. Every normalized record retains its source name and URL.
+
+- Source: DGHS HEOC Dengue Dynamic Dashboard
+- Source URL: <https://dashboard.dghs.gov.bd/pages/heoc_dengue_v1.php>
+- Geographic scope: Bangladesh, national aggregate
+- Temporal scope in the committed daily snapshot: 1 January–3 June 2026
+- Data unit: daily admitted dengue cases
+- Accessed by the upstream research project: June 2026
+- Transformation: validated daily counts aggregated into Monday–Sunday ISO weeks
+- Missing-value convention: empty normalized cells mean unavailable or not applicable
+
+See the [data dictionary](docs/DATA_DICTIONARY.md) for variables, types, units, allowed values, and missing-value rules. See the [ethics statement](docs/ETHICS.md) for the current review basis and requirements for future operational data.
 
 Do not commit credentials, protected health information, or identifiable patient data. See [SECURITY.md](SECURITY.md) for responsible reporting.
 
@@ -174,4 +194,3 @@ If you use this software in research, cite the repository using [CITATION.cff](C
 ## License
 
 Licensed under the [MIT License](LICENSE). Third-party datasets remain subject to their original terms and attribution requirements.
-
