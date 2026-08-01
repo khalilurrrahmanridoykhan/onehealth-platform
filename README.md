@@ -54,6 +54,7 @@ The DHIS2 integration foundation is implemented; live-instance validation and th
 | Division-level dengue surveillance | Implemented |
 | Live DHIS2 instance validation | Blocked until an instance is configured |
 | Customized React dashboard | Planned |
+| EBS Tracker metadata and payload workflow | Implemented; live validation pending |
 | Measles integration | Planned |
 | AWD/environmental-risk integration | Planned |
 | Operational validation | Not started |
@@ -114,6 +115,8 @@ uvicorn onehealth.api:app --reload
 - OpenAPI schema: <http://127.0.0.1:8000/openapi.json>
 
 The default backend is the committed CSV demonstration. To read from a configured DHIS2 instance, follow the [DHIS2 integration guide](docs/DHIS2_INTEGRATION.md) and set `ONEHEALTH_BACKEND=dhis2`.
+
+The six-stage Event-Based Surveillance program is documented in the [EBS Tracker guide](docs/EBS_TRACKER.md).
 
 ### Available endpoints
 
@@ -185,7 +188,7 @@ Do not commit credentials, protected health information, or identifiable patient
 ## Roadmap
 
 1. Validate national and division metadata synchronization against a live DHIS2 instance.
-2. Define EBS Tracker programs and program stages.
+2. Validate the EBS Tracker metadata and signal workflow against the live instance.
 3. Build the customized React dashboard with trends, maps, and alerts.
 5. Add EBS verification, risk assessment, investigation, and response workflows.
 6. Integrate measles outbreak intelligence.

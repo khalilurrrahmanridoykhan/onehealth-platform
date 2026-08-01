@@ -24,6 +24,10 @@ The project follows [Semantic Versioning](https://semver.org/).
 - Stable internal national and division location codes
 - Location discovery, filtering, summaries, and division-specific alerts
 - DHIS2 organization-unit mapping placeholders for all supported locations
+- Six-stage DHIS2 EBS Tracker metadata package
+- EBS signal enrollment and follow-up event payload builders
+- Explicit preview and commit workflow for Tracker signals
+- Tracker metadata, linkage, UID, and HTTP integration tests
 
 ## [0.1.0] - 2026-08-01
 

@@ -1,0 +1,155 @@
+{
+  "trackedEntityTypes": [
+    {
+      "id": "OhEbsSig001",
+      "name": "OneHealth EBS Signal",
+      "shortName": "OH EBS Signal",
+      "description": "An unusual health event signal managed through verification, assessment, investigation, response, and closure"
+    }
+  ],
+  "trackedEntityAttributes": [
+    {
+      "id": "OhEbsId0001",
+      "name": "OneHealth EBS Signal ID",
+      "shortName": "EBS Signal ID",
+      "code": "OH_EBS_SIGNAL_ID",
+      "valueType": "TEXT",
+      "unique": true,
+      "generated": false,
+      "orgunitScope": false
+    },
+    {
+      "id": "OhEbsTit001",
+      "name": "OneHealth EBS Signal Title",
+      "shortName": "EBS Signal Title",
+      "code": "OH_EBS_SIGNAL_TITLE",
+      "valueType": "TEXT",
+      "unique": false,
+      "generated": false,
+      "orgunitScope": false
+    },
+    {
+      "id": "OhEbsSrc001",
+      "name": "OneHealth EBS Signal Source",
+      "shortName": "EBS Signal Source",
+      "code": "OH_EBS_SIGNAL_SOURCE",
+      "valueType": "TEXT",
+      "unique": false,
+      "generated": false,
+      "orgunitScope": false
+    }
+  ],
+  "dataElements": [
+    {"id": "OhEbsTyp001", "name": "EBS Signal Type", "shortName": "EBS Signal Type", "code": "OH_EBS_SIGNAL_TYPE", "domainType": "TRACKER", "valueType": "TEXT", "aggregationType": "NONE"},
+    {"id": "OhEbsDes001", "name": "EBS Signal Description", "shortName": "EBS Description", "code": "OH_EBS_DESCRIPTION", "domainType": "TRACKER", "valueType": "LONG_TEXT", "aggregationType": "NONE"},
+    {"id": "OhEbsVrf001", "name": "EBS Verification Status", "shortName": "Verification Status", "code": "OH_EBS_VERIFICATION_STATUS", "domainType": "TRACKER", "valueType": "TEXT", "aggregationType": "NONE"},
+    {"id": "OhEbsVnt001", "name": "EBS Verification Notes", "shortName": "Verification Notes", "code": "OH_EBS_VERIFICATION_NOTES", "domainType": "TRACKER", "valueType": "LONG_TEXT", "aggregationType": "NONE"},
+    {"id": "OhEbsLik001", "name": "EBS Likelihood Score", "shortName": "Likelihood Score", "code": "OH_EBS_LIKELIHOOD", "domainType": "TRACKER", "valueType": "INTEGER_ZERO_OR_POSITIVE", "aggregationType": "NONE"},
+    {"id": "OhEbsImp001", "name": "EBS Impact Score", "shortName": "Impact Score", "code": "OH_EBS_IMPACT", "domainType": "TRACKER", "valueType": "INTEGER_ZERO_OR_POSITIVE", "aggregationType": "NONE"},
+    {"id": "OhEbsRsk001", "name": "EBS Risk Level", "shortName": "Risk Level", "code": "OH_EBS_RISK_LEVEL", "domainType": "TRACKER", "valueType": "TEXT", "aggregationType": "NONE"},
+    {"id": "OhEbsInv001", "name": "EBS Investigation Status", "shortName": "Investigation Status", "code": "OH_EBS_INVESTIGATION_STATUS", "domainType": "TRACKER", "valueType": "TEXT", "aggregationType": "NONE"},
+    {"id": "OhEbsSam001", "name": "EBS Samples Collected", "shortName": "Samples Collected", "code": "OH_EBS_SAMPLES_COLLECTED", "domainType": "TRACKER", "valueType": "INTEGER_ZERO_OR_POSITIVE", "aggregationType": "SUM"},
+    {"id": "OhEbsFin001", "name": "EBS Investigation Findings", "shortName": "Investigation Findings", "code": "OH_EBS_FINDINGS", "domainType": "TRACKER", "valueType": "LONG_TEXT", "aggregationType": "NONE"},
+    {"id": "OhEbsAct001", "name": "EBS Recommended Actions", "shortName": "Recommended Actions", "code": "OH_EBS_ACTIONS", "domainType": "TRACKER", "valueType": "LONG_TEXT", "aggregationType": "NONE"},
+    {"id": "OhEbsOff001", "name": "EBS Responsible Officer", "shortName": "Responsible Officer", "code": "OH_EBS_OFFICER", "domainType": "TRACKER", "valueType": "TEXT", "aggregationType": "NONE"},
+    {"id": "OhEbsDue001", "name": "EBS Response Due Date", "shortName": "Response Due Date", "code": "OH_EBS_DUE_DATE", "domainType": "TRACKER", "valueType": "DATE", "aggregationType": "NONE"},
+    {"id": "OhEbsRsp001", "name": "EBS Response Status", "shortName": "Response Status", "code": "OH_EBS_RESPONSE_STATUS", "domainType": "TRACKER", "valueType": "TEXT", "aggregationType": "NONE"},
+    {"id": "OhEbsOut001", "name": "EBS Closure Outcome", "shortName": "Closure Outcome", "code": "OH_EBS_OUTCOME", "domainType": "TRACKER", "valueType": "LONG_TEXT", "aggregationType": "NONE"},
+    {"id": "OhEbsCls001", "name": "EBS Closure Date", "shortName": "Closure Date", "code": "OH_EBS_CLOSURE_DATE", "domainType": "TRACKER", "valueType": "DATE", "aggregationType": "NONE"},
+    {"id": "OhEbsLes001", "name": "EBS Lessons Learned", "shortName": "Lessons Learned", "code": "OH_EBS_LESSONS", "domainType": "TRACKER", "valueType": "LONG_TEXT", "aggregationType": "NONE"}
+  ],
+  "programs": [
+    {
+      "id": "OhEbsProg01",
+      "name": "OneHealth Event-Based Surveillance",
+      "shortName": "OH Event Surveillance",
+      "code": "OH_EBS_PROGRAM",
+      "programType": "WITH_REGISTRATION",
+      "trackedEntityType": {"id": "OhEbsSig001"},
+      "onlyEnrollOnce": false,
+      "displayIncidentDate": true,
+      "incidentDateLabel": "Signal detection date",
+      "enrollmentDateLabel": "Signal registration date",
+      "featureType": "POINT",
+      "programTrackedEntityAttributes": [
+        {"trackedEntityAttribute": {"id": "OhEbsId0001"}, "mandatory": true, "searchable": true, "displayInList": true, "sortOrder": 1},
+        {"trackedEntityAttribute": {"id": "OhEbsTit001"}, "mandatory": true, "searchable": true, "displayInList": true, "sortOrder": 2},
+        {"trackedEntityAttribute": {"id": "OhEbsSrc001"}, "mandatory": true, "searchable": false, "displayInList": true, "sortOrder": 3}
+      ]
+    }
+  ],
+  "programStages": [
+    {
+      "id": "OhEbsDet001",
+      "name": "EBS Signal Detection",
+      "program": {"id": "OhEbsProg01"},
+      "repeatable": false,
+      "executionDateLabel": "Detection date",
+      "programStageDataElements": [
+        {"dataElement": {"id": "OhEbsTyp001"}, "compulsory": true, "displayInReports": true, "sortOrder": 1},
+        {"dataElement": {"id": "OhEbsDes001"}, "compulsory": true, "displayInReports": true, "sortOrder": 2}
+      ]
+    },
+    {
+      "id": "OhEbsVer001",
+      "name": "EBS Signal Verification",
+      "program": {"id": "OhEbsProg01"},
+      "repeatable": false,
+      "executionDateLabel": "Verification date",
+      "programStageDataElements": [
+        {"dataElement": {"id": "OhEbsVrf001"}, "compulsory": true, "displayInReports": true, "sortOrder": 1},
+        {"dataElement": {"id": "OhEbsVnt001"}, "compulsory": false, "displayInReports": true, "sortOrder": 2}
+      ]
+    },
+    {
+      "id": "OhEbsRas001",
+      "name": "EBS Risk Assessment",
+      "program": {"id": "OhEbsProg01"},
+      "repeatable": false,
+      "executionDateLabel": "Assessment date",
+      "programStageDataElements": [
+        {"dataElement": {"id": "OhEbsLik001"}, "compulsory": true, "displayInReports": true, "sortOrder": 1},
+        {"dataElement": {"id": "OhEbsImp001"}, "compulsory": true, "displayInReports": true, "sortOrder": 2},
+        {"dataElement": {"id": "OhEbsRsk001"}, "compulsory": true, "displayInReports": true, "sortOrder": 3}
+      ]
+    },
+    {
+      "id": "OhEbsInvSt1",
+      "name": "EBS Investigation",
+      "program": {"id": "OhEbsProg01"},
+      "repeatable": true,
+      "executionDateLabel": "Investigation date",
+      "programStageDataElements": [
+        {"dataElement": {"id": "OhEbsInv001"}, "compulsory": true, "displayInReports": true, "sortOrder": 1},
+        {"dataElement": {"id": "OhEbsSam001"}, "compulsory": false, "displayInReports": true, "sortOrder": 2},
+        {"dataElement": {"id": "OhEbsFin001"}, "compulsory": false, "displayInReports": true, "sortOrder": 3}
+      ]
+    },
+    {
+      "id": "OhEbsRes001",
+      "name": "EBS Response Action",
+      "program": {"id": "OhEbsProg01"},
+      "repeatable": true,
+      "executionDateLabel": "Response date",
+      "programStageDataElements": [
+        {"dataElement": {"id": "OhEbsAct001"}, "compulsory": true, "displayInReports": true, "sortOrder": 1},
+        {"dataElement": {"id": "OhEbsOff001"}, "compulsory": true, "displayInReports": true, "sortOrder": 2},
+        {"dataElement": {"id": "OhEbsDue001"}, "compulsory": false, "displayInReports": true, "sortOrder": 3},
+        {"dataElement": {"id": "OhEbsRsp001"}, "compulsory": true, "displayInReports": true, "sortOrder": 4}
+      ]
+    },
+    {
+      "id": "OhEbsClo001",
+      "name": "EBS Signal Closure",
+      "program": {"id": "OhEbsProg01"},
+      "repeatable": false,
+      "executionDateLabel": "Closure date",
+      "programStageDataElements": [
+        {"dataElement": {"id": "OhEbsOut001"}, "compulsory": true, "displayInReports": true, "sortOrder": 1},
+        {"dataElement": {"id": "OhEbsCls001"}, "compulsory": true, "displayInReports": true, "sortOrder": 2},
+        {"dataElement": {"id": "OhEbsLes001"}, "compulsory": false, "displayInReports": true, "sortOrder": 3}
+      ]
+    }
+  ]
+}
+

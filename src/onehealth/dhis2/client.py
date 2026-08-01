@@ -122,3 +122,18 @@ class DHIS2Client:
             },
         )
 
+    def import_tracker_bundle(
+        self, bundle: Mapping[str, Any]
+    ) -> dict[str, Any]:
+        return self._request(
+            "POST",
+            "tracker",
+            params={
+                "async": "false",
+                "importStrategy": "CREATE_AND_UPDATE",
+                "atomicMode": "ALL",
+                "reportMode": "FULL",
+            },
+            payload=bundle,
+        )
+
