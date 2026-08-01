@@ -70,3 +70,26 @@ export interface EBSPreview {
     events: Array<{ event: string; status: string; orgUnit: string }>
   }
 }
+
+export interface EBSStageDraft {
+  stage: string
+  enrollment_uid: string
+  location_code: string
+  occurred_on: string
+  values: Record<string, string | number>
+}
+
+export interface EBSStagePreview {
+  mode: 'PREVIEW'
+  stage: string
+  bundle: {
+    events: Array<{
+      event: string
+      programStage: string
+      enrollment: string
+      status: string
+      orgUnit: string
+      dataValues: Array<{ dataElement: string; value: string }>
+    }>
+  }
+}

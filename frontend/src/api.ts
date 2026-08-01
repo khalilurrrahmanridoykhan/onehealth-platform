@@ -3,6 +3,8 @@ import type {
   EBSPreview,
   EBSSignalDraft,
   EBSStage,
+  EBSStageDraft,
+  EBSStagePreview,
   Location,
   OverviewItem,
   SurveillanceRecord,
@@ -44,4 +46,6 @@ export const api = {
   ebsSchema: () => getJson<{ stages: EBSStage[] }>('/api/v1/ebs/schema'),
   previewSignal: (signal: EBSSignalDraft) =>
     postJson<EBSPreview>('/api/v1/ebs/signals/preview', signal),
+  previewStage: (stage: EBSStageDraft) =>
+    postJson<EBSStagePreview>('/api/v1/ebs/stages/preview', stage),
 }

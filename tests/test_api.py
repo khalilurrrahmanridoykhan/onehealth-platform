@@ -82,3 +82,44 @@ def test_ebs_schema_and_signal_preview(monkeypatch):
     assert preview.status_code == 200
     assert preview.json()["bundle"]["events"][0]["orgUnit"] == "BdDivDha001"
     assert commit.status_code == 403
+
+
+def test_ebs_follow_up_stage_preview_and_write_guard(monkeypatch):
+    monkeypatch.delenv("ONEHEALTH_EBS_WRITES_ENABLED", raising=False)
+    payload = {
+        "stage": "risk_assessment",
+        "enrollment_uid": "Bcdefg12345",
+        "location_code": "BD-DHA",
+        "occurred_on": "2026-08-02",
+        "values": {
+            "likelihood_score": 4,
+            "impact_score": 3,
+            "risk_level": "HIGH",
+        },
+    }
+
+    preview = client.post("/api/v1/ebs/stages/preview", json=payload)
+    commit = client.post("/api/v1/ebs/stages", json=payload)
+
+    assert preview.status_code == 200
+    assert preview.json()["stage"] == "risk_assessment"
+    event = preview.json()["bundle"]["events"][0]
+    assert event["programStage"] == "OhEbsRas001"
+    assert event["enrollment"] == "Bcdefg12345"
+    assert commit.status_code == 403
+
+
+def test_ebs_follow_up_stage_rejects_missing_required_fields():
+    response = client.post(
+        "/api/v1/ebs/stages/preview",
+        json={
+            "stage": "verification",
+            "enrollment_uid": "Bcdefg12345",
+            "location_code": "BD-DHA",
+            "occurred_on": "2026-08-02",
+            "values": {"verification_notes": "Could not reach reporter"},
+        },
+    )
+
+    assert response.status_code == 422
+    assert "verification_status" in response.json()["detail"]

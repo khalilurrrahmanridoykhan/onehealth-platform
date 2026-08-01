@@ -16,6 +16,7 @@ from onehealth.dhis2.ebs import (
     EBS_STAGES,
     EBSSignalInput,
     build_signal_bundle,
+    build_stage_event,
 )
 from onehealth.dhis2.sync import records_from_dhis2
 from onehealth.services.alerts import generate_latest_alert
@@ -234,15 +235,26 @@ class EBSSignalRequest(BaseModel):
     detected_on: date
 
 
-def _ebs_signal_bundle(request: EBSSignalRequest) -> dict:
+class EBSStageRequest(BaseModel):
+    stage: str = Field(min_length=3, max_length=50)
+    enrollment_uid: str = Field(min_length=11, max_length=11)
+    location_code: str = Field(min_length=2, max_length=20)
+    occurred_on: date
+    values: dict[str, str | int]
+
+
+def _ebs_org_unit_uid(location_code: str) -> str:
     mapping_path = Path(
         os.environ.get("DHIS2_MAPPING_PATH", DEFAULT_DHIS2_MAPPING_PATH)
     )
     try:
         mapping = DHIS2Mapping.from_path(mapping_path)
-        location = mapping.location_for_code(request.location_code.upper())
+        return mapping.location_for_code(location_code.upper()).uid
     except (OSError, ValueError) as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+
+def _ebs_signal_bundle(request: EBSSignalRequest) -> dict:
     return build_signal_bundle(
         EBSSignalInput(
             signal_id=request.signal_id,
@@ -250,10 +262,23 @@ def _ebs_signal_bundle(request: EBSSignalRequest) -> dict:
             source=request.source,
             signal_type=request.signal_type,
             description=request.description,
-            org_unit_uid=location.uid,
+            org_unit_uid=_ebs_org_unit_uid(request.location_code),
             detected_on=request.detected_on,
         )
     )
+
+
+def _ebs_stage_bundle(request: EBSStageRequest) -> dict:
+    try:
+        return build_stage_event(
+            stage=request.stage,
+            enrollment_uid=request.enrollment_uid,
+            org_unit_uid=_ebs_org_unit_uid(request.location_code),
+            occurred_on=request.occurred_on,
+            values=request.values,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
 
 
 @app.get("/api/v1/ebs/schema")
@@ -287,6 +312,11 @@ def preview_ebs_signal(request: EBSSignalRequest) -> dict:
     return {"mode": "PREVIEW", "bundle": _ebs_signal_bundle(request)}
 
 
+@app.post("/api/v1/ebs/stages/preview")
+def preview_ebs_stage(request: EBSStageRequest) -> dict:
+    return {"mode": "PREVIEW", "stage": request.stage, "bundle": _ebs_stage_bundle(request)}
+
+
 @app.post("/api/v1/ebs/signals")
 def submit_ebs_signal(request: EBSSignalRequest) -> dict:
     if os.environ.get("ONEHEALTH_EBS_WRITES_ENABLED", "false").lower() != "true":
@@ -305,6 +335,29 @@ def submit_ebs_signal(request: EBSSignalRequest) -> dict:
             timeout_seconds=settings.timeout_seconds,
         ) as client:
             response = client.import_tracker_bundle(_ebs_signal_bundle(request))
+    except (ValueError, OSError, DHIS2APIError) as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
+    return {"mode": "COMMITTED", "response": response}
+
+
+@app.post("/api/v1/ebs/stages")
+def submit_ebs_stage(request: EBSStageRequest) -> dict:
+    if os.environ.get("ONEHEALTH_EBS_WRITES_ENABLED", "false").lower() != "true":
+        raise HTTPException(
+            status_code=403,
+            detail="EBS writes are disabled. Preview the stage or explicitly enable live writes.",
+        )
+    try:
+        settings = DHIS2Settings.from_env()
+        with DHIS2Client(
+            settings.base_url,
+            api_token=settings.api_token,
+            username=settings.username,
+            password=settings.password,
+            verify_ssl=settings.verify_ssl,
+            timeout_seconds=settings.timeout_seconds,
+        ) as client:
+            response = client.import_tracker_bundle(_ebs_stage_bundle(request))
     except (ValueError, OSError, DHIS2APIError) as exc:
         raise HTTPException(status_code=503, detail=str(exc)) from exc
     return {"mode": "COMMITTED", "response": response}

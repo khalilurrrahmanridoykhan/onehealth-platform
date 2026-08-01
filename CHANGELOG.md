@@ -34,6 +34,8 @@ The project follows [Semantic Versioning](https://semver.org/).
 - GeoJSON attribution and stable ISO-based division joins
 - EBS workflow schema and custom signal-preview workspace
 - Write-disabled-by-default API boundary for DHIS2 Tracker signal submission
+- Verification, risk assessment, investigation, response, and closure preview forms
+- DHIS2-compatible follow-up stage event API with required-field validation
 
 ## [0.1.0] - 2026-08-01
 

@@ -140,7 +140,7 @@ The current dashboard includes:
 - Explainable risk status and recommended actions
 - National and division comparison table
 - Interactive division risk map linked to location selection
-- Six-stage EBS workflow and safe Tracker signal preview form
+- Six-stage EBS workflow with safe detection and follow-up event previews
 - Responsive desktop and mobile layouts
 
 ### Available endpoints
@@ -159,6 +159,8 @@ The current dashboard includes:
 | `GET` | `/api/v1/ebs/schema` | EBS program-stage schema for the custom UI |
 | `POST` | `/api/v1/ebs/signals/preview` | Validate and preview a DHIS2 Tracker signal payload |
 | `POST` | `/api/v1/ebs/signals` | Submit a signal only when EBS writes are explicitly enabled |
+| `POST` | `/api/v1/ebs/stages/preview` | Validate and preview a follow-up Tracker stage event |
+| `POST` | `/api/v1/ebs/stages` | Submit a follow-up event only when EBS writes are explicitly enabled |
 
 ## Alert interpretation
 
@@ -219,8 +221,8 @@ Do not commit credentials, protected health information, or identifiable patient
 1. Validate national and division metadata synchronization against a live DHIS2 instance.
 2. Validate the EBS Tracker metadata and signal workflow against the live instance.
 3. Validate EBS signal submission with controlled test data on the live instance.
-4. Add EBS verification, risk assessment, investigation, and response screens.
-5. Add authentication and role-based access.
+4. Add EBS signal search, saved workflow state, and audit history from DHIS2.
+5. Add authentication and role-based access before enabling operational writes.
 6. Integrate measles outbreak intelligence.
 7. Integrate AWD, rainfall, and flood-risk indicators.
 8. Validate alert methods with public-health experts before operational use.

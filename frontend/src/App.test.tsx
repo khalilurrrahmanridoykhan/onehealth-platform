@@ -54,6 +54,13 @@ beforeEach(() => {
         events: [{ event: 'Cdefgh12345', status: 'COMPLETED', orgUnit: 'BdDivDha001' }],
       },
     }
+    else if (url.includes('/ebs/stages/preview') && init?.method === 'POST') body = {
+      mode: 'PREVIEW', stage: 'verification', bundle: { events: [{
+        event: 'Defghi12345', programStage: 'OhEbsVer001', enrollment: 'Bcdefg12345',
+        status: 'COMPLETED', orgUnit: 'BdDivDha001',
+        dataValues: [{ dataElement: 'OhEbsVrf001', value: 'VERIFIED' }],
+      }] },
+    }
     else if (url.includes('/locations')) body = locations
     else if (url.includes('/overview')) body = overview
     else if (url.includes('/trends')) body = trend
@@ -89,4 +96,23 @@ test('builds an EBS Tracker signal preview without committing', async () => {
 
   await waitFor(() => expect(screen.getByText('Tracker bundle ready')).toBeInTheDocument())
   expect(screen.getByText('No data is written to DHIS2 in preview mode.')).toBeInTheDocument()
+})
+
+test('previews a verification event for the detection enrollment', async () => {
+  render(<App />)
+  await waitFor(() => expect(screen.getByRole('button', { name: /Verification/i })).toBeDisabled())
+
+  fireEvent.change(screen.getByLabelText('Signal ID'), { target: { value: 'EBS-2026-0002' } })
+  fireEvent.change(screen.getByLabelText('Title'), { target: { value: 'Unusual fever cluster' } })
+  fireEvent.change(screen.getByLabelText('Source'), { target: { value: 'Community worker' } })
+  fireEvent.change(screen.getByLabelText('Description'), { target: { value: 'Seven people with fever' } })
+  fireEvent.click(screen.getByRole('button', { name: 'Preview Tracker signal' }))
+  await waitFor(() => expect(screen.getByText('Tracker bundle ready')).toBeInTheDocument())
+
+  fireEvent.click(screen.getByRole('button', { name: /Verification/i }))
+  fireEvent.change(screen.getByLabelText('Verification Status *'), { target: { value: 'VERIFIED' } })
+  fireEvent.click(screen.getByRole('button', { name: 'Preview Verification' }))
+
+  await waitFor(() => expect(screen.getByText('Verification event ready')).toBeInTheDocument())
+  expect(screen.getByText('1 field values · completed event')).toBeInTheDocument()
 })
