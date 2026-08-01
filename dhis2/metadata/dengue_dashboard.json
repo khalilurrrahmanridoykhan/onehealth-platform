@@ -381,6 +381,32 @@
       "restrictFilters": false,
       "dashboardItems": [
         {
+          "id": "OhDngItem03",
+          "i": "OhDngItem03",
+          "type": "VISUALIZATION",
+          "x": 0,
+          "y": 0,
+          "w": 30,
+          "h": 8,
+          "width": 30,
+          "height": 8,
+          "minH": 6,
+          "visualization": { "id": "OhDngKpi001" }
+        },
+        {
+          "id": "OhDngItem04",
+          "i": "OhDngItem04",
+          "type": "VISUALIZATION",
+          "x": 30,
+          "y": 0,
+          "w": 30,
+          "h": 8,
+          "width": 30,
+          "height": 8,
+          "minH": 6,
+          "visualization": { "id": "OhDngYtd001" }
+        },
+        {
           "id": "OhDngItem01",
           "i": "OhDngItem01",
           "type": "VISUALIZATION",
@@ -407,32 +433,6 @@
           "minH": 8,
           "firstOfType": false,
           "visualization": { "id": "OhDngDiv001" }
-        },
-        {
-          "id": "OhDngItem03",
-          "i": "OhDngItem03",
-          "type": "VISUALIZATION",
-          "x": 0,
-          "y": 0,
-          "w": 30,
-          "h": 8,
-          "width": 30,
-          "height": 8,
-          "minH": 6,
-          "visualization": { "id": "OhDngKpi001" }
-        },
-        {
-          "id": "OhDngItem04",
-          "i": "OhDngItem04",
-          "type": "VISUALIZATION",
-          "x": 30,
-          "y": 0,
-          "w": 30,
-          "h": 8,
-          "width": 30,
-          "height": 8,
-          "minH": 6,
-          "visualization": { "id": "OhDngYtd001" }
         },
         {
           "id": "OhDngItem05",

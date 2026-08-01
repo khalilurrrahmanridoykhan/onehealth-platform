@@ -56,7 +56,12 @@ Metadata object UIDs in this project are stable:
 | Object | UID |
 |---|---|
 | Weekly dengue dataset | `OhDngWeek01` |
-| Dengue admitted-cases data element | `OhDngCase01` |
+| Division dengue admitted-cases data element | `OhDngCase01` |
+| National reported dengue-cases data element | `OhDngNat001` |
+
+National and division observations use separate data elements. This prevents
+DHIS2 from adding an already aggregated national report to its division
+children during organisation-unit roll-up analytics.
 
 ## Preview payloads locally
 
