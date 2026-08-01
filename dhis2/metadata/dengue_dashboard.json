@@ -1,0 +1,56 @@
+{
+  "visualizations": [
+    {
+      "id": "OhDngTrend1",
+      "name": "OneHealth Dengue Weekly Trend",
+      "description": "Weekly admitted dengue cases reported through the OneHealth Intelligence Platform",
+      "type": "LINE",
+      "publicAccess": "rw------",
+      "showData": true,
+      "hideEmptyRows": true,
+      "hideEmptyColumns": true,
+      "showDimensionLabels": true,
+      "columns": [
+        { "id": "dx" }
+      ],
+      "rows": [
+        { "id": "pe" }
+      ],
+      "filters": [
+        { "id": "ou" }
+      ],
+      "dataDimensionItems": [
+        {
+          "dataDimensionItemType": "DATA_ELEMENT",
+          "dataElement": { "id": "OhDngCase01" }
+        }
+      ],
+      "organisationUnits": [
+        { "id": "BdOrgUnit01" }
+      ],
+      "relativePeriods": {
+        "weeksThisYear": true
+      }
+    }
+  ],
+  "dashboards": [
+    {
+      "id": "OhDngDash01",
+      "name": "OneHealth Dengue Surveillance",
+      "description": "National dengue surveillance overview for Bangladesh",
+      "publicAccess": "rw------",
+      "restrictFilters": false,
+      "dashboardItems": [
+        {
+          "id": "OhDngItem01",
+          "type": "VISUALIZATION",
+          "x": 0,
+          "y": 0,
+          "w": 40,
+          "h": 24,
+          "visualization": { "id": "OhDngTrend1" }
+        }
+      ]
+    }
+  ]
+}
