@@ -39,7 +39,6 @@ h1 { margin: 0; color: #102e26; font-size: clamp(30px, 4vw, 46px); line-height: 
 .location-select span { display: block; margin-bottom: 7px; color: #61766f; font-size: 12px; font-weight: 700; }
 .location-select select { width: 100%; padding: 11px 38px 11px 13px; border: 1px solid #ccddd7; border-radius: 10px; background: white; color: #18332b; font-weight: 600; }
 .topbar-actions { display: flex; align-items: flex-end; gap: 10px; }
-.operations-bar { display: grid; grid-template-columns: 1.2fr repeat(3, 1fr); margin-bottom: 18px; border: 1px solid #d8e5e0; border-radius: 14px; background: white; box-shadow: 0 8px 28px #133b3008; overflow: hidden; }.operations-bar > div { min-height: 70px; padding: 14px 18px; border-right: 1px solid #e6eeeb; }.operations-bar > div:last-child { border-right: 0; }.operations-bar span, .operations-bar strong, .operations-bar small { display: block; }.operations-bar span { color: #71847d; font-size: 9px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; }.operations-bar strong { margin-top: 5px; font-size: 15px; }.operations-bar small { margin-top: 2px; color: #8a9a94; font-size: 9px; }.operations-bar .status-live { display: inline-block; width: 8px; height: 8px; margin-right: 7px; border-radius: 50%; background: #20b486; box-shadow: 0 0 0 4px #20b4861c; }
 .session-control { position: relative; }
 .session-control > button, .session-user button { padding: 11px 14px; border: 1px solid #bcd4cc; border-radius: 10px; color: #075845; background: white; font-weight: 700; cursor: pointer; }
 .login-popover { position: absolute; z-index: 5; top: 50px; right: 0; width: 280px; display: grid; gap: 12px; padding: 18px; border: 1px solid #d5e2dd; border-radius: 12px; background: white; box-shadow: 0 18px 45px #173a3025; }
@@ -187,7 +186,6 @@ td button { padding: 0; border: 0; background: transparent; color: #173a30; font
 
 @media (max-width: 1050px) {
   .summary-grid { grid-template-columns: repeat(2, 1fr); }
-  .operations-bar { grid-template-columns: repeat(2, 1fr); }.operations-bar > div:nth-child(2) { border-right: 0; }.operations-bar > div { border-bottom: 1px solid #e6eeeb; }
   .dashboard-grid { grid-template-columns: 1fr; }
   .geo-grid { grid-template-columns: 1fr; }
   .comparison-heading { align-items: flex-start; }.comparison-filters { width: 100%; }.comparison-filters label { flex: 1; }.comparison-filters select { width: 100%; min-width: 0; }
@@ -208,7 +206,6 @@ td button { padding: 0; border: 0; background: transparent; color: #173a30; font
   .location-select { min-width: 0; }
   .topbar-actions { align-items: stretch; flex-direction: column; }
   .summary-grid { grid-template-columns: 1fr; }
-  .operations-bar { grid-template-columns: 1fr; }.operations-bar > div { border-right: 0; }
   .comparison-filters, .comparison-kpis { grid-template-columns: 1fr; flex-direction: column; }
   .panel-heading { flex-direction: column; }
   .workflow-steps { grid-template-columns: 1fr 1fr; }

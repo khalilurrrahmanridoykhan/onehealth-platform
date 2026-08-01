@@ -50,7 +50,6 @@ export default function App() {
   )
   const divisionOverview = overview.filter((item) => item.location_level === 'division')
   const highRiskCount = divisionOverview.filter((item) => item.risk_level === 'HIGH').length
-  const aboveBaselineCount = divisionOverview.filter((item) => item.expected_cases !== null && item.latest_cases > item.expected_cases).length
   const latestPeriod = overview.find((item) => item.location_code === 'BD')?.latest_period ?? 'Waiting for data'
 
   const navigation = [
@@ -90,12 +89,6 @@ export default function App() {
         {error && <div className="error-banner" role="alert">Could not load surveillance data: {error}</div>}
         {loading ? <div className="loading-state">Loading {selectedLocation?.name ?? 'surveillance'} data…</div> : (
           <>
-            <section className="operations-bar" aria-label="Operational status">
-              <div><span className="status-live" />System status<strong>Live from DHIS2</strong></div>
-              <div><span>High-risk divisions</span><strong>{highRiskCount}</strong><small>require verification</small></div>
-              <div><span>Above baseline</span><strong>{aboveBaselineCount}</strong><small>of 8 divisions</small></div>
-              <div><span>Latest reporting period</span><strong>{latestPeriod}</strong><small>complete weekly data</small></div>
-            </section>
             <div className="geo-grid hero-geo" id="geography">
               <RiskMap items={overview} selected={selected} onSelect={setSelected} />
               <LocationTable items={overview} selected={selected} onSelect={setSelected} />
