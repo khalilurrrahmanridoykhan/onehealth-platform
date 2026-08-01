@@ -42,6 +42,9 @@ The project follows [Semantic Versioning](https://semver.org/).
 - PBKDF2 password authentication and signed eight-hour bearer sessions
 - Viewer, Analyst, Responder, and Admin role hierarchy
 - Custom dashboard sign-in and session controls
+- Non-root, read-only production containers and automatic HTTPS proxy baseline
+- HTTPS deployment verification utility and production configuration guide
+- Current GitHub Actions runtimes without Node.js 20 deprecation warnings
 
 ## [0.1.0] - 2026-08-01
 

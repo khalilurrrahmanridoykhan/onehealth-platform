@@ -143,6 +143,7 @@ The current dashboard includes:
 - Six-stage EBS workflow with safe detection and follow-up event previews
 - Protected DHIS2 signal registry with search, detail, and event history
 - Signed application sessions and Viewer/Analyst/Responder/Admin roles
+- Non-root container deployment baseline with automatic HTTPS
 - Responsive desktop and mobile layouts
 
 ### Available endpoints
@@ -226,8 +227,9 @@ Do not commit credentials, protected health information, or identifiable patient
 1. Validate national and division metadata synchronization against a live DHIS2 instance.
 2. Validate the EBS Tracker metadata and signal workflow against the live instance.
 3. Validate EBS signal submission with controlled test data on the live instance.
-4. Validate authentication, saved-signal history, and role policies in a controlled deployment.
-5. Add external identity-provider integration for production environments.
+4. Deploy the baseline to a controlled HTTPS test environment.
+5. Validate DHIS2 metadata, reads, previews, and guarded writes on the test instance.
+6. Add external identity-provider integration for production environments.
 6. Integrate measles outbreak intelligence.
 7. Integrate AWD, rainfall, and flood-risk indicators.
 8. Validate alert methods with public-health experts before operational use.
