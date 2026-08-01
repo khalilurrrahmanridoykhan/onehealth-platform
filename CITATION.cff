@@ -1,0 +1,20 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it using the metadata below."
+title: "OneHealth Intelligence Platform"
+type: software
+authors:
+  - family-names: "Khan"
+    given-names: "Khalilur Rahman Ridoy"
+repository-code: "https://github.com/khalilurrrahmanridoykhan/onehealth-platform"
+url: "https://github.com/khalilurrrahmanridoykhan/onehealth-platform"
+license: MIT
+version: 0.1.0
+date-released: 2026-08-01
+keywords:
+  - one-health
+  - disease-surveillance
+  - public-health
+  - early-warning
+  - dhis2
+  - bangladesh
+

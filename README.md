@@ -1,74 +1,119 @@
 # OneHealth Intelligence Platform
 
-An incremental disease-surveillance, early-warning, and response platform for Bangladesh. This repository consumes standardized exports from independent disease research projects and will later integrate with DHIS2.
+[![CI](https://github.com/khalilurrrahmanridoykhan/onehealth-platform/actions/workflows/ci.yml/badge.svg)](https://github.com/khalilurrrahmanridoykhan/onehealth-platform/actions/workflows/ci.yml)
+[![Python](https://img.shields.io/badge/Python-3.11%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.115%2B-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Project status: early development](https://img.shields.io/badge/status-early%20development-orange)](#project-status)
 
-## Implemented in the first milestone
+An open-source disease-surveillance, early-warning, and response platform for Bangladesh. The project is being developed incrementally from reproducible dengue, measles, and acute watery diarrhea research workflows.
 
-- Dengue daily CSV validation and ingestion
-- ISO epidemiological-week aggregation
-- A shared surveillance record format with source provenance
-- Detection and exclusion of incomplete weeks
-- Explainable four-week historical-threshold alerts
-- FastAPI endpoints for disease lists, weekly trends, and the latest alert
-- Unit tests for aggregation and alert logic
+> [!IMPORTANT]
+> This repository is an early practice and research implementation. It is not a validated clinical tool, an official outbreak-definition system, or a production DHIS2 deployment.
 
-## Architecture
+## Vision
+
+The target platform combines a customized public-health dashboard with DHIS2 as the health-data backend and independent services for ingestion, prediction, explainable alerts, and response recommendations.
 
 ```text
-Disease research repository
-        ↓ CSV export
-OneHealth ingestion and validation
-        ↓ normalized weekly records
-Surveillance and alert services
-        ↓
-FastAPI
-        ↓
-Dashboard and DHIS2 integration (next milestones)
+Research datasets and surveillance sources
+                   ↓
+       Validation and ingestion
+                   ↓
+       DHIS2 health-data backend
+                   ↓
+ Integration and prediction services
+                   ↓
+ Customized dashboard, alerts, and actions
 ```
 
-## Setup
+DHIS2 integration and the customized frontend are part of the roadmap. The current milestone implements the reusable ingestion, surveillance, API, and alert foundation.
+
+## Current capabilities
+
+- Validates an existing daily dengue CSV export
+- Aggregates observations into ISO epidemiological weeks
+- Produces a normalized surveillance dataset with source provenance
+- Detects partial reporting weeks and excludes them from alert calculations
+- Generates explainable alerts using a four-week historical baseline
+- Exposes FastAPI endpoints for diseases, trends, and latest alerts
+- Includes automated tests and continuous integration
+
+## Project status
+
+| Capability | Status |
+|---|---|
+| Dengue CSV ingestion | Implemented |
+| Weekly surveillance data model | Implemented |
+| Explainable baseline alerts | Implemented |
+| FastAPI service | Implemented |
+| Division-level surveillance | Planned |
+| DHIS2 metadata and synchronization | Planned |
+| Customized React dashboard | Planned |
+| Measles integration | Planned |
+| AWD/environmental-risk integration | Planned |
+| Operational validation | Not started |
+
+See the [roadmap](#roadmap) and [architecture documentation](docs/ARCHITECTURE.md) for the intended progression.
+
+## Quick start
+
+### Requirements
+
+- Python 3.11 or newer
+- Git
+
+### Installation
 
 ```bash
-cd /Users/khalilur/Documents/AIWORK/onehealth-platform
+git clone https://github.com/khalilurrrahmanridoykhan/onehealth-platform.git
+cd onehealth-platform
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install -e '.[dev]'
 ```
 
-## Import the existing dengue data
+On Windows PowerShell, activate the environment with `.venv\Scripts\Activate.ps1`.
+
+### Import dengue data
 
 ```bash
-python scripts/import_dengue.py \
-  /Users/khalilur/Documents/AIWORK/dengue/data/raw/dengue_daily_2026.csv
+python scripts/import_dengue.py /path/to/dengue_daily_2026.csv
 ```
 
-The normalized output is written to `data/processed/dengue_weekly.csv`. Partial weeks remain available for display but are excluded from alert calculations.
+The importer expects:
 
-## Run the API
+```csv
+date,dengue_cases_daily
+2026-01-01,76
+2026-01-02,63
+```
+
+Normalized output is written to `data/processed/dengue_weekly.csv`. Boundary weeks are retained for transparency, while incomplete weeks are excluded from alerts.
+
+### Start the API
 
 ```bash
 uvicorn onehealth.api:app --reload
 ```
 
-Interactive API documentation: <http://127.0.0.1:8000/docs>
+- API: <http://127.0.0.1:8000>
+- Interactive documentation: <http://127.0.0.1:8000/docs>
+- OpenAPI schema: <http://127.0.0.1:8000/openapi.json>
 
-Available endpoints:
+### Available endpoints
 
-- `GET /health`
-- `GET /api/v1/diseases`
-- `GET /api/v1/trends/DENGUE`
-- `GET /api/v1/trends/DENGUE?complete_only=false&limit=10`
-- `GET /api/v1/alerts/DENGUE/latest`
-
-## Run tests
-
-```bash
-pytest
-```
+| Method | Endpoint | Purpose |
+|---|---|---|
+| `GET` | `/health` | Service health and version |
+| `GET` | `/api/v1/diseases` | Available diseases |
+| `GET` | `/api/v1/trends/DENGUE` | Complete weekly dengue records |
+| `GET` | `/api/v1/trends/DENGUE?complete_only=false&limit=10` | Include partial weeks and limit results |
+| `GET` | `/api/v1/alerts/DENGUE/latest` | Latest explainable dengue alert |
 
 ## Alert interpretation
 
-The baseline is the mean of the previous four complete weeks.
+The practice algorithm compares the latest complete week with the mean of the previous four complete weeks.
 
 | Current cases compared with baseline | Risk |
 |---|---|
@@ -76,9 +121,57 @@ The baseline is the mean of the previous four complete weeks.
 | 120% to less than 150% | Medium |
 | 150% or more | High |
 
-This is an explainable practice threshold, not a validated clinical or government outbreak definition. It must be reviewed and calibrated before operational use.
+The result includes the observed and expected case counts, risk level, confidence heuristic, reasons, and recommended follow-up actions. These thresholds must be calibrated and validated before operational use.
 
-## Next milestone
+## Testing
 
-Build the React dashboard with trend charts, filters, alert cards, and a Bangladesh map. Then add division-level dengue records and map them to stable organization-unit codes for future DHIS2 synchronization.
+```bash
+pytest
+```
+
+CI runs the test suite on supported Python versions for every push and pull request.
+
+## Repository structure
+
+```text
+onehealth-platform/
+├── .github/                  Community templates and CI
+├── data/processed/           Normalized demonstration output
+├── docs/                     Architecture and data documentation
+├── scripts/                  Command-line ingestion tools
+├── src/onehealth/            Application package
+│   ├── api.py                FastAPI routes
+│   ├── models.py             Domain models
+│   └── services/             Ingestion, surveillance, and alerts
+└── tests/                    Automated tests
+```
+
+## Data provenance and privacy
+
+The included demonstration dataset is derived from publicly accessible, aggregate DGHS Bangladesh dengue reporting. It contains no names, patient identifiers, or individual-level health records. Every normalized record retains its source name and URL.
+
+Do not commit credentials, protected health information, or identifiable patient data. See [SECURITY.md](SECURITY.md) for responsible reporting.
+
+## Roadmap
+
+1. Add division-level dengue ingestion and stable geographic codes.
+2. Define DHIS2 organization units, data elements, programs, and mappings.
+3. Implement authenticated DHIS2 synchronization and duplicate protection.
+4. Build the customized React dashboard with trends, maps, and alerts.
+5. Add EBS verification, risk assessment, investigation, and response workflows.
+6. Integrate measles outbreak intelligence.
+7. Integrate AWD, rainfall, and flood-risk indicators.
+8. Validate alert methods with public-health experts before operational use.
+
+## Contributing
+
+Contributions, reproducibility checks, documentation improvements, and public-health feedback are welcome. Read [CONTRIBUTING.md](CONTRIBUTING.md) and the [Code of Conduct](CODE_OF_CONDUCT.md) before opening a pull request.
+
+## Citation
+
+If you use this software in research, cite the repository using [CITATION.cff](CITATION.cff). A versioned DOI can be added to the citation metadata when an archival release is available.
+
+## License
+
+Licensed under the [MIT License](LICENSE). Third-party datasets remain subject to their original terms and attribution requirements.
 
