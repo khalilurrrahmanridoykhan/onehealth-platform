@@ -53,3 +53,32 @@ def test_overview_returns_national_then_eight_divisions(monkeypatch):
     assert overview[0]["location_code"] == "BD"
     assert overview[0]["location_level"] == "national"
     assert {item["risk_level"] for item in overview} <= {"LOW", "MEDIUM", "HIGH"}
+
+
+def test_ebs_schema_and_signal_preview(monkeypatch):
+    monkeypatch.setenv("ONEHEALTH_EBS_WRITES_ENABLED", "false")
+    schema = client.get("/api/v1/ebs/schema")
+    payload = {
+        "signal_id": "EBS-2026-0002",
+        "title": "Unusual fever cluster",
+        "source": "Community health worker",
+        "signal_type": "CLUSTER",
+        "description": "Seven people with fever in one locality",
+        "location_code": "BD-DHA",
+        "detected_on": "2026-08-01",
+    }
+    preview = client.post("/api/v1/ebs/signals/preview", json=payload)
+    commit = client.post("/api/v1/ebs/signals", json=payload)
+
+    assert schema.status_code == 200
+    assert [stage["code"] for stage in schema.json()["stages"]] == [
+        "detection",
+        "verification",
+        "risk_assessment",
+        "investigation",
+        "response",
+        "closure",
+    ]
+    assert preview.status_code == 200
+    assert preview.json()["bundle"]["events"][0]["orgUnit"] == "BdDivDha001"
+    assert commit.status_code == 403

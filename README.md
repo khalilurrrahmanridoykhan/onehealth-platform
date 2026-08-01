@@ -27,7 +27,7 @@ Research datasets and surveillance sources
  Customized dashboard, alerts, and actions
 ```
 
-The DHIS2 integration foundation is implemented; live-instance validation and the customized frontend remain on the roadmap.
+The DHIS2 integration foundation and customized frontend are implemented. Live-instance validation remains on the roadmap.
 
 ## Current capabilities
 
@@ -39,6 +39,8 @@ The DHIS2 integration foundation is implemented; live-instance validation and th
 - Generates explainable alerts using a four-week historical baseline
 - Exposes FastAPI endpoints for diseases, trends, and latest alerts
 - Previews, validates, submits, and reads DHIS2 aggregate surveillance payloads
+- Displays an interactive Bangladesh division risk map
+- Previews EBS signal enrollment payloads while DHIS2 writes remain disabled by default
 - Includes automated tests and continuous integration
 
 ## Project status
@@ -53,7 +55,7 @@ The DHIS2 integration foundation is implemented; live-instance validation and th
 | DHIS2 metadata and data-value dry-run synchronization | Implemented |
 | Division-level dengue surveillance | Implemented |
 | Live DHIS2 instance validation | Blocked until an instance is configured |
-| Customized React surveillance dashboard | Implemented; map and EBS screens planned |
+| Customized React surveillance dashboard | Implemented with division map and EBS preview workspace |
 | EBS Tracker metadata and payload workflow | Implemented; live validation pending |
 | Measles integration | Planned |
 | AWD/environmental-risk integration | Planned |
@@ -137,6 +139,8 @@ The current dashboard includes:
 - Weekly dengue epidemic curve
 - Explainable risk status and recommended actions
 - National and division comparison table
+- Interactive division risk map linked to location selection
+- Six-stage EBS workflow and safe Tracker signal preview form
 - Responsive desktop and mobile layouts
 
 ### Available endpoints
@@ -152,6 +156,9 @@ The current dashboard includes:
 | `GET` | `/api/v1/alerts/DENGUE/latest` | Latest explainable dengue alert |
 | `GET` | `/api/v1/alerts/DENGUE/latest?location_code=BD-DHA` | Latest Dhaka Division alert |
 | `GET` | `/api/v1/summary/DENGUE?location_code=BD-DHA` | Summary metrics for a location |
+| `GET` | `/api/v1/ebs/schema` | EBS program-stage schema for the custom UI |
+| `POST` | `/api/v1/ebs/signals/preview` | Validate and preview a DHIS2 Tracker signal payload |
+| `POST` | `/api/v1/ebs/signals` | Submit a signal only when EBS writes are explicitly enabled |
 
 ## Alert interpretation
 
@@ -211,8 +218,9 @@ Do not commit credentials, protected health information, or identifiable patient
 
 1. Validate national and division metadata synchronization against a live DHIS2 instance.
 2. Validate the EBS Tracker metadata and signal workflow against the live instance.
-3. Add the Bangladesh division map and EBS workflow screens to the dashboard.
-5. Add EBS verification, risk assessment, investigation, and response workflows.
+3. Validate EBS signal submission with controlled test data on the live instance.
+4. Add EBS verification, risk assessment, investigation, and response screens.
+5. Add authentication and role-based access.
 6. Integrate measles outbreak intelligence.
 7. Integrate AWD, rainfall, and flood-risk indicators.
 8. Validate alert methods with public-health experts before operational use.

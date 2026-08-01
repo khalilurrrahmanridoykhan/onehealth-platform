@@ -1,7 +1,28 @@
-import type { Alert, Location, OverviewItem, SurveillanceRecord } from './types'
+import type {
+  Alert,
+  EBSPreview,
+  EBSSignalDraft,
+  EBSStage,
+  Location,
+  OverviewItem,
+  SurveillanceRecord,
+} from './types'
 
 async function getJson<T>(path: string): Promise<T> {
   const response = await fetch(path)
+  if (!response.ok) {
+    const body = await response.json().catch(() => null) as { detail?: string } | null
+    throw new Error(body?.detail ?? `Request failed with HTTP ${response.status}`)
+  }
+  return response.json() as Promise<T>
+}
+
+async function postJson<T>(path: string, payload: unknown): Promise<T> {
+  const response = await fetch(path, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  })
   if (!response.ok) {
     const body = await response.json().catch(() => null) as { detail?: string } | null
     throw new Error(body?.detail ?? `Request failed with HTTP ${response.status}`)
@@ -20,5 +41,7 @@ export const api = {
     getJson<Alert>(
       `/api/v1/alerts/DENGUE/latest?location_code=${encodeURIComponent(locationCode)}`,
     ),
+  ebsSchema: () => getJson<{ stages: EBSStage[] }>('/api/v1/ebs/schema'),
+  previewSignal: (signal: EBSSignalDraft) =>
+    postJson<EBSPreview>('/api/v1/ebs/signals/preview', signal),
 }
-

@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { beforeEach, expect, test, vi } from 'vitest'
 import App from './App'
 
@@ -32,10 +32,29 @@ const alert = {
 }
 
 beforeEach(() => {
-  vi.stubGlobal('fetch', vi.fn((input: RequestInfo | URL) => {
+  vi.stubGlobal('fetch', vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
     const url = String(input)
     let body: unknown
-    if (url.includes('/locations')) body = locations
+    if (url.includes('.geojson')) body = {
+      type: 'FeatureCollection',
+      features: [{
+        type: 'Feature', properties: { shapeISO: 'BD-C', shapeName: 'Dhaka' },
+        geometry: { type: 'Polygon', coordinates: [[[90, 23], [91, 23], [91, 24], [90, 24], [90, 23]]] },
+      }],
+    }
+    else if (url.includes('/ebs/schema')) body = { stages: [
+      { code: 'detection', uid: 'OhEbsDet001', fields: ['description', 'signal_type'], required_fields: ['description', 'signal_type'], repeatable: false },
+      { code: 'verification', uid: 'OhEbsVer001', fields: ['verification_status'], required_fields: ['verification_status'], repeatable: false },
+    ] }
+    else if (url.includes('/ebs/signals/preview') && init?.method === 'POST') body = {
+      mode: 'PREVIEW',
+      bundle: {
+        trackedEntities: [{ trackedEntity: 'Abcdef12345', orgUnit: 'BdDivDha001' }],
+        enrollments: [{ enrollment: 'Bcdefg12345', status: 'ACTIVE' }],
+        events: [{ event: 'Cdefgh12345', status: 'COMPLETED', orgUnit: 'BdDivDha001' }],
+      },
+    }
+    else if (url.includes('/locations')) body = locations
     else if (url.includes('/overview')) body = overview
     else if (url.includes('/trends')) body = trend
     else body = alert
@@ -50,5 +69,24 @@ test('renders surveillance metrics and alert guidance', async () => {
   await waitFor(() => expect(screen.getByText('Latest weekly cases')).toBeInTheDocument())
   expect(screen.getAllByText('3,000')).toHaveLength(2)
   expect(screen.getByText('Continue routine weekly surveillance.')).toBeInTheDocument()
-  expect(screen.getByRole('option', { name: 'Dhaka' })).toBeInTheDocument()
+  expect(screen.getAllByRole('option', { name: 'Dhaka' })).toHaveLength(2)
+  await waitFor(() =>
+    expect(screen.getByRole('img', { name: /Dengue risk by Bangladesh division/i })).toBeInTheDocument(),
+  )
+  expect(screen.getByRole('img', { name: 'Dengue risk by Bangladesh division' })).toBeInTheDocument()
+  expect(screen.getByRole('heading', { name: 'Signal workflow' })).toBeInTheDocument()
+})
+
+test('builds an EBS Tracker signal preview without committing', async () => {
+  render(<App />)
+  await waitFor(() => expect(screen.getByRole('heading', { name: 'Signal workflow' })).toBeInTheDocument())
+
+  fireEvent.change(screen.getByLabelText('Signal ID'), { target: { value: 'EBS-2026-0001' } })
+  fireEvent.change(screen.getByLabelText('Title'), { target: { value: 'Unusual fever cluster' } })
+  fireEvent.change(screen.getByLabelText('Source'), { target: { value: 'Community worker' } })
+  fireEvent.change(screen.getByLabelText('Description'), { target: { value: 'Seven people with fever' } })
+  fireEvent.click(screen.getByRole('button', { name: 'Preview Tracker signal' }))
+
+  await waitFor(() => expect(screen.getByText('Tracker bundle ready')).toBeInTheDocument())
+  expect(screen.getByText('No data is written to DHIS2 in preview mode.')).toBeInTheDocument()
 })

@@ -65,10 +65,15 @@ python scripts/submit_ebs_signal.py \
 
 Replace the demonstration organization-unit UID with a real UID before submitting to DHIS2. Use `--commit` only after metadata installation and preview review.
 
+## Custom dashboard API
+
+The custom frontend reads the workflow definition from `GET /api/v1/ebs/schema` and validates signal input with `POST /api/v1/ebs/signals/preview`. Preview mode returns the DHIS2 Tracker enrollment and detection-event payload without making a network write.
+
+`POST /api/v1/ebs/signals` is protected by `ONEHEALTH_EBS_WRITES_ENABLED`. It defaults to `false`; enable it only after installing the metadata, replacing demonstration organization-unit UIDs, configuring credentials, and completing a reviewed live-instance dry run.
+
 ## Safety boundaries
 
 - The current workflow is for aggregate or non-identifiable event signals.
 - Do not enter names, phone numbers, addresses, or patient identifiers.
 - Text statuses are intentionally simple in this first metadata version; controlled option sets should be calibrated with program owners before operational deployment.
 - DHIS2 access control, sharing, retention, and audit policies must be configured on the live instance.
-

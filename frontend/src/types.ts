@@ -44,3 +44,29 @@ export interface OverviewItem {
   expected_cases: number | null
 }
 
+export interface EBSStage {
+  code: string
+  uid: string
+  fields: string[]
+  required_fields: string[]
+  repeatable: boolean
+}
+
+export interface EBSSignalDraft {
+  signal_id: string
+  title: string
+  source: string
+  signal_type: string
+  description: string
+  location_code: string
+  detected_on: string
+}
+
+export interface EBSPreview {
+  mode: 'PREVIEW'
+  bundle: {
+    trackedEntities: Array<{ trackedEntity: string; orgUnit: string }>
+    enrollments: Array<{ enrollment: string; status: string }>
+    events: Array<{ event: string; status: string; orgUnit: string }>
+  }
+}

@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useState } from 'react'
 import { api } from './api'
 import { AlertPanel } from './components/AlertPanel'
+import { EBSWorkspace } from './components/EBSWorkspace'
 import { LocationTable } from './components/LocationTable'
+import { RiskMap } from './components/RiskMap'
 import { SummaryCards } from './components/SummaryCards'
 import { TrendChart } from './components/TrendChart'
 import type { Alert, Location, OverviewItem, SurveillanceRecord } from './types'
@@ -78,11 +80,14 @@ export default function App() {
               <TrendChart records={trend} />
               <AlertPanel alert={alert} />
             </div>
-            <LocationTable items={overview} selected={selected} onSelect={setSelected} />
+            <div className="geo-grid">
+              <RiskMap items={overview} selected={selected} onSelect={setSelected} />
+              <LocationTable items={overview} selected={selected} onSelect={setSelected} />
+            </div>
+            <EBSWorkspace locations={locations} />
           </>
         )}
       </main>
     </div>
   )
 }
-

@@ -5,10 +5,18 @@ from pathlib import Path
 
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel, Field
 
 from onehealth import __version__
-from onehealth.config import DEFAULT_DATA_PATH, DHIS2Settings
+from onehealth.config import DEFAULT_DATA_PATH, DEFAULT_DHIS2_MAPPING_PATH, DHIS2Settings
 from onehealth.dhis2 import DHIS2APIError, DHIS2Client, DHIS2Mapping
+from onehealth.dhis2.ebs import (
+    EBS_REQUIRED_FIELDS,
+    EBS_STAGE_FIELDS,
+    EBS_STAGES,
+    EBSSignalInput,
+    build_signal_bundle,
+)
 from onehealth.dhis2.sync import records_from_dhis2
 from onehealth.services.alerts import generate_latest_alert
 from onehealth.services.surveillance import load_surveillance_records
@@ -31,7 +39,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=cors_origins,
     allow_credentials=False,
-    allow_methods=["GET"],
+    allow_methods=["GET", "POST"],
     allow_headers=["*"],
 )
 
@@ -214,3 +222,89 @@ def overview(disease_code: str) -> list[dict]:
         results,
         key=lambda item: (item["location_level"] != "national", item["location_name"]),
     )
+
+
+class EBSSignalRequest(BaseModel):
+    signal_id: str = Field(min_length=3, max_length=100)
+    title: str = Field(min_length=3, max_length=200)
+    source: str = Field(min_length=2, max_length=100)
+    signal_type: str = Field(min_length=2, max_length=100)
+    description: str = Field(min_length=5, max_length=2000)
+    location_code: str = Field(min_length=2, max_length=20)
+    detected_on: date
+
+
+def _ebs_signal_bundle(request: EBSSignalRequest) -> dict:
+    mapping_path = Path(
+        os.environ.get("DHIS2_MAPPING_PATH", DEFAULT_DHIS2_MAPPING_PATH)
+    )
+    try:
+        mapping = DHIS2Mapping.from_path(mapping_path)
+        location = mapping.location_for_code(request.location_code.upper())
+    except (OSError, ValueError) as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    return build_signal_bundle(
+        EBSSignalInput(
+            signal_id=request.signal_id,
+            title=request.title,
+            source=request.source,
+            signal_type=request.signal_type,
+            description=request.description,
+            org_unit_uid=location.uid,
+            detected_on=request.detected_on,
+        )
+    )
+
+
+@app.get("/api/v1/ebs/schema")
+def ebs_schema() -> dict:
+    order = [
+        "detection",
+        "verification",
+        "risk_assessment",
+        "investigation",
+        "response",
+        "closure",
+    ]
+    return {
+        "stages": [
+            {
+                "code": stage,
+                "uid": EBS_STAGES[stage],
+                "fields": sorted(EBS_STAGE_FIELDS.get(stage, {"signal_type", "description"})),
+                "required_fields": sorted(
+                    EBS_REQUIRED_FIELDS.get(stage, {"signal_type", "description"})
+                ),
+                "repeatable": stage in {"investigation", "response"},
+            }
+            for stage in order
+        ]
+    }
+
+
+@app.post("/api/v1/ebs/signals/preview")
+def preview_ebs_signal(request: EBSSignalRequest) -> dict:
+    return {"mode": "PREVIEW", "bundle": _ebs_signal_bundle(request)}
+
+
+@app.post("/api/v1/ebs/signals")
+def submit_ebs_signal(request: EBSSignalRequest) -> dict:
+    if os.environ.get("ONEHEALTH_EBS_WRITES_ENABLED", "false").lower() != "true":
+        raise HTTPException(
+            status_code=403,
+            detail="EBS writes are disabled. Preview the signal or explicitly enable live writes.",
+        )
+    try:
+        settings = DHIS2Settings.from_env()
+        with DHIS2Client(
+            settings.base_url,
+            api_token=settings.api_token,
+            username=settings.username,
+            password=settings.password,
+            verify_ssl=settings.verify_ssl,
+            timeout_seconds=settings.timeout_seconds,
+        ) as client:
+            response = client.import_tracker_bundle(_ebs_signal_bundle(request))
+    except (ValueError, OSError, DHIS2APIError) as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
+    return {"mode": "COMMITTED", "response": response}

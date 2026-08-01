@@ -9,8 +9,6 @@ The project follows [Semantic Versioning](https://semver.org/).
 ### Planned
 
 - Live DHIS2 validation and EBS Tracker metadata
-- Customized React surveillance dashboard
-- Division-level dengue mapping
 
 ### Added
 
@@ -32,6 +30,10 @@ The project follows [Semantic Versioning](https://semver.org/).
 - National and division filters, summary cards, trend chart, risk panel, and comparison table
 - Consolidated disease overview API and configurable CORS policy
 - Locked frontend dependencies, component tests, production build, and CI job
+- Interactive Bangladesh division risk map with linked dashboard filtering
+- GeoJSON attribution and stable ISO-based division joins
+- EBS workflow schema and custom signal-preview workspace
+- Write-disabled-by-default API boundary for DHIS2 Tracker signal submission
 
 ## [0.1.0] - 2026-08-01
 
