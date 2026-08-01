@@ -71,6 +71,17 @@
       "incidentDateLabel": "Signal detection date",
       "enrollmentDateLabel": "Signal registration date",
       "featureType": "POINT",
+      "organisationUnits": [
+        {"id": "BdOrgUnit01"},
+        {"id": "BdDivBar001"},
+        {"id": "BdDivCtg001"},
+        {"id": "BdDivDha001"},
+        {"id": "BdDivKhu001"},
+        {"id": "BdDivMym001"},
+        {"id": "BdDivRaj001"},
+        {"id": "BdDivRan001"},
+        {"id": "BdDivSyl001"}
+      ],
       "programTrackedEntityAttributes": [
         {"trackedEntityAttribute": {"id": "OhEbsId0001"}, "mandatory": true, "searchable": true, "displayInList": true, "sortOrder": 1},
         {"trackedEntityAttribute": {"id": "OhEbsTit001"}, "mandatory": true, "searchable": true, "displayInList": true, "sortOrder": 2},
@@ -152,4 +163,3 @@
     }
   ]
 }
-
