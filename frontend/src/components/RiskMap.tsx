@@ -35,6 +35,8 @@ const RISK_COLOR: Record<RiskLevel | 'UNKNOWN', string> = {
 export function RiskMap({ items, selected, onSelect }: Props) {
   const [geoData, setGeoData] = useState<FeatureCollection<Geometry, DivisionProperties>>()
   const [layer, setLayer] = useState<'risk' | 'cases' | 'deviation'>('risk')
+  const [zoom, setZoom] = useState(1)
+  const [showLabels, setShowLabels] = useState(true)
   const summaries = useMemo(
     () => new Map(items.map((item) => [item.location_code, item])),
     [items],
@@ -75,11 +77,12 @@ export function RiskMap({ items, selected, onSelect }: Props) {
           <p className="eyebrow">Spatial risk</p>
           <h2>Bangladesh division map</h2>
         </div>
-        <label className="map-layer">Map layer<select value={layer} onChange={(event) => setLayer(event.target.value as typeof layer)}><option value="risk">Alert risk</option><option value="cases">Latest cases</option><option value="deviation">Baseline deviation</option></select></label>
+        <div className="map-controls"><label className="map-layer">Map layer<select value={layer} onChange={(event) => setLayer(event.target.value as typeof layer)}><option value="risk">Alert risk</option><option value="cases">Latest cases</option><option value="deviation">Baseline deviation</option></select></label><div className="map-tool-buttons" aria-label="Map display controls"><button type="button" onClick={() => setZoom((value) => Math.min(1.8, value + .2))} aria-label="Zoom in">+</button><button type="button" onClick={() => setZoom((value) => Math.max(1, value - .2))} aria-label="Zoom out">−</button><button type="button" className={showLabels ? 'active' : ''} onClick={() => setShowLabels((value) => !value)} aria-label="Toggle division labels">Aa</button><button type="button" onClick={() => { setZoom(1); setShowLabels(true) }} aria-label="Reset map">Reset</button></div></div>
       </div>
       {!geoData || !map ? <div className="map-loading">Loading boundaries…</div> : (
         <svg className="risk-map" viewBox="0 0 500 455" role="img" aria-label="Dengue risk by Bangladesh division">
           <rect className="map-ocean" width="500" height="455" rx="14" />
+          <g transform={`translate(250 227.5) scale(${zoom}) translate(-250 -227.5)`}>
           {geoData.features.map((feature) => {
             const locationCode = ISO_TO_LOCATION[feature.properties.shapeISO]
             const summary = summaries.get(locationCode)
@@ -101,10 +104,11 @@ export function RiskMap({ items, selected, onSelect }: Props) {
                 >
                   <title>{summary?.location_name ?? feature.properties.shapeName}: {risk} risk, {summary?.latest_cases ?? 0} latest cases</title>
                 </path>
-                <text x={centroid[0]} y={centroid[1]} className="map-label">{summary?.location_name ?? feature.properties.shapeName}</text>
+                {showLabels && <text x={centroid[0]} y={centroid[1]} className="map-label">{summary?.location_name ?? feature.properties.shapeName}</text>}
               </g>
             )
           })}
+          </g>
         </svg>
       )}
       <div className="map-footer">

@@ -99,6 +99,8 @@ test('renders surveillance metrics and alert guidance', async () => {
     expect(screen.getByRole('img', { name: /Dengue risk by Bangladesh division/i })).toBeInTheDocument(),
   )
   expect(screen.getByRole('img', { name: 'Dengue risk by Bangladesh division' })).toBeInTheDocument()
+  expect(screen.getByRole('button', { name: 'Zoom in' })).toBeInTheDocument()
+  expect(screen.getByRole('button', { name: 'Toggle division labels' })).toBeInTheDocument()
   expect(screen.getByRole('heading', { name: 'Signal workflow' })).toBeInTheDocument()
 })
 

@@ -96,16 +96,16 @@ export default function App() {
               <div><span>Above baseline</span><strong>{aboveBaselineCount}</strong><small>of 8 divisions</small></div>
               <div><span>Latest reporting period</span><strong>{latestPeriod}</strong><small>complete weekly data</small></div>
             </section>
+            <div className="geo-grid hero-geo" id="geography">
+              <RiskMap items={overview} selected={selected} onSelect={setSelected} />
+              <LocationTable items={overview} selected={selected} onSelect={setSelected} />
+            </div>
             <SummaryCards summary={selectedSummary} alert={alert} />
             <div className="dashboard-grid" id="surveillance">
               <TrendChart records={trend} alert={alert} />
               <div id="alerts"><AlertPanel alert={alert} /></div>
             </div>
             <ComparisonWorkbench locations={locations} primaryCode={selected} primaryRecords={trend} />
-            <div className="geo-grid" id="geography">
-              <RiskMap items={overview} selected={selected} onSelect={setSelected} />
-              <LocationTable items={overview} selected={selected} onSelect={setSelected} />
-            </div>
             <EBSOperationsQueue />
             <EBSWorkspace locations={locations} />
             <EBSSignalRegistry />
