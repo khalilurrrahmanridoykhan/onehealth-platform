@@ -1,4 +1,77 @@
 {
+  "organisationUnits": [
+    {
+      "id": "BdOrgUnit01",
+      "name": "Bangladesh",
+      "shortName": "Bangladesh",
+      "code": "BD",
+      "openingDate": "1971-12-16"
+    },
+    {
+      "id": "BdDivBar001",
+      "name": "Barishal Division",
+      "shortName": "Barishal",
+      "code": "BD-BAR",
+      "openingDate": "2015-09-14",
+      "parent": { "id": "BdOrgUnit01" }
+    },
+    {
+      "id": "BdDivCtg001",
+      "name": "Chattogram Division",
+      "shortName": "Chattogram",
+      "code": "BD-CTG",
+      "openingDate": "1971-12-16",
+      "parent": { "id": "BdOrgUnit01" }
+    },
+    {
+      "id": "BdDivDha001",
+      "name": "Dhaka Division",
+      "shortName": "Dhaka",
+      "code": "BD-DHA",
+      "openingDate": "1971-12-16",
+      "parent": { "id": "BdOrgUnit01" }
+    },
+    {
+      "id": "BdDivKhu001",
+      "name": "Khulna Division",
+      "shortName": "Khulna",
+      "code": "BD-KHU",
+      "openingDate": "1971-12-16",
+      "parent": { "id": "BdOrgUnit01" }
+    },
+    {
+      "id": "BdDivMym001",
+      "name": "Mymensingh Division",
+      "shortName": "Mymensingh",
+      "code": "BD-MYM",
+      "openingDate": "2015-09-14",
+      "parent": { "id": "BdOrgUnit01" }
+    },
+    {
+      "id": "BdDivRaj001",
+      "name": "Rajshahi Division",
+      "shortName": "Rajshahi",
+      "code": "BD-RAJ",
+      "openingDate": "1971-12-16",
+      "parent": { "id": "BdOrgUnit01" }
+    },
+    {
+      "id": "BdDivRan001",
+      "name": "Rangpur Division",
+      "shortName": "Rangpur",
+      "code": "BD-RAN",
+      "openingDate": "2010-01-25",
+      "parent": { "id": "BdOrgUnit01" }
+    },
+    {
+      "id": "BdDivSyl001",
+      "name": "Sylhet Division",
+      "shortName": "Sylhet",
+      "code": "BD-SYL",
+      "openingDate": "1995-08-01",
+      "parent": { "id": "BdOrgUnit01" }
+    }
+  ],
   "dataElements": [
     {
       "id": "OhDngCase01",
@@ -20,6 +93,17 @@
       "code": "OH_WEEKLY_DENGUE",
       "periodType": "Weekly",
       "openFuturePeriods": 0,
+      "organisationUnits": [
+        { "id": "BdOrgUnit01" },
+        { "id": "BdDivBar001" },
+        { "id": "BdDivCtg001" },
+        { "id": "BdDivDha001" },
+        { "id": "BdDivKhu001" },
+        { "id": "BdDivMym001" },
+        { "id": "BdDivRaj001" },
+        { "id": "BdDivRan001" },
+        { "id": "BdDivSyl001" }
+      ],
       "dataSetElements": [
         {
           "dataElement": {
@@ -30,4 +114,3 @@
     }
   ]
 }
-
