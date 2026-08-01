@@ -125,6 +125,7 @@ td button { padding: 0; border: 0; background: transparent; color: #173a30; font
 
 .ebs-panel { margin-top: 20px; padding-bottom: 22px; }
 .preview-badge { padding: 6px 10px; border-radius: 20px; color: #74510b; background: #fff1c2; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; }
+.preview-badge.write-enabled { color: #067647; background: #dcfae6; }
 .workflow-steps { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin: 20px 22px; }
 .workflow-step { position: relative; display: flex; gap: 8px; min-width: 0; padding: 10px; border: 1px solid transparent; border-radius: 10px; background: #f3f8f6; text-align: left; font: inherit; cursor: pointer; }
 .workflow-step.active { border-color: #087f5b; background: #e5f4ee; box-shadow: 0 0 0 2px rgba(8, 127, 91, .08); }
@@ -146,7 +147,8 @@ td button { padding: 0; border: 0; background: transparent; color: #173a30; font
 .form-actions button { padding: 11px 16px; border: 0; border-radius: 9px; color: white; background: #087f5b; font-weight: 700; cursor: pointer; }
 .form-actions button:disabled { cursor: wait; opacity: .6; }
 .form-error { margin: 16px 22px 0; color: #a52620; font-size: 12px; }
-.preview-result { display: flex; align-items: center; gap: 14px; margin: 18px 22px 0; padding: 14px; border: 1px solid #a9dfc8; border-radius: 10px; color: #26624e; background: #effbf6; font-size: 12px; }
+.preview-result { display: flex; align-items: center; gap: 14px; margin: 18px 22px 0; padding: 14px; border: 1px solid #a9dfc8; border-radius: 10px; color: #26624e; background: #effbf6; font-size: 12px; }.preview-result div strong, .preview-result div span { display: block; }.preview-result div span { margin-top: 3px; }
+.preview-result.committed { border-color: #6bc9a6; background: #e2f8ef; }.preview-result button { padding: 9px 12px; border: 0; border-radius: 8px; color: white; background: #087f5b; font: inherit; font-size: 11px; font-weight: 750; cursor: pointer; }.preview-result button:disabled { opacity: .6; cursor: wait; }
 .preview-result code { margin-left: auto; color: #365e50; }
 .registry-panel { margin-top: 20px; padding-bottom: 22px; overflow: hidden; }
 .connection-badge { padding: 6px 10px; border-radius: 20px; color: #8a4b16; background: #ffead5; font-size: 10px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; }

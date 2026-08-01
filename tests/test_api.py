@@ -203,6 +203,54 @@ def test_ebs_registry_reads_are_disabled_by_default(monkeypatch):
     assert response.status_code == 401
 
 
+def test_committed_signal_returns_the_identifiers_written_to_tracker(monkeypatch):
+    monkeypatch.setenv("ONEHEALTH_EBS_WRITES_ENABLED", "true")
+    monkeypatch.setenv("ONEHEALTH_AUTH_SECRET", "a-secure-test-secret-with-32-characters")
+    monkeypatch.setattr(
+        api_module.DHIS2Settings,
+        "from_env",
+        lambda: SimpleNamespace(
+            base_url="https://dhis.example", api_token="token", username=None,
+            password=None, verify_ssl=True, timeout_seconds=30,
+        ),
+    )
+    imported = {}
+
+    class FakeClient:
+        def __init__(self, *_args, **_kwargs):
+            pass
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_args):
+            return None
+
+        def import_tracker_bundle(self, bundle):
+            imported.update(bundle)
+            return {"status": "OK"}
+
+    monkeypatch.setattr(api_module, "DHIS2Client", FakeClient)
+    headers = {"Authorization": f"Bearer {issue_token(User('responder', 'responder'))}"}
+    response = client.post(
+        "/api/v1/ebs/signals",
+        headers=headers,
+        json={
+            "signal_id": "EBS-2026-COMMIT", "title": "Commit contract test",
+            "source": "Surveillance desk", "signal_type": "CLUSTER",
+            "description": "Non-identifiable practice signal", "location_code": "BD-DHA",
+            "detected_on": "2026-08-02",
+        },
+    )
+
+    assert response.status_code == 200
+    result = response.json()
+    assert result["mode"] == "COMMITTED"
+    assert result["tracked_entity_uid"] == imported["trackedEntities"][0]["trackedEntity"]
+    assert result["enrollment_uid"] == imported["enrollments"][0]["enrollment"]
+    assert result["event_uid"] == imported["events"][0]["event"]
+
+
 def test_login_and_role_based_access(monkeypatch):
     monkeypatch.setenv("ONEHEALTH_AUTH_SECRET", "a-secure-test-secret-with-32-characters")
     monkeypatch.setenv("ONEHEALTH_AUTH_USERS", json.dumps([{

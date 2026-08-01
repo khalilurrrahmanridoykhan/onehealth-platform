@@ -1,6 +1,6 @@
 import { type FormEvent, useEffect, useMemo, useState } from 'react'
 import { api } from '../api'
-import type { EBSPreview, EBSSignalDraft, EBSStage, EBSStagePreview, Location } from '../types'
+import type { EBSCommitResult, EBSConnectionStatus, EBSPreview, EBSSignalDraft, EBSStage, EBSStageDraft, EBSStagePreview, Location } from '../types'
 
 const today = () => new Date().toISOString().slice(0, 10)
 const INITIAL_SIGNAL: EBSSignalDraft = {
@@ -28,14 +28,33 @@ export function EBSWorkspace({ locations }: { locations: Location[] }) {
   const [activeStage, setActiveStage] = useState('detection')
   const [stageValues, setStageValues] = useState<Record<string, string>>({})
   const [stagePreview, setStagePreview] = useState<EBSStagePreview>()
+  const [signalCommit, setSignalCommit] = useState<EBSCommitResult>()
+  const [stageCommit, setStageCommit] = useState<EBSCommitResult>()
+  const [status, setStatus] = useState<EBSConnectionStatus>()
+  const [user, setUser] = useState<{ username: string; role: string }>()
   const [error, setError] = useState<string>()
   const [submitting, setSubmitting] = useState(false)
 
   useEffect(() => {
     api.ebsSchema().then((response) => setStages(response.stages)).catch((reason: Error) => setError(reason.message))
+    api.ebsStatus().then(setStatus).catch((reason: Error) => setError(reason.message))
+    if (localStorage.getItem('onehealth_session')) api.me().then(setUser).catch(() => setUser(undefined))
   }, [])
 
   const selectedStage = useMemo(() => stages.find((stage) => stage.code === activeStage), [stages, activeStage])
+  const activeEnrollment = signalCommit?.enrollment_uid ?? signalPreview?.bundle.enrollments[0].enrollment
+  const canWrite = Boolean(status?.writes_enabled && user && ['responder', 'admin'].includes(user.role))
+
+  const stageDraft = (): EBSStageDraft | null => {
+    if (!selectedStage || !activeEnrollment) return null
+    return {
+      stage: selectedStage.code,
+      enrollment_uid: activeEnrollment,
+      location_code: signal.location_code,
+      occurred_on: today(),
+      values: Object.fromEntries(Object.entries(stageValues).filter(([, value]) => value !== '')),
+    }
+  }
 
   const previewSignal = (event: FormEvent) => {
     event.preventDefault(); setSubmitting(true); setError(undefined)
@@ -46,30 +65,42 @@ export function EBSWorkspace({ locations }: { locations: Location[] }) {
 
   const previewStage = (event: FormEvent) => {
     event.preventDefault()
-    if (!signalPreview || !selectedStage) return
+    const draft = stageDraft()
+    if (!draft) return
     setSubmitting(true); setError(undefined)
-    const values = Object.fromEntries(Object.entries(stageValues).filter(([, value]) => value !== ''))
-    api.previewStage({
-      stage: selectedStage.code,
-      enrollment_uid: signalPreview.bundle.enrollments[0].enrollment,
-      location_code: signal.location_code,
-      occurred_on: today(),
-      values,
-    }).then(setStagePreview).catch((reason: Error) => setError(reason.message)).finally(() => setSubmitting(false))
+    api.previewStage(draft).then((result) => { setStagePreview(result); setStageCommit(undefined) }).catch((reason: Error) => setError(reason.message)).finally(() => setSubmitting(false))
+  }
+
+  const commitSignal = () => {
+    setSubmitting(true); setError(undefined)
+    api.commitSignal(signal).then((result) => {
+      setSignalCommit(result); setStageCommit(undefined)
+      window.dispatchEvent(new Event('onehealth:registry-changed'))
+    }).catch((reason: Error) => setError(reason.message)).finally(() => setSubmitting(false))
+  }
+
+  const commitStage = () => {
+    const draft = stageDraft()
+    if (!draft || !signalCommit) return
+    setSubmitting(true); setError(undefined)
+    api.commitStage(draft).then((result) => {
+      setStageCommit(result)
+      window.dispatchEvent(new Event('onehealth:registry-changed'))
+    }).catch((reason: Error) => setError(reason.message)).finally(() => setSubmitting(false))
   }
 
   const updateSignal = (field: keyof EBSSignalDraft, value: string) => {
-    setSignal((current) => ({ ...current, [field]: value })); setSignalPreview(undefined); setStagePreview(undefined); setActiveStage('detection')
+    setSignal((current) => ({ ...current, [field]: value })); setSignalPreview(undefined); setSignalCommit(undefined); setStagePreview(undefined); setStageCommit(undefined); setActiveStage('detection')
   }
 
   const chooseStage = (code: string) => {
     if (code !== 'detection' && !signalPreview) return
-    setActiveStage(code); setStageValues({}); setStagePreview(undefined); setError(undefined)
+    setActiveStage(code); setStageValues({}); setStagePreview(undefined); setStageCommit(undefined); setError(undefined)
   }
 
   return (
     <section className="panel ebs-panel" id="ebs">
-      <div className="panel-heading"><div><p className="eyebrow">Event-based surveillance</p><h2>Signal workflow</h2></div><span className="preview-badge">Preview mode</span></div>
+      <div className="panel-heading"><div><p className="eyebrow">Event-based surveillance</p><h2>Signal workflow</h2></div><span className={`preview-badge ${canWrite ? 'write-enabled' : ''}`}>{canWrite ? 'DHIS2 writes enabled' : 'Preview mode'}</span></div>
       <div className="workflow-steps" aria-label="EBS workflow stages">
         {stages.map((stage, index) => (
           <button type="button" className={`workflow-step ${activeStage === stage.code ? 'active' : ''}`} key={stage.code} onClick={() => chooseStage(stage.code)} disabled={stage.code !== 'detection' && !signalPreview}>
@@ -86,11 +117,11 @@ export function EBSWorkspace({ locations }: { locations: Location[] }) {
           <label>Location<select value={signal.location_code} onChange={(event) => updateSignal('location_code', event.target.value)}>{locations.map((location) => <option key={location.code} value={location.code}>{location.name}</option>)}</select></label>
           <label>Detected on<input required type="date" value={signal.detected_on} onChange={(event) => updateSignal('detected_on', event.target.value)} /></label>
           <label className="full-width">Description<textarea required minLength={5} value={signal.description} onChange={(event) => updateSignal('description', event.target.value)} placeholder="Describe the unusual event without patient identifiers." /></label>
-          <div className="form-actions full-width"><p>No data is written to DHIS2 in preview mode.</p><button type="submit" disabled={submitting}>{submitting ? 'Building preview…' : 'Preview Tracker signal'}</button></div>
+          <div className="form-actions full-width"><p>{canWrite ? 'Preview first, then commit with your authenticated responder account.' : 'No data is written to DHIS2 in preview mode.'}</p><button type="submit" disabled={submitting}>{submitting ? 'Building preview…' : 'Preview Tracker signal'}</button></div>
         </form>
-      ) : selectedStage && signalPreview ? (
+      ) : selectedStage && activeEnrollment ? (
         <form className="ebs-form stage-form" onSubmit={previewStage}>
-          <div className="stage-context full-width"><strong>{stageLabel(selectedStage.code)}</strong><span>Enrollment {signalPreview.bundle.enrollments[0].enrollment} · {signal.signal_id}</span></div>
+          <div className="stage-context full-width"><strong>{stageLabel(selectedStage.code)}</strong><span>Enrollment {activeEnrollment} · {signal.signal_id}</span></div>
           {selectedStage.fields.map((field) => (
             <label className={['verification_notes', 'findings', 'recommended_actions', 'outcome', 'lessons_learned'].includes(field) ? 'full-width' : ''} key={field}>
               {fieldLabel(field)}{selectedStage.required_fields.includes(field) ? ' *' : ''}
@@ -105,12 +136,12 @@ export function EBSWorkspace({ locations }: { locations: Location[] }) {
               )}
             </label>
           ))}
-          <div className="form-actions full-width"><p>Preview only · no DHIS2 write</p><button type="submit" disabled={submitting}>{submitting ? 'Building preview…' : `Preview ${stageLabel(selectedStage.code)}`}</button></div>
+          <div className="form-actions full-width"><p>{signalCommit ? 'Committed enrollment · preview this stage before saving' : 'Preview enrollment · commit detection before saving stages'}</p><button type="submit" disabled={submitting}>{submitting ? 'Building preview…' : `Preview ${stageLabel(selectedStage.code)}`}</button></div>
         </form>
       ) : null}
       {error && <div className="form-error" role="alert">{error}</div>}
-      {signalPreview && activeStage === 'detection' && <div className="preview-result" role="status"><strong>Tracker bundle ready</strong><span>1 tracked entity · 1 enrollment · 1 completed detection event</span><code>Enrollment: {signalPreview.bundle.enrollments[0].enrollment}</code></div>}
-      {stagePreview && <div className="preview-result" role="status"><strong>{stageLabel(stagePreview.stage)} event ready</strong><span>{stagePreview.bundle.events[0].dataValues.length} field values · completed event</span><code>Event: {stagePreview.bundle.events[0].event}</code></div>}
+      {signalPreview && activeStage === 'detection' && <div className={`preview-result ${signalCommit ? 'committed' : ''}`} role="status"><div><strong>{signalCommit ? 'Detection saved to DHIS2' : 'Tracker bundle ready'}</strong><span>{signalCommit ? `Tracked entity ${signalCommit.tracked_entity_uid}` : '1 tracked entity · 1 enrollment · 1 completed detection event'}</span></div><code>Enrollment: {signalCommit?.enrollment_uid ?? signalPreview.bundle.enrollments[0].enrollment}</code>{canWrite && !signalCommit && <button type="button" onClick={commitSignal} disabled={submitting}>{submitting ? 'Saving…' : 'Save detection to DHIS2'}</button>}</div>}
+      {stagePreview && <div className={`preview-result ${stageCommit ? 'committed' : ''}`} role="status"><div><strong>{stageCommit ? `${stageLabel(stagePreview.stage)} saved to DHIS2` : `${stageLabel(stagePreview.stage)} event ready`}</strong><span>{stagePreview.bundle.events[0].dataValues.length} field values · completed event</span></div><code>Event: {stageCommit?.event_uid ?? stagePreview.bundle.events[0].event}</code>{canWrite && signalCommit && !stageCommit && <button type="button" onClick={commitStage} disabled={submitting}>{submitting ? 'Saving…' : `Save ${stageLabel(stagePreview.stage)} to DHIS2`}</button>}</div>}
     </section>
   )
 }

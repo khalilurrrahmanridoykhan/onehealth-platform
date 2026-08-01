@@ -94,6 +94,15 @@ export interface EBSStagePreview {
   }
 }
 
+export interface EBSCommitResult {
+  mode: 'COMMITTED'
+  tracked_entity_uid?: string
+  enrollment_uid: string
+  event_uid: string
+  stage?: string
+  response: Record<string, unknown>
+}
+
 export interface EBSConnectionStatus {
   dhis2_configured: boolean
   reads_enabled: boolean

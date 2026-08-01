@@ -26,6 +26,12 @@ export function EBSSignalRegistry() {
     }).catch((reason: Error) => { setError(reason.message); setLoading(false) })
   }, [])
 
+  useEffect(() => {
+    const refresh = () => { if (status?.dhis2_configured && status.reads_enabled) loadSignals(query) }
+    window.addEventListener('onehealth:registry-changed', refresh)
+    return () => window.removeEventListener('onehealth:registry-changed', refresh)
+  }, [status, query])
+
   const search = (event: FormEvent) => { event.preventDefault(); loadSignals(query) }
   const openSignal = (uid: string) => {
     setError(undefined)

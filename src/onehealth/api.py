@@ -497,6 +497,7 @@ def submit_ebs_signal(request: EBSSignalRequest, _user: User = Depends(responder
         )
     try:
         settings = DHIS2Settings.from_env()
+        bundle = _ebs_signal_bundle(request)
         with DHIS2Client(
             settings.base_url,
             api_token=settings.api_token,
@@ -505,10 +506,16 @@ def submit_ebs_signal(request: EBSSignalRequest, _user: User = Depends(responder
             verify_ssl=settings.verify_ssl,
             timeout_seconds=settings.timeout_seconds,
         ) as client:
-            response = client.import_tracker_bundle(_ebs_signal_bundle(request))
+            response = client.import_tracker_bundle(bundle)
     except (ValueError, OSError, DHIS2APIError) as exc:
         raise HTTPException(status_code=503, detail=str(exc)) from exc
-    return {"mode": "COMMITTED", "response": response}
+    return {
+        "mode": "COMMITTED",
+        "tracked_entity_uid": bundle["trackedEntities"][0]["trackedEntity"],
+        "enrollment_uid": bundle["enrollments"][0]["enrollment"],
+        "event_uid": bundle["events"][0]["event"],
+        "response": response,
+    }
 
 
 @app.post("/api/v1/ebs/stages")
@@ -520,6 +527,7 @@ def submit_ebs_stage(request: EBSStageRequest, _user: User = Depends(responder))
         )
     try:
         settings = DHIS2Settings.from_env()
+        bundle = _ebs_stage_bundle(request)
         with DHIS2Client(
             settings.base_url,
             api_token=settings.api_token,
@@ -528,7 +536,13 @@ def submit_ebs_stage(request: EBSStageRequest, _user: User = Depends(responder))
             verify_ssl=settings.verify_ssl,
             timeout_seconds=settings.timeout_seconds,
         ) as client:
-            response = client.import_tracker_bundle(_ebs_stage_bundle(request))
+            response = client.import_tracker_bundle(bundle)
     except (ValueError, OSError, DHIS2APIError) as exc:
         raise HTTPException(status_code=503, detail=str(exc)) from exc
-    return {"mode": "COMMITTED", "response": response}
+    return {
+        "mode": "COMMITTED",
+        "stage": request.stage,
+        "enrollment_uid": request.enrollment_uid,
+        "event_uid": bundle["events"][0]["event"],
+        "response": response,
+    }
