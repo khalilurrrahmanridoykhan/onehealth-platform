@@ -3,6 +3,7 @@ import type {
   EBSPreview,
   EBSConnectionStatus,
   EBSCommitResult,
+  EBSOperations,
   EBSSavedSignal,
   EBSSignalDetail,
   EBSSignalDraft,
@@ -61,6 +62,7 @@ export const api = {
   commitStage: (stage: EBSStageDraft) =>
     postJson<EBSCommitResult>('/api/v1/ebs/stages', stage),
   ebsStatus: () => getJson<EBSConnectionStatus>('/api/v1/ebs/status'),
+  ebsOperations: () => getJson<EBSOperations>('/api/v1/ebs/operations'),
   savedSignals: (query = '') =>
     getJson<{ signals: EBSSavedSignal[] }>(`/api/v1/ebs/signals?q=${encodeURIComponent(query)}`),
   savedSignal: (trackedEntityUid: string) =>

@@ -3,6 +3,7 @@ import { api } from './api'
 import { AlertPanel } from './components/AlertPanel'
 import { ComparisonWorkbench } from './components/ComparisonWorkbench'
 import { EBSWorkspace } from './components/EBSWorkspace'
+import { EBSOperationsQueue } from './components/EBSOperationsQueue'
 import { EBSSignalRegistry } from './components/EBSSignalRegistry'
 import { LocationTable } from './components/LocationTable'
 import { RiskMap } from './components/RiskMap'
@@ -55,7 +56,7 @@ export default function App() {
   const navigation = [
     ['dashboard', 'OV', 'Command overview'], ['surveillance', 'TR', 'Trends & forecast'],
     ['comparison', 'CP', 'Compare locations'], ['geography', 'MP', 'Spatial analysis'],
-    ['alerts', 'AL', 'Alert intelligence'], ['ebs', 'WF', 'Response workflow'],
+    ['alerts', 'AL', 'Alert intelligence'], ['operations-queue', 'OQ', 'Operations queue'], ['ebs', 'WF', 'Response workflow'],
     ['ebs-registry', 'RG', 'Signal registry'],
   ]
 
@@ -105,6 +106,7 @@ export default function App() {
               <RiskMap items={overview} selected={selected} onSelect={setSelected} />
               <LocationTable items={overview} selected={selected} onSelect={setSelected} />
             </div>
+            <EBSOperationsQueue />
             <EBSWorkspace locations={locations} />
             <EBSSignalRegistry />
           </>

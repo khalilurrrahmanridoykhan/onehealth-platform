@@ -471,6 +471,78 @@ def list_ebs_signals(
     return {"signals": signals, "pager": response.get("pager"), "dhis2_url": settings.base_url}
 
 
+@app.get("/api/v1/ebs/operations")
+def ebs_operations(_user: User = Depends(viewer)) -> dict:
+    if os.environ.get("ONEHEALTH_EBS_READS_ENABLED", "false").lower() != "true":
+        raise HTTPException(status_code=403, detail="EBS registry reads are disabled")
+    try:
+        _, client = _settings_and_client()
+        with client:
+            entity_response = client.get_tracked_entities(
+                program=EBS_PROGRAM_UID, page=1, page_size=100
+            )
+            rows = []
+            stage_order = list(EBS_STAGES)
+            for entity in _tracker_items(entity_response, "trackedEntities"):
+                tracked_entity_uid = entity.get("trackedEntity")
+                event_response = client.get_tracker_events(
+                    tracked_entity_uid=tracked_entity_uid,
+                    program=EBS_PROGRAM_UID,
+                )
+                events = [
+                    _event_view(event)
+                    for event in _tracker_items(event_response, "events")
+                ]
+                attributes = _attribute_values(entity)
+                present = {event["stage"] for event in events}
+                latest_stage = next(
+                    (stage for stage in reversed(stage_order) if stage in present),
+                    "detection",
+                )
+                risk_events = [event for event in events if event["stage"] == "risk_assessment"]
+                response_events = [event for event in events if event["stage"] == "response"]
+                risk_values = risk_events[-1]["values"] if risk_events else {}
+                response_values = response_events[-1]["values"] if response_events else {}
+                due_date = str(response_values.get("due_date") or "") or None
+                closed = "closure" in present
+                overdue = bool(
+                    due_date
+                    and due_date < date.today().isoformat()
+                    and not closed
+                    and response_values.get("response_status") != "COMPLETED"
+                )
+                rows.append({
+                    "tracked_entity_uid": tracked_entity_uid,
+                    "signal_id": attributes["signal_id"],
+                    "title": attributes["title"],
+                    "source": attributes["source"],
+                    "org_unit_uid": entity.get("orgUnit"),
+                    "latest_stage": latest_stage,
+                    "risk_level": risk_values.get("risk_level"),
+                    "responsible_officer": response_values.get("responsible_officer"),
+                    "due_date": due_date,
+                    "response_status": response_values.get("response_status"),
+                    "closed": closed,
+                    "overdue": overdue,
+                    "event_count": len(events),
+                    "updated_at": entity.get("updatedAt"),
+                })
+    except (ValueError, OSError, DHIS2APIError) as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
+    rows.sort(key=lambda row: (row["closed"], not row["overdue"], row["signal_id"]))
+    return {
+        "signals": rows,
+        "summary": {
+            "total": len(rows),
+            "open": sum(not row["closed"] for row in rows),
+            "closed": sum(row["closed"] for row in rows),
+            "overdue": sum(row["overdue"] for row in rows),
+            "high_risk": sum(row["risk_level"] in {"HIGH", "CRITICAL"} and not row["closed"] for row in rows),
+        },
+        "generated_at": date.today().isoformat(),
+    }
+
+
 @app.get("/api/v1/ebs/signals/{tracked_entity_uid}")
 def get_ebs_signal(tracked_entity_uid: str, _user: User = Depends(viewer)) -> dict:
     if os.environ.get("ONEHEALTH_EBS_READS_ENABLED", "false").lower() != "true":

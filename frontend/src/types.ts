@@ -133,3 +133,26 @@ export interface EBSSignalDetail extends EBSSavedSignal {
   enrollment_uid: string | null
   events: EBSSignalEvent[]
 }
+
+export interface EBSOperationItem {
+  tracked_entity_uid: string
+  signal_id: string
+  title: string
+  source: string
+  org_unit_uid: string
+  latest_stage: string
+  risk_level: string | null
+  responsible_officer: string | null
+  due_date: string | null
+  response_status: string | null
+  closed: boolean
+  overdue: boolean
+  event_count: number
+  updated_at: string | null
+}
+
+export interface EBSOperations {
+  signals: EBSOperationItem[]
+  summary: { total: number; open: number; closed: number; overdue: number; high_risk: number }
+  generated_at: string
+}

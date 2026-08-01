@@ -186,6 +186,7 @@ def test_ebs_signal_search_and_detail_read_from_tracker(monkeypatch):
 
     search = client.get("/api/v1/ebs/signals?q=fever", headers=headers)
     detail = client.get("/api/v1/ebs/signals/Abcdef12345", headers=headers)
+    operations = client.get("/api/v1/ebs/operations", headers=headers)
 
     assert search.status_code == 200
     assert search.json()["signals"][0]["signal_id"] == "EBS-2026-0001"
@@ -193,6 +194,11 @@ def test_ebs_signal_search_and_detail_read_from_tracker(monkeypatch):
     assert detail.json()["enrollment_uid"] == "Bcdefg12345"
     assert detail.json()["events"][0]["stage"] == "verification"
     assert detail.json()["events"][0]["values"] == {"verification_status": "VERIFIED"}
+    assert operations.status_code == 200
+    assert operations.json()["summary"] == {
+        "total": 1, "open": 1, "closed": 0, "overdue": 0, "high_risk": 0,
+    }
+    assert operations.json()["signals"][0]["latest_stage"] == "verification"
 
 
 def test_ebs_registry_reads_are_disabled_by_default(monkeypatch):
