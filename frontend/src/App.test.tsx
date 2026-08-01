@@ -87,7 +87,10 @@ test('renders surveillance metrics and alert guidance', async () => {
   await waitFor(() => expect(screen.getByText('Latest weekly cases')).toBeInTheDocument())
   expect(screen.getAllByText('3,000')).toHaveLength(2)
   expect(screen.getByText('Continue routine weekly surveillance.')).toBeInTheDocument()
-  expect(screen.getAllByRole('option', { name: 'Dhaka' })).toHaveLength(2)
+  expect(screen.getAllByRole('option', { name: 'Dhaka' })).toHaveLength(3)
+  expect(screen.getByRole('heading', { name: 'Location and reporting-window analysis' })).toBeInTheDocument()
+  expect(screen.getByText('Next-week outlook')).toBeInTheDocument()
+  expect(screen.getByRole('link', { name: 'Open response workflow →' })).toHaveAttribute('href', '#ebs')
   await waitFor(() =>
     expect(screen.getByRole('img', { name: /Dengue risk by Bangladesh division/i })).toBeInTheDocument(),
   )

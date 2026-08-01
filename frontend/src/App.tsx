@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { api } from './api'
 import { AlertPanel } from './components/AlertPanel'
+import { ComparisonWorkbench } from './components/ComparisonWorkbench'
 import { EBSWorkspace } from './components/EBSWorkspace'
 import { EBSSignalRegistry } from './components/EBSSignalRegistry'
 import { LocationTable } from './components/LocationTable'
@@ -54,6 +55,7 @@ export default function App() {
           <a className="active" href="#dashboard">Dashboard</a>
           <a href="#surveillance">Surveillance</a>
           <a href="#alerts">Alerts</a>
+          <a href="#comparison">Compare</a>
           <a href="#ebs">EBS workflow</a>
           <a href="#ebs-registry">Signal registry</a>
         </nav>
@@ -80,9 +82,10 @@ export default function App() {
           <>
             <SummaryCards summary={selectedSummary} alert={alert} />
             <div className="dashboard-grid" id="surveillance">
-              <TrendChart records={trend} />
-              <AlertPanel alert={alert} />
+              <TrendChart records={trend} alert={alert} />
+              <div id="alerts"><AlertPanel alert={alert} /></div>
             </div>
+            <ComparisonWorkbench locations={locations} primaryCode={selected} primaryRecords={trend} />
             <div className="geo-grid">
               <RiskMap items={overview} selected={selected} onSelect={setSelected} />
               <LocationTable items={overview} selected={selected} onSelect={setSelected} />

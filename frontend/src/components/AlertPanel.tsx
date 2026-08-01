@@ -17,6 +17,10 @@ export function AlertPanel({ alert }: { alert?: Alert }) {
             <span>Model confidence heuristic</span>
             <strong>{Math.round(alert.confidence * 100)}%</strong>
           </div>
+          <div className="forecast-strip">
+            <div><span>Next-week outlook</span><strong>{Math.round(alert.predicted_cases).toLocaleString()}</strong></div>
+            <div><span>Four-week baseline</span><strong>{Math.round(alert.expected_cases).toLocaleString()}</strong></div>
+          </div>
           <div>
             <h3>Why this status?</h3>
             <ul className="reason-list">
@@ -30,9 +34,9 @@ export function AlertPanel({ alert }: { alert?: Alert }) {
             </ol>
           </div>
           <p className="disclaimer">Practice threshold only. Verify signals before operational action.</p>
+          <a className="response-link" href="#ebs">Open response workflow →</a>
         </>
       ) : <p className="empty-state">No alert is available for this location.</p>}
     </aside>
   )
 }
-
