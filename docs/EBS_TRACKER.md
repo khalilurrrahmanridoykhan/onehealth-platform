@@ -94,6 +94,24 @@ Responders can assign or update an officer, due date, recommended actions and re
 
 External email, SMS or WhatsApp delivery is intentionally not enabled by default. It should be added only after an approved provider, recipient policy, message template, delivery audit and protected-data review are configured.
 
+## Demonstration operations dataset
+
+The repository includes ten synthetic, clearly labelled `DEMO-EBS-*` training signals. Together they demonstrate closed, completed, overdue, due-today, due-soon, on-track, on-hold, unassigned, low-risk, high-risk and critical workflows across all eight Bangladesh divisions. They contain no patient or personally identifiable information.
+
+Preview the records without writing:
+
+```bash
+python scripts/seed_ebs_demo.py
+```
+
+Create only records that do not already exist:
+
+```bash
+python scripts/seed_ebs_demo.py --commit
+```
+
+The command checks existing signal IDs and skips them, making repeated deployments safe. Demonstration records must remain visibly labelled and must never be presented as real surveillance events.
+
 Registry endpoints require an authenticated Viewer or higher and are also protected by `ONEHEALTH_EBS_READS_ENABLED=false`. Tracker writes require a Responder or Admin plus the independent write switch. Enabling either flag does not expose DHIS2 credentials to the browser; all DHIS2 requests remain server-side. See [Authentication and Roles](AUTHENTICATION.md).
 
 ## Safety boundaries

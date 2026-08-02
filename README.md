@@ -176,6 +176,7 @@ The current dashboard includes:
 - Operational alert queue with officer assignment written to DHIS2 Tracker
 - Due-date monitoring with due-soon, due-today, overdue, and unassigned states
 - In-application operational notifications and downloadable CSV situation reports
+- Idempotent, non-identifiable EBS demonstration scenarios covering every queue state
 - Signed application sessions and Viewer/Analyst/Responder/Admin roles
 - Non-root container deployment baseline with automatic HTTPS
 - Responsive desktop and mobile layouts
