@@ -12,6 +12,7 @@ import type {
   EBSStage,
   EBSStageDraft,
   EBSStagePreview,
+  Disease,
   Location,
   OverviewItem,
   SurveillanceRecord,
@@ -44,15 +45,16 @@ async function postJson<T>(path: string, payload: unknown): Promise<T> {
 export const api = {
   login: (username: string, password: string) => postJson<{ access_token: string; user: { username: string; role: string } }>('/api/v1/auth/login', { username, password }),
   me: () => getJson<{ username: string; role: string }>('/api/v1/auth/me'),
-  locations: () => getJson<Location[]>('/api/v1/locations?disease_code=DENGUE'),
-  overview: () => getJson<OverviewItem[]>('/api/v1/overview/DENGUE'),
-  trend: (locationCode: string) =>
+  diseases: () => getJson<Disease[]>('/api/v1/diseases'),
+  locations: (diseaseCode: string) => getJson<Location[]>(`/api/v1/locations?disease_code=${encodeURIComponent(diseaseCode)}`),
+  overview: (diseaseCode: string) => getJson<OverviewItem[]>(`/api/v1/overview/${encodeURIComponent(diseaseCode)}`),
+  trend: (diseaseCode: string, locationCode: string) =>
     getJson<SurveillanceRecord[]>(
-      `/api/v1/trends/DENGUE?location_code=${encodeURIComponent(locationCode)}`,
+      `/api/v1/trends/${encodeURIComponent(diseaseCode)}?location_code=${encodeURIComponent(locationCode)}`,
     ),
-  alert: (locationCode: string) =>
+  alert: (diseaseCode: string, locationCode: string) =>
     getJson<Alert>(
-      `/api/v1/alerts/DENGUE/latest?location_code=${encodeURIComponent(locationCode)}`,
+      `/api/v1/alerts/${encodeURIComponent(diseaseCode)}/latest?location_code=${encodeURIComponent(locationCode)}`,
     ),
   ebsSchema: () => getJson<{ stages: EBSStage[] }>('/api/v1/ebs/schema'),
   previewSignal: (signal: EBSSignalDraft) =>

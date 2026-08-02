@@ -6,6 +6,7 @@ import { api } from '../api'
 import type { Location, SurveillanceRecord } from '../types'
 
 interface Props {
+  diseaseCode: string
   locations: Location[]
   primaryCode: string
   primaryRecords: SurveillanceRecord[]
@@ -13,7 +14,7 @@ interface Props {
 
 const number = new Intl.NumberFormat('en-US')
 
-export function ComparisonWorkbench({ locations, primaryCode, primaryRecords }: Props) {
+export function ComparisonWorkbench({ diseaseCode, locations, primaryCode, primaryRecords }: Props) {
   const alternatives = locations.filter((location) => location.code !== primaryCode)
   const [comparisonCode, setComparisonCode] = useState('')
   const [comparisonRecords, setComparisonRecords] = useState<SurveillanceRecord[]>([])
@@ -28,8 +29,8 @@ export function ComparisonWorkbench({ locations, primaryCode, primaryRecords }: 
   useEffect(() => {
     if (!comparisonCode) return
     setError(undefined)
-    api.trend(comparisonCode).then(setComparisonRecords).catch((reason: Error) => setError(reason.message))
-  }, [comparisonCode])
+    api.trend(diseaseCode, comparisonCode).then(setComparisonRecords).catch((reason: Error) => setError(reason.message))
+  }, [diseaseCode, comparisonCode])
 
   const data = useMemo(() => {
     const primary = primaryRecords.slice(-windowSize)

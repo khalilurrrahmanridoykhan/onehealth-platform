@@ -30,16 +30,28 @@ def generate_latest_alert(
 
     if risk_level == "LOW":
         reasons = (f"Observed cases are {abs(percent_change):.1f}% {'below' if percent_change < 0 else 'above'} the 4-week baseline.",)
-        actions = ("Continue routine weekly surveillance.",)
+        actions = (
+            "Continue routine measles surveillance and review MR vaccination coverage."
+            if current.disease_code == "MEASLES"
+            else "Continue routine weekly surveillance.",
+        )
     else:
         reasons = (
             f"Observed cases are {percent_change:.1f}% above the 4-week baseline.",
             f"The alert threshold for {risk_level.lower()} risk was exceeded.",
         )
         actions = (
-            "Verify the signal with the responsible surveillance officer.",
-            "Review hospital capacity and laboratory reporting.",
-            "Assess whether a field investigation is required.",
+            (
+                "Verify suspected cases and reporting completeness with the surveillance officer.",
+                "Confirm specimen collection and laboratory linkage for suspected measles cases.",
+                "Review MR vaccination coverage and assess the need for outbreak-response immunization.",
+            )
+            if current.disease_code == "MEASLES"
+            else (
+                "Verify the signal with the responsible surveillance officer.",
+                "Review hospital capacity and laboratory reporting.",
+                "Assess whether a field investigation is required.",
+            )
         )
 
     return AlertResult(
@@ -54,4 +66,3 @@ def generate_latest_alert(
         reasons=reasons,
         recommended_actions=actions,
     )
-

@@ -31,6 +31,7 @@ export ONEHEALTH_BACKEND=dhis2
 export DHIS2_BASE_URL=https://your-dhis2.example
 export DHIS2_API_TOKEN=your-token
 export DHIS2_MAPPING_PATH=dhis2/mappings/dengue.json
+export DHIS2_MAPPING_PATHS=dhis2/mappings/dengue.json,dhis2/mappings/measles.json
 ```
 
 Never commit `.env`, access tokens, passwords, or production organization-unit UIDs that should remain private.
@@ -58,6 +59,8 @@ Metadata object UIDs in this project are stable:
 | Weekly dengue dataset | `OhDngWeek01` |
 | Division dengue admitted-cases data element | `OhDngCase01` |
 | National reported dengue-cases data element | `OhDngNat001` |
+| Weekly measles dataset | `OhMslWeek01` |
+| National measles suspected-cases data element | `OhMslCase01` |
 
 National and division observations use separate data elements. This prevents
 DHIS2 from adding an already aggregated national report to its division
@@ -107,6 +110,24 @@ python scripts/sync_dhis2.py --commit
 ```
 
 The client uses `CREATE_AND_UPDATE`, allowing a corrected source value to update an existing data value. Duplicate disease/location/period records within one local input are rejected before network submission. Partial national weeks are excluded. The current division input consists of source-published weekly aggregates and is treated as complete.
+
+## Import and synchronize measles data
+
+Import the national Measles aggregate metadata:
+
+```bash
+python scripts/import_dhis2_metadata.py dhis2/metadata/measles_aggregate.json --dry-run
+python scripts/import_dhis2_metadata.py dhis2/metadata/measles_aggregate.json --commit
+```
+
+Then validate and synchronize the complete national weeks:
+
+```bash
+python scripts/sync_dhis2.py --data data/processed/measles_weekly.csv --mapping dhis2/mappings/measles.json --dry-run
+python scripts/sync_dhis2.py --data data/processed/measles_weekly.csv --mapping dhis2/mappings/measles.json --commit
+```
+
+The Measles mapping intentionally contains only `BD`. Division-level data will be added only when an authoritative and structurally reliable source is available.
 
 ## Read through the OneHealth API
 

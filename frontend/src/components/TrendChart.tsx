@@ -9,7 +9,7 @@ import {
 } from 'recharts'
 import type { Alert, SurveillanceRecord } from '../types'
 
-export function TrendChart({ records, alert }: { records: SurveillanceRecord[]; alert?: Alert }) {
+export function TrendChart({ records, alert, diseaseName }: { records: SurveillanceRecord[]; alert?: Alert; diseaseName: string }) {
   const data: Array<{ period: string; cases: number | null; forecast: number | null; baseline: number | null }> = records.map((record) => ({
     period: record.period_label.replace(/^\d{4}-/, ''),
     cases: record.cases,
@@ -35,7 +35,7 @@ export function TrendChart({ records, alert }: { records: SurveillanceRecord[]; 
         </div>
         <span className="source-label">DGHS aggregate surveillance</span>
       </div>
-      <div className="chart-wrap" aria-label="Weekly dengue trend chart">
+      <div className="chart-wrap" aria-label={`Weekly ${diseaseName} trend chart`}>
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={data} margin={{ top: 12, right: 18, left: -12, bottom: 4 }}>
             <CartesianGrid strokeDasharray="4 5" vertical={false} stroke="#dce8e3" />

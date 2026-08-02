@@ -60,6 +60,25 @@ def test_overview_returns_national_then_eight_divisions(monkeypatch):
     assert {item["risk_level"] for item in overview} <= {"LOW", "MEDIUM", "HIGH"}
 
 
+def test_csv_backend_supports_multiple_diseases(monkeypatch):
+    root = api_module.DEFAULT_DATA_PATH.parents[1]
+    monkeypatch.setenv("ONEHEALTH_BACKEND", "csv")
+    monkeypatch.setenv(
+        "ONEHEALTH_DATA_PATHS",
+        f"{root / 'processed/dengue_weekly.csv'},{root / 'processed/measles_weekly.csv'}",
+    )
+
+    diseases = client.get("/api/v1/diseases")
+    trend = client.get("/api/v1/trends/MEASLES?location_code=BD")
+    alert = client.get("/api/v1/alerts/MEASLES/latest?location_code=BD")
+
+    assert {item["code"] for item in diseases.json()} == {"DENGUE", "MEASLES"}
+    assert trend.status_code == 200
+    assert len(trend.json()) == 8
+    assert alert.status_code == 200
+    assert "vaccination" in " ".join(alert.json()["recommended_actions"]).lower()
+
+
 def test_ebs_schema_and_signal_preview(monkeypatch):
     monkeypatch.setenv("ONEHEALTH_EBS_WRITES_ENABLED", "false")
     schema = client.get("/api/v1/ebs/schema")

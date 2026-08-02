@@ -111,15 +111,23 @@ def _data_path() -> Path:
     return Path(os.environ.get("ONEHEALTH_DATA_PATH", DEFAULT_DATA_PATH))
 
 
+def _configured_paths(name: str, fallback: Path) -> list[Path]:
+    value = os.environ.get(name, "").strip()
+    return (
+        [Path(item.strip()) for item in value.split(",") if item.strip()]
+        if value
+        else [fallback]
+    )
+
+
 def _records():
     backend = os.environ.get("ONEHEALTH_BACKEND", "csv").strip().lower()
     if backend == "dhis2":
         try:
             settings = DHIS2Settings.from_env()
-            mapping = DHIS2Mapping.from_path(settings.mapping_path)
             start_date = os.environ.get("DHIS2_START_DATE", "2020-01-01")
             end_date = os.environ.get("DHIS2_END_DATE", date.today().isoformat())
-            responses = []
+            records = []
             with DHIS2Client(
                 settings.base_url,
                 api_token=settings.api_token,
@@ -128,24 +136,26 @@ def _records():
                 verify_ssl=settings.verify_ssl,
                 timeout_seconds=settings.timeout_seconds,
             ) as client:
-                for location in mapping.locations.values():
-                    responses.append(
-                        client.get_data_values(
+                for mapping_path in _configured_paths(
+                    "DHIS2_MAPPING_PATHS", settings.mapping_path
+                ):
+                    mapping = DHIS2Mapping.from_path(mapping_path)
+                    for location in mapping.locations.values():
+                        response = client.get_data_values(
                             data_set=mapping.data_set_uid,
                             org_unit=location.uid,
                             start_date=start_date,
                             end_date=end_date,
                         )
-                    )
-            records = [
-                record
-                for response in responses
-                for record in records_from_dhis2(response, mapping)
-            ]
+                        records.extend(records_from_dhis2(response, mapping))
         except (ValueError, OSError, DHIS2APIError) as exc:
             raise HTTPException(status_code=503, detail=str(exc)) from exc
     elif backend == "csv":
-        records = load_surveillance_records(_data_path())
+        records = [
+            record
+            for path in _configured_paths("ONEHEALTH_DATA_PATHS", _data_path())
+            for record in load_surveillance_records(path)
+        ]
     else:
         raise HTTPException(
             status_code=503,

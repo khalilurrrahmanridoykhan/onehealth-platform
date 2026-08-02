@@ -1,0 +1,11 @@
+disease_code,disease_name,period_start,period_end,period_type,period_label,location_code,location_name,location_level,cases,deaths,population,incidence_per_100k,data_status,source_name,source_url,complete_period
+MEASLES,Measles,2026-03-30,2026-04-05,weekly,2026-W14,BD,Bangladesh,national,3393,,,,observed,DGHS Bangladesh measles press releases,https://dghs.gov.bd/pages/press-releases/,False
+MEASLES,Measles,2026-04-06,2026-04-12,weekly,2026-W15,BD,Bangladesh,national,8286,,,,observed,DGHS Bangladesh measles press releases,https://dghs.gov.bd/pages/press-releases/,True
+MEASLES,Measles,2026-04-13,2026-04-19,weekly,2026-W16,BD,Bangladesh,national,7953,,,,observed,DGHS Bangladesh measles press releases,https://dghs.gov.bd/pages/press-releases/,True
+MEASLES,Measles,2026-04-20,2026-04-26,weekly,2026-W17,BD,Bangladesh,national,8422,,,,observed,DGHS Bangladesh measles press releases,https://dghs.gov.bd/pages/press-releases/,True
+MEASLES,Measles,2026-04-27,2026-05-03,weekly,2026-W18,BD,Bangladesh,national,8463,,,,observed,DGHS Bangladesh measles press releases,https://dghs.gov.bd/pages/press-releases/,True
+MEASLES,Measles,2026-05-04,2026-05-10,weekly,2026-W19,BD,Bangladesh,national,8668,,,,observed,DGHS Bangladesh measles press releases,https://dghs.gov.bd/pages/press-releases/,True
+MEASLES,Measles,2026-05-11,2026-05-17,weekly,2026-W20,BD,Bangladesh,national,8725,,,,observed,DGHS Bangladesh measles press releases,https://dghs.gov.bd/pages/press-releases/,True
+MEASLES,Measles,2026-05-18,2026-05-24,weekly,2026-W21,BD,Bangladesh,national,8901,,,,observed,DGHS Bangladesh measles press releases,https://dghs.gov.bd/pages/press-releases/,True
+MEASLES,Measles,2026-05-25,2026-05-31,weekly,2026-W22,BD,Bangladesh,national,7123,,,,observed,DGHS Bangladesh measles press releases,https://dghs.gov.bd/pages/press-releases/,True
+MEASLES,Measles,2026-06-01,2026-06-07,weekly,2026-W23,BD,Bangladesh,national,2426,,,,observed,DGHS Bangladesh measles press releases,https://dghs.gov.bd/pages/press-releases/,False

@@ -11,6 +11,7 @@ interface DivisionProperties {
 interface Props {
   items: OverviewItem[]
   selected: string
+  diseaseName: string
   onSelect: (code: string) => void
 }
 
@@ -32,7 +33,7 @@ const RISK_COLOR: Record<RiskLevel | 'UNKNOWN', string> = {
   UNKNOWN: '#d7e2de',
 }
 
-export function RiskMap({ items, selected, onSelect }: Props) {
+export function RiskMap({ items, selected, diseaseName, onSelect }: Props) {
   const [geoData, setGeoData] = useState<FeatureCollection<Geometry, DivisionProperties>>()
   const [layer, setLayer] = useState<'risk' | 'cases' | 'deviation'>('risk')
   const [zoom, setZoom] = useState(1)
@@ -80,7 +81,7 @@ export function RiskMap({ items, selected, onSelect }: Props) {
         <div className="map-controls"><label className="map-layer">Map layer<select value={layer} onChange={(event) => setLayer(event.target.value as typeof layer)}><option value="risk">Alert risk</option><option value="cases">Latest cases</option><option value="deviation">Baseline deviation</option></select></label><div className="map-tool-buttons" aria-label="Map display controls"><button type="button" onClick={() => setZoom((value) => Math.min(1.8, value + .2))} aria-label="Zoom in">+</button><button type="button" onClick={() => setZoom((value) => Math.max(1, value - .2))} aria-label="Zoom out">−</button><button type="button" className={showLabels ? 'active' : ''} onClick={() => setShowLabels((value) => !value)} aria-label="Toggle division labels">Aa</button><button type="button" onClick={() => { setZoom(1); setShowLabels(true) }} aria-label="Reset map">Reset</button></div></div>
       </div>
       {!geoData || !map ? <div className="map-loading">Loading boundaries…</div> : (
-        <svg className="risk-map" viewBox="0 0 500 455" role="img" aria-label="Dengue risk by Bangladesh division">
+        <svg className="risk-map" viewBox="0 0 500 455" role="img" aria-label={`${diseaseName} risk by Bangladesh division`}>
           <rect className="map-ocean" width="500" height="455" rx="14" />
           <g transform={`translate(250 227.5) scale(${zoom}) translate(-250 -227.5)`}>
           {geoData.features.map((feature) => {
@@ -94,12 +95,12 @@ export function RiskMap({ items, selected, onSelect }: Props) {
                   d={map.path(feature) ?? undefined}
                   fill={fillFor(summary)}
                   className={selected === locationCode ? 'map-shape selected' : 'map-shape'}
-                  onClick={() => onSelect(locationCode)}
-                  tabIndex={0}
-                  role="button"
+                  onClick={() => { if (summary) onSelect(locationCode) }}
+                  tabIndex={summary ? 0 : -1}
+                  role={summary ? 'button' : 'img'}
                   aria-label={`${summary?.location_name ?? feature.properties.shapeName}: ${risk} risk`}
                   onKeyDown={(event) => {
-                    if (event.key === 'Enter' || event.key === ' ') onSelect(locationCode)
+                    if (summary && (event.key === 'Enter' || event.key === ' ')) onSelect(locationCode)
                   }}
                 >
                   <title>{summary?.location_name ?? feature.properties.shapeName}: {risk} risk, {summary?.latest_cases ?? 0} latest cases</title>

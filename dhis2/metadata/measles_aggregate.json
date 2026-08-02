@@ -1,0 +1,27 @@
+{
+  "dataElements": [
+    {
+      "id": "OhMslCase01",
+      "name": "OneHealth Measles weekly suspected cases",
+      "shortName": "OH Measles suspected",
+      "code": "OH_MEASLES_SUSPECTED_CASES",
+      "description": "Weekly national suspected measles cases derived from public DGHS Bangladesh daily press releases",
+      "domainType": "AGGREGATE",
+      "valueType": "INTEGER_ZERO_OR_POSITIVE",
+      "aggregationType": "SUM",
+      "zeroIsSignificant": true
+    }
+  ],
+  "dataSets": [
+    {
+      "id": "OhMslWeek01",
+      "name": "OneHealth Weekly Measles Surveillance",
+      "shortName": "OH Weekly Measles",
+      "code": "OH_WEEKLY_MEASLES",
+      "periodType": "Weekly",
+      "openFuturePeriods": 0,
+      "organisationUnits": [{ "id": "BdOrgUnit01" }],
+      "dataSetElements": [{ "dataElement": { "id": "OhMslCase01" } }]
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "diseaseCode": "MEASLES",
+  "diseaseName": "Measles",
+  "dataSetUid": "OhMslWeek01",
+  "casesDataElementUid": "OhMslCase01",
+  "locations": {
+    "BD": {
+      "uid": "BdOrgUnit01",
+      "name": "Bangladesh",
+      "level": "national"
+    }
+  }
+}

@@ -79,6 +79,7 @@ beforeEach(() => {
       tracked_entity_uid: 'Abcdef12345', org_unit_uid: 'BdDivDha001', signal_id: 'EBS-2026-0001',
       title: 'Unusual fever cluster', source: 'Community worker', created_at: '2026-08-01T10:00:00.000', updated_at: '2026-08-02T10:00:00.000',
     }] }
+    else if (url.includes('/diseases')) body = [{ code: 'DENGUE', name: 'Dengue' }, { code: 'MEASLES', name: 'Measles' }]
     else if (url.includes('/locations')) body = locations
     else if (url.includes('/overview')) body = overview
     else if (url.includes('/trends')) body = trend

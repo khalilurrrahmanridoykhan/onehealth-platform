@@ -1,5 +1,10 @@
 export type RiskLevel = 'LOW' | 'MEDIUM' | 'HIGH'
 
+export interface Disease {
+  code: string
+  name: string
+}
+
 export interface Location {
   code: string
   name: string
