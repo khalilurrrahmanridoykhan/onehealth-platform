@@ -15,19 +15,42 @@ An open-source disease-surveillance, early-warning, and response platform for Ba
 
 The target platform combines a customized public-health dashboard with DHIS2 as the health-data backend and independent services for ingestion, prediction, explainable alerts, and response recommendations.
 
-```text
-Research datasets and surveillance sources
-                   ↓
-       Validation and ingestion
-                   ↓
-       DHIS2 health-data backend
-                   ↓
- Integration and prediction services
-                   ↓
- Customized dashboard, alerts, and actions
+### Technical workflow
+
+```mermaid
+flowchart TD
+    A["<b>Research datasets and surveillance sources</b><br/>DGHS reports · CSV/PDF extracts · DHIS2 aggregate data<br/>Community and EBS signal reports"]
+    B["<b>Validation and ingestion</b><br/>Python 3.11 · reproducible import scripts<br/>Schema, completeness, provenance and quality checks"]
+    C["<b>DHIS2 health-data backend</b><br/>DHIS2 Core 2.42 · Web API · Aggregate Analytics · Tracker<br/>PostgreSQL 16 + PostGIS · metadata · users · audit history"]
+    D["<b>Integration and prediction services</b><br/>FastAPI · Uvicorn · HTTPX · DHIS2 API client<br/>Weekly baselines · risk scoring · explainable alert rules"]
+    E["<b>Customized dashboard, alerts, and actions</b><br/>React 19 · TypeScript · Vite<br/>Recharts · D3 Geo · EBS workflows · situation reports"]
+    F["<b>Secure deployment</b><br/>Docker Compose · Nginx · Caddy<br/>HTTPS · role-based access · protected DHIS2 writes"]
+
+    A -->|raw observations and event signals| B
+    B -->|validated aggregate values and Tracker payloads| C
+    C -->|authenticated DHIS2 Web API| D
+    D -->|trends, predictions, alerts and recommendations| E
+    E -->|verified assignments, response events and closure| C
+    F -. hosts and protects .-> C
+    F -. hosts and protects .-> D
+    F -. hosts and protects .-> E
+
+    classDef source fill:#eff6ff,stroke:#2563eb,color:#172554,stroke-width:2px;
+    classDef process fill:#ecfdf5,stroke:#059669,color:#022c22,stroke-width:2px;
+    classDef backend fill:#fff7ed,stroke:#ea580c,color:#431407,stroke-width:2px;
+    classDef delivery fill:#f5f3ff,stroke:#7c3aed,color:#2e1065,stroke-width:2px;
+    classDef infrastructure fill:#f8fafc,stroke:#475569,color:#0f172a,stroke-width:2px,stroke-dasharray:5 3;
+
+    class A source;
+    class B,D process;
+    class C backend;
+    class E delivery;
+    class F infrastructure;
 ```
 
-The DHIS2 integration foundation and customized frontend are implemented. Live-instance validation remains on the roadmap.
+The primary path moves validated surveillance data into DHIS2, uses independent services for analysis and decision support, and presents the results through the customized application. Operational updates flow back to DHIS2 Tracker so that assignments, response events, closure, permissions, and audit history remain in the health-data system of record.
+
+The DHIS2 integration foundation, customized frontend, and test-instance deployment are implemented. Formal operational validation remains on the roadmap.
 
 ## DHIS2-backed architecture in practice
 
