@@ -3,11 +3,52 @@
   "diseaseName": "Measles",
   "dataSetUid": "OhMslWeek01",
   "casesDataElementUid": "OhMslCase01",
+  "nationalCasesDataElementUid": "OhMslNat001",
   "locations": {
     "BD": {
       "uid": "BdOrgUnit01",
       "name": "Bangladesh",
       "level": "national"
+    },
+    "BD-BAR": {
+      "uid": "BdDivBar001",
+      "name": "Barishal",
+      "level": "division"
+    },
+    "BD-CTG": {
+      "uid": "BdDivCtg001",
+      "name": "Chattogram",
+      "level": "division"
+    },
+    "BD-DHA": {
+      "uid": "BdDivDha001",
+      "name": "Dhaka",
+      "level": "division"
+    },
+    "BD-KHU": {
+      "uid": "BdDivKhu001",
+      "name": "Khulna",
+      "level": "division"
+    },
+    "BD-MYM": {
+      "uid": "BdDivMym001",
+      "name": "Mymensingh",
+      "level": "division"
+    },
+    "BD-RAJ": {
+      "uid": "BdDivRaj001",
+      "name": "Rajshahi",
+      "level": "division"
+    },
+    "BD-RAN": {
+      "uid": "BdDivRan001",
+      "name": "Rangpur",
+      "level": "division"
+    },
+    "BD-SYL": {
+      "uid": "BdDivSyl001",
+      "name": "Sylhet",
+      "level": "division"
     }
   }
 }

@@ -60,7 +60,8 @@ Metadata object UIDs in this project are stable:
 | Division dengue admitted-cases data element | `OhDngCase01` |
 | National reported dengue-cases data element | `OhDngNat001` |
 | Weekly measles dataset | `OhMslWeek01` |
-| National measles suspected-cases data element | `OhMslCase01` |
+| Division measles suspected-cases data element | `OhMslCase01` |
+| National measles suspected-cases data element | `OhMslNat001` |
 
 National and division observations use separate data elements. This prevents
 DHIS2 from adding an already aggregated national report to its division
@@ -127,7 +128,7 @@ python scripts/sync_dhis2.py --data data/processed/measles_weekly.csv --mapping 
 python scripts/sync_dhis2.py --data data/processed/measles_weekly.csv --mapping dhis2/mappings/measles.json --commit
 ```
 
-The Measles mapping intentionally contains only `BD`. Division-level data will be added only when an authoritative and structurally reliable source is available.
+The Measles mapping contains Bangladesh and all eight divisions, but only source-available, seven-day-complete division weeks are synchronized. National and division observations use separate data elements to prevent double-counting during organisation-unit rollups. Missing divisions are not estimated.
 
 ## Read through the OneHealth API
 

@@ -2,9 +2,20 @@
   "dataElements": [
     {
       "id": "OhMslCase01",
-      "name": "OneHealth Measles weekly suspected cases",
-      "shortName": "OH Measles suspected",
-      "code": "OH_MEASLES_SUSPECTED_CASES",
+      "name": "OneHealth Measles division weekly suspected cases",
+      "shortName": "OH Measles division",
+      "code": "OH_MEASLES_DIVISION_SUSPECTED_CASES",
+      "description": "Weekly division suspected measles cases derived from validated rows in public DGHS Bangladesh daily press releases",
+      "domainType": "AGGREGATE",
+      "valueType": "INTEGER_ZERO_OR_POSITIVE",
+      "aggregationType": "SUM",
+      "zeroIsSignificant": true
+    },
+    {
+      "id": "OhMslNat001",
+      "name": "OneHealth Measles national weekly suspected cases",
+      "shortName": "OH Measles national",
+      "code": "OH_MEASLES_NATIONAL_SUSPECTED_CASES",
       "description": "Weekly national suspected measles cases derived from public DGHS Bangladesh daily press releases",
       "domainType": "AGGREGATE",
       "valueType": "INTEGER_ZERO_OR_POSITIVE",
@@ -20,8 +31,17 @@
       "code": "OH_WEEKLY_MEASLES",
       "periodType": "Weekly",
       "openFuturePeriods": 0,
-      "organisationUnits": [{ "id": "BdOrgUnit01" }],
-      "dataSetElements": [{ "dataElement": { "id": "OhMslCase01" } }]
+      "organisationUnits": [
+        { "id": "BdOrgUnit01" }, { "id": "BdDivBar001" },
+        { "id": "BdDivCtg001" }, { "id": "BdDivDha001" },
+        { "id": "BdDivKhu001" }, { "id": "BdDivMym001" },
+        { "id": "BdDivRaj001" }, { "id": "BdDivRan001" },
+        { "id": "BdDivSyl001" }
+      ],
+      "dataSetElements": [
+        { "dataElement": { "id": "OhMslCase01" } },
+        { "dataElement": { "id": "OhMslNat001" } }
+      ]
     }
   ]
 }

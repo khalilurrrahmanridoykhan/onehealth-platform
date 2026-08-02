@@ -49,6 +49,10 @@ export function RiskMap({ items, selected, diseaseName, onSelect }: Props) {
       .then((data: FeatureCollection<Geometry, DivisionProperties>) => setGeoData(data))
   }, [])
 
+  useEffect(() => {
+    setLayer(diseaseName === 'Measles' ? 'cases' : 'risk')
+  }, [diseaseName])
+
   const map = useMemo(() => {
     if (!geoData) return null
     const projection = geoMercator().fitSize([500, 455], geoData)
@@ -113,7 +117,7 @@ export function RiskMap({ items, selected, diseaseName, onSelect }: Props) {
         </svg>
       )}
       <div className="map-footer">
-        <div className="map-legend"><span className="low" />Low <span className="medium" />Watch <span className="high" />High</div>
+        <div className="map-legend">{layer === 'cases' ? 'Case intensity · light to dark' : <><span className="low" />Low <span className="medium" />Watch <span className="high" />High</>}</div>
         <div className="map-selection"><span>Selected area</span><strong>{selectedSummary?.location_name ?? 'Select a division'}</strong><small>{selectedSummary ? `${selectedSummary.latest_cases.toLocaleString()} cases · ${selectedSummary.risk_level ?? 'Unknown'} risk` : 'Click a boundary to inspect'}</small></div>
       </div>
     </section>

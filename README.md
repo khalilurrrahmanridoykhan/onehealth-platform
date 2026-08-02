@@ -66,7 +66,7 @@ These examples are described in the official [DHIS2 One Health](https://dhis2.or
 - Aggregates observations into ISO epidemiological weeks
 - Produces a normalized surveillance dataset with source provenance
 - Includes national and eight-division dengue surveillance
-- Includes national weekly measles suspected-case surveillance
+- Includes national and quality-controlled division weekly measles suspected-case surveillance
 - Lets users switch disease programmes without leaving the customized dashboard
 - Detects partial reporting weeks and excludes them from alert calculations
 - Generates explainable alerts using a four-week historical baseline
@@ -90,7 +90,7 @@ These examples are described in the official [DHIS2 One Health](https://dhis2.or
 | Live DHIS2 instance validation | Implemented on the project test instance |
 | Customized React surveillance dashboard | Implemented with division map and EBS preview workspace |
 | EBS Tracker metadata and payload workflow | Implemented; live validation pending |
-| Measles integration | Implemented for national weekly surveillance; division data pending a reliable source |
+| Measles integration | Implemented nationally and for five divisions with complete weekly source coverage |
 | AWD/environmental-risk integration | Planned |
 | Operational validation | Not started |
 
@@ -134,10 +134,11 @@ Normalized output is written to `data/processed/dengue_weekly.csv`. Boundary wee
 ### Import measles data
 
 ```bash
-python scripts/import_measles.py /path/to/measles_national_summary.csv
+python scripts/import_measles.py /path/to/measles_national_summary.csv \
+  --division-source /path/to/measles_division_breakdown.csv
 ```
 
-The importer reads the aggregate DGHS daily suspected-case field, groups it into Monday–Sunday ISO weeks, and writes `data/processed/measles_weekly.csv`. It marks boundary weeks as incomplete so they remain visible for audit but are excluded from alert calculations. The current source supports a national series only; the platform does not invent division values.
+The importer reads aggregate DGHS daily suspected-case fields, groups them into Monday–Sunday ISO weeks, and writes `data/processed/measles_weekly.csv`. It rejects PDF-parser contamination when a purported division value exceeds its corresponding national daily total. Partial weeks remain visible for audit but are excluded from DHIS2 synchronization and alert calculations. The current source provides complete weekly coverage for Dhaka, Chattogram, Khulna, Rajshahi, and Rangpur; unavailable divisions remain explicitly unreported rather than being estimated.
 
 ### Reproduce the current output
 
@@ -271,11 +272,12 @@ The included demonstration dataset is derived from publicly accessible, aggregat
 The committed measles series is also public, aggregate DGHS reporting and contains no patient identifiers.
 
 - Source: DGHS Bangladesh measles national situation summaries
-- Geographic scope: Bangladesh, national aggregate
+- Geographic scope: Bangladesh national aggregate plus source-available division observations
 - Temporal scope: 2 April–2 June 2026
 - Data unit: daily suspected measles cases reported in the previous 24 hours
 - Transformation: daily counts aggregated into Monday–Sunday ISO weeks
-- Completeness rule: only weeks containing all seven daily reports are used in trends and alerts
+- Quality rule: division rows exceeding the corresponding national daily value are rejected as parser contamination
+- Completeness rule: only weeks containing all seven daily reports are synchronized to DHIS2 and used in trends and alerts
 
 See the [data dictionary](docs/DATA_DICTIONARY.md) for variables, types, units, allowed values, and missing-value rules. See the [ethics statement](docs/ETHICS.md) for the current review basis and requirements for future operational data.
 
@@ -289,7 +291,7 @@ Do not commit credentials, protected health information, or identifiable patient
 4. Deploy the baseline to a controlled HTTPS test environment.
 5. Validate DHIS2 metadata, reads, previews, and guarded writes on the test instance.
 6. Add external identity-provider integration for production environments.
-7. Add reliable division-level measles observations when an authoritative source is available.
+7. Extend Measles coverage to the remaining divisions and districts when complete authoritative series are available.
 8. Integrate AWD, rainfall, and flood-risk indicators.
 9. Validate alert methods with public-health experts before operational use.
 
