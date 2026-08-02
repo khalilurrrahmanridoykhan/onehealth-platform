@@ -130,6 +130,30 @@ python scripts/sync_dhis2.py --data data/processed/measles_weekly.csv --mapping 
 
 The Measles mapping contains Bangladesh and all eight divisions, but only source-available, seven-day-complete division weeks are synchronized. National and division observations use separate data elements to prevent double-counting during organisation-unit rollups. Missing divisions are not estimated.
 
+## Install the native Measles dashboard
+
+The native dashboard contains national summary values, a weekly trend, latest
+division comparison, multi-week division composition, a surveillance table,
+and a thematic division map.
+
+First validate and import division boundary geometry from the GeoJSON used by
+the custom dashboard:
+
+```bash
+python scripts/import_dhis2_geometry.py frontend/public/bangladesh_divisions.geojson --dry-run
+python scripts/import_dhis2_geometry.py frontend/public/bangladesh_divisions.geojson --commit
+```
+
+Then validate and import the dashboard metadata:
+
+```bash
+python scripts/import_dhis2_metadata.py dhis2/metadata/measles_dashboard.json --dry-run
+python scripts/import_dhis2_metadata.py dhis2/metadata/measles_dashboard.json --commit
+```
+
+Run DHIS2 analytics table generation after importing new aggregate values or
+geometry so the Maps and Dashboard apps can query the latest analytical data.
+
 ## Read through the OneHealth API
 
 With `ONEHEALTH_BACKEND=dhis2`, existing endpoints read aggregate values from DHIS2 instead of the CSV backend:

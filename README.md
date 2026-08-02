@@ -73,6 +73,7 @@ These examples are described in the official [DHIS2 One Health](https://dhis2.or
 - Exposes FastAPI endpoints for diseases, trends, and latest alerts
 - Previews, validates, submits, and reads DHIS2 aggregate surveillance payloads
 - Displays an interactive Bangladesh division risk map
+- Includes native DHIS2 Dengue and Measles analytical dashboards
 - Previews EBS signal enrollment payloads while DHIS2 writes remain disabled by default
 - Includes automated tests and continuous integration
 
@@ -91,6 +92,7 @@ These examples are described in the official [DHIS2 One Health](https://dhis2.or
 | Customized React surveillance dashboard | Implemented with division map and EBS preview workspace |
 | EBS Tracker metadata and payload workflow | Implemented; live validation pending |
 | Measles integration | Implemented nationally and for five divisions with complete weekly source coverage |
+| Native DHIS2 Measles dashboard | Implemented with KPIs, trends, division comparisons, table, and thematic map |
 | AWD/environmental-risk integration | Planned |
 | Operational validation | Not started |
 

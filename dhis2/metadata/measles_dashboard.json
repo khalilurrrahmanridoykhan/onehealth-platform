@@ -1,0 +1,960 @@
+{
+  "visualizations": [
+    {
+      "id": "OhMslTrend1",
+      "name": "OneHealth Measles Weekly Trend",
+      "description": "National weekly suspected measles cases, complete weeks 15\u201322 of 2026",
+      "type": "LINE",
+      "publicAccess": "rw------",
+      "showData": true,
+      "hideEmptyRows": true,
+      "hideEmptyColumns": true,
+      "showDimensionLabels": true,
+      "columns": [
+        {
+          "dimension": "dx",
+          "items": [
+            {
+              "id": "OhMslNat001",
+              "dimensionItemType": "DATA_ELEMENT"
+            }
+          ]
+        }
+      ],
+      "rows": [
+        {
+          "dimension": "pe",
+          "items": [
+            {
+              "id": "2026W15",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2026W16",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2026W17",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2026W18",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2026W19",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2026W20",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2026W21",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2026W22",
+              "dimensionItemType": "PERIOD"
+            }
+          ]
+        }
+      ],
+      "filters": [
+        {
+          "dimension": "ou",
+          "items": [
+            {
+              "id": "BdOrgUnit01",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            }
+          ]
+        }
+      ],
+      "dataDimensionItems": [
+        {
+          "dataDimensionItemType": "DATA_ELEMENT",
+          "dataElement": {
+            "id": "OhMslNat001"
+          }
+        }
+      ],
+      "organisationUnits": [
+        {
+          "id": "BdOrgUnit01"
+        }
+      ],
+      "periods": [
+        {
+          "id": "2026W15"
+        },
+        {
+          "id": "2026W16"
+        },
+        {
+          "id": "2026W17"
+        },
+        {
+          "id": "2026W18"
+        },
+        {
+          "id": "2026W19"
+        },
+        {
+          "id": "2026W20"
+        },
+        {
+          "id": "2026W21"
+        },
+        {
+          "id": "2026W22"
+        }
+      ],
+      "relativePeriods": {}
+    },
+    {
+      "id": "OhMslDiv001",
+      "name": "Measles Cases by Division \u2014 Week 22",
+      "description": "Source-available division suspected measles cases for week 22 of 2026",
+      "type": "COLUMN",
+      "publicAccess": "rw------",
+      "showData": true,
+      "hideEmptyRows": true,
+      "hideEmptyColumns": true,
+      "showDimensionLabels": true,
+      "columns": [
+        {
+          "dimension": "ou",
+          "items": [
+            {
+              "id": "BdDivBar001",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            },
+            {
+              "id": "BdDivCtg001",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            },
+            {
+              "id": "BdDivDha001",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            },
+            {
+              "id": "BdDivKhu001",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            },
+            {
+              "id": "BdDivMym001",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            },
+            {
+              "id": "BdDivRaj001",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            },
+            {
+              "id": "BdDivRan001",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            },
+            {
+              "id": "BdDivSyl001",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            }
+          ]
+        }
+      ],
+      "rows": [
+        {
+          "dimension": "dx",
+          "items": [
+            {
+              "id": "OhMslCase01",
+              "dimensionItemType": "DATA_ELEMENT"
+            }
+          ]
+        }
+      ],
+      "filters": [
+        {
+          "dimension": "pe",
+          "items": [
+            {
+              "id": "2026W22",
+              "dimensionItemType": "PERIOD"
+            }
+          ]
+        }
+      ],
+      "dataDimensionItems": [
+        {
+          "dataDimensionItemType": "DATA_ELEMENT",
+          "dataElement": {
+            "id": "OhMslCase01"
+          }
+        }
+      ],
+      "organisationUnits": [
+        {
+          "id": "BdDivBar001"
+        },
+        {
+          "id": "BdDivCtg001"
+        },
+        {
+          "id": "BdDivDha001"
+        },
+        {
+          "id": "BdDivKhu001"
+        },
+        {
+          "id": "BdDivMym001"
+        },
+        {
+          "id": "BdDivRaj001"
+        },
+        {
+          "id": "BdDivRan001"
+        },
+        {
+          "id": "BdDivSyl001"
+        }
+      ],
+      "periods": [
+        {
+          "id": "2026W22"
+        }
+      ],
+      "relativePeriods": {}
+    },
+    {
+      "id": "OhMslKpi001",
+      "name": "Latest National Suspected Measles Cases",
+      "description": "National suspected measles cases for week 22 of 2026",
+      "type": "SINGLE_VALUE",
+      "publicAccess": "rw------",
+      "showData": true,
+      "hideEmptyRows": true,
+      "hideEmptyColumns": true,
+      "showDimensionLabels": true,
+      "columns": [
+        {
+          "dimension": "dx",
+          "items": [
+            {
+              "id": "OhMslNat001",
+              "dimensionItemType": "DATA_ELEMENT"
+            }
+          ]
+        }
+      ],
+      "rows": [],
+      "filters": [
+        {
+          "dimension": "pe",
+          "items": [
+            {
+              "id": "2026W22",
+              "dimensionItemType": "PERIOD"
+            }
+          ]
+        },
+        {
+          "dimension": "ou",
+          "items": [
+            {
+              "id": "BdOrgUnit01",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            }
+          ]
+        }
+      ],
+      "dataDimensionItems": [
+        {
+          "dataDimensionItemType": "DATA_ELEMENT",
+          "dataElement": {
+            "id": "OhMslNat001"
+          }
+        }
+      ],
+      "organisationUnits": [
+        {
+          "id": "BdOrgUnit01"
+        }
+      ],
+      "periods": [
+        {
+          "id": "2026W22"
+        }
+      ],
+      "relativePeriods": {}
+    },
+    {
+      "id": "OhMslYtd001",
+      "name": "National Suspected Measles Cases \u2014 Weeks 15\u201322",
+      "description": "Cumulative national suspected measles cases across complete weeks 15\u201322",
+      "type": "SINGLE_VALUE",
+      "publicAccess": "rw------",
+      "showData": true,
+      "hideEmptyRows": true,
+      "hideEmptyColumns": true,
+      "showDimensionLabels": true,
+      "columns": [
+        {
+          "dimension": "dx",
+          "items": [
+            {
+              "id": "OhMslNat001",
+              "dimensionItemType": "DATA_ELEMENT"
+            }
+          ]
+        }
+      ],
+      "rows": [],
+      "filters": [
+        {
+          "dimension": "pe",
+          "items": [
+            {
+              "id": "2026W15",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2026W16",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2026W17",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2026W18",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2026W19",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2026W20",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2026W21",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2026W22",
+              "dimensionItemType": "PERIOD"
+            }
+          ]
+        },
+        {
+          "dimension": "ou",
+          "items": [
+            {
+              "id": "BdOrgUnit01",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            }
+          ]
+        }
+      ],
+      "dataDimensionItems": [
+        {
+          "dataDimensionItemType": "DATA_ELEMENT",
+          "dataElement": {
+            "id": "OhMslNat001"
+          }
+        }
+      ],
+      "organisationUnits": [
+        {
+          "id": "BdOrgUnit01"
+        }
+      ],
+      "periods": [
+        {
+          "id": "2026W15"
+        },
+        {
+          "id": "2026W16"
+        },
+        {
+          "id": "2026W17"
+        },
+        {
+          "id": "2026W18"
+        },
+        {
+          "id": "2026W19"
+        },
+        {
+          "id": "2026W20"
+        },
+        {
+          "id": "2026W21"
+        },
+        {
+          "id": "2026W22"
+        }
+      ],
+      "relativePeriods": {}
+    },
+    {
+      "id": "OhMslStack1",
+      "name": "Division Measles Burden \u2014 Complete Reporting Weeks",
+      "description": "Weekly composition of suspected measles cases across source-available divisions",
+      "type": "STACKED_COLUMN",
+      "publicAccess": "rw------",
+      "showData": false,
+      "hideEmptyRows": true,
+      "hideEmptyColumns": true,
+      "showDimensionLabels": true,
+      "columns": [
+        {
+          "dimension": "ou",
+          "items": [
+            {
+              "id": "BdDivBar001",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            },
+            {
+              "id": "BdDivCtg001",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            },
+            {
+              "id": "BdDivDha001",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            },
+            {
+              "id": "BdDivKhu001",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            },
+            {
+              "id": "BdDivMym001",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            },
+            {
+              "id": "BdDivRaj001",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            },
+            {
+              "id": "BdDivRan001",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            },
+            {
+              "id": "BdDivSyl001",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            }
+          ]
+        }
+      ],
+      "rows": [
+        {
+          "dimension": "dx",
+          "items": [
+            {
+              "id": "OhMslCase01",
+              "dimensionItemType": "DATA_ELEMENT"
+            }
+          ]
+        },
+        {
+          "dimension": "pe",
+          "items": [
+            {
+              "id": "2026W15",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2026W16",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2026W17",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2026W18",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2026W19",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2026W20",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2026W21",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2026W22",
+              "dimensionItemType": "PERIOD"
+            }
+          ]
+        }
+      ],
+      "filters": [],
+      "dataDimensionItems": [
+        {
+          "dataDimensionItemType": "DATA_ELEMENT",
+          "dataElement": {
+            "id": "OhMslCase01"
+          }
+        }
+      ],
+      "organisationUnits": [
+        {
+          "id": "BdDivBar001"
+        },
+        {
+          "id": "BdDivCtg001"
+        },
+        {
+          "id": "BdDivDha001"
+        },
+        {
+          "id": "BdDivKhu001"
+        },
+        {
+          "id": "BdDivMym001"
+        },
+        {
+          "id": "BdDivRaj001"
+        },
+        {
+          "id": "BdDivRan001"
+        },
+        {
+          "id": "BdDivSyl001"
+        }
+      ],
+      "periods": [
+        {
+          "id": "2026W15"
+        },
+        {
+          "id": "2026W16"
+        },
+        {
+          "id": "2026W17"
+        },
+        {
+          "id": "2026W18"
+        },
+        {
+          "id": "2026W19"
+        },
+        {
+          "id": "2026W20"
+        },
+        {
+          "id": "2026W21"
+        },
+        {
+          "id": "2026W22"
+        }
+      ],
+      "relativePeriods": {}
+    },
+    {
+      "id": "OhMslTable1",
+      "name": "Measles Division Weekly Surveillance Table",
+      "description": "Auditable weekly division suspected measles case table",
+      "type": "PIVOT_TABLE",
+      "publicAccess": "rw------",
+      "showData": true,
+      "hideEmptyRows": true,
+      "hideEmptyColumns": true,
+      "showDimensionLabels": true,
+      "columns": [
+        {
+          "dimension": "pe",
+          "items": [
+            {
+              "id": "2026W15",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2026W16",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2026W17",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2026W18",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2026W19",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2026W20",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2026W21",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2026W22",
+              "dimensionItemType": "PERIOD"
+            }
+          ]
+        }
+      ],
+      "rows": [
+        {
+          "dimension": "ou",
+          "items": [
+            {
+              "id": "BdDivBar001",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            },
+            {
+              "id": "BdDivCtg001",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            },
+            {
+              "id": "BdDivDha001",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            },
+            {
+              "id": "BdDivKhu001",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            },
+            {
+              "id": "BdDivMym001",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            },
+            {
+              "id": "BdDivRaj001",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            },
+            {
+              "id": "BdDivRan001",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            },
+            {
+              "id": "BdDivSyl001",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            }
+          ]
+        },
+        {
+          "dimension": "dx",
+          "items": [
+            {
+              "id": "OhMslCase01",
+              "dimensionItemType": "DATA_ELEMENT"
+            }
+          ]
+        }
+      ],
+      "filters": [],
+      "dataDimensionItems": [
+        {
+          "dataDimensionItemType": "DATA_ELEMENT",
+          "dataElement": {
+            "id": "OhMslCase01"
+          }
+        }
+      ],
+      "organisationUnits": [
+        {
+          "id": "BdDivBar001"
+        },
+        {
+          "id": "BdDivCtg001"
+        },
+        {
+          "id": "BdDivDha001"
+        },
+        {
+          "id": "BdDivKhu001"
+        },
+        {
+          "id": "BdDivMym001"
+        },
+        {
+          "id": "BdDivRaj001"
+        },
+        {
+          "id": "BdDivRan001"
+        },
+        {
+          "id": "BdDivSyl001"
+        }
+      ],
+      "periods": [
+        {
+          "id": "2026W15"
+        },
+        {
+          "id": "2026W16"
+        },
+        {
+          "id": "2026W17"
+        },
+        {
+          "id": "2026W18"
+        },
+        {
+          "id": "2026W19"
+        },
+        {
+          "id": "2026W20"
+        },
+        {
+          "id": "2026W21"
+        },
+        {
+          "id": "2026W22"
+        }
+      ],
+      "relativePeriods": {}
+    }
+  ],
+  "maps": [
+    {
+      "id": "OhMslMap001",
+      "name": "Measles Division Case Map \u2014 Week 22",
+      "description": "Native DHIS2 thematic map of source-available division measles cases",
+      "publicAccess": "rw------",
+      "basemap": "osmLight",
+      "zoom": 6,
+      "latitude": 23.7,
+      "longitude": 90.35,
+      "mapViews": [
+        {
+          "layer": "thematic1",
+          "name": "Measles suspected cases \u2014 Week 22",
+          "columns": [
+            {
+              "dimension": "dx",
+              "items": [
+                {
+                  "id": "OhMslCase01",
+                  "dimensionItemType": "DATA_ELEMENT"
+                }
+              ]
+            }
+          ],
+          "rows": [
+            {
+              "dimension": "ou",
+              "items": [
+                {
+                  "id": "BdDivBar001",
+                  "dimensionItemType": "ORGANISATION_UNIT"
+                },
+                {
+                  "id": "BdDivCtg001",
+                  "dimensionItemType": "ORGANISATION_UNIT"
+                },
+                {
+                  "id": "BdDivDha001",
+                  "dimensionItemType": "ORGANISATION_UNIT"
+                },
+                {
+                  "id": "BdDivKhu001",
+                  "dimensionItemType": "ORGANISATION_UNIT"
+                },
+                {
+                  "id": "BdDivMym001",
+                  "dimensionItemType": "ORGANISATION_UNIT"
+                },
+                {
+                  "id": "BdDivRaj001",
+                  "dimensionItemType": "ORGANISATION_UNIT"
+                },
+                {
+                  "id": "BdDivRan001",
+                  "dimensionItemType": "ORGANISATION_UNIT"
+                },
+                {
+                  "id": "BdDivSyl001",
+                  "dimensionItemType": "ORGANISATION_UNIT"
+                }
+              ]
+            }
+          ],
+          "filters": [
+            {
+              "dimension": "pe",
+              "items": [
+                {
+                  "id": "2026W22",
+                  "dimensionItemType": "PERIOD"
+                }
+              ]
+            }
+          ],
+          "dataDimensionItems": [
+            {
+              "dataDimensionItemType": "DATA_ELEMENT",
+              "dataElement": {
+                "id": "OhMslCase01"
+              }
+            }
+          ],
+          "organisationUnits": [
+            {
+              "id": "BdDivBar001"
+            },
+            {
+              "id": "BdDivCtg001"
+            },
+            {
+              "id": "BdDivDha001"
+            },
+            {
+              "id": "BdDivKhu001"
+            },
+            {
+              "id": "BdDivMym001"
+            },
+            {
+              "id": "BdDivRaj001"
+            },
+            {
+              "id": "BdDivRan001"
+            },
+            {
+              "id": "BdDivSyl001"
+            }
+          ],
+          "periods": [
+            {
+              "id": "2026W22"
+            }
+          ],
+          "classes": 5,
+          "method": 2,
+          "colorLow": "fff5eb",
+          "colorHigh": "b42318",
+          "opacity": 0.85,
+          "labels": true
+        }
+      ]
+    }
+  ],
+  "dashboards": [
+    {
+      "id": "OhMslDash01",
+      "name": "OneHealth Measles Surveillance",
+      "description": "Native DHIS2 Measles surveillance dashboard for Bangladesh",
+      "publicAccess": "rw------",
+      "dashboardItems": [
+        {
+          "id": "OhMslItem01",
+          "i": "OhMslItem01",
+          "type": "VISUALIZATION",
+          "x": 0,
+          "y": 0,
+          "w": 30,
+          "h": 8,
+          "width": 30,
+          "height": 8,
+          "minH": 6,
+          "visualization": {
+            "id": "OhMslKpi001"
+          }
+        },
+        {
+          "id": "OhMslItem02",
+          "i": "OhMslItem02",
+          "type": "VISUALIZATION",
+          "x": 30,
+          "y": 0,
+          "w": 30,
+          "h": 8,
+          "width": 30,
+          "height": 8,
+          "minH": 6,
+          "visualization": {
+            "id": "OhMslYtd001"
+          }
+        },
+        {
+          "id": "OhMslItem03",
+          "i": "OhMslItem03",
+          "type": "VISUALIZATION",
+          "x": 0,
+          "y": 8,
+          "w": 30,
+          "h": 14,
+          "width": 30,
+          "height": 14,
+          "minH": 8,
+          "visualization": {
+            "id": "OhMslTrend1"
+          }
+        },
+        {
+          "id": "OhMslItem04",
+          "i": "OhMslItem04",
+          "type": "VISUALIZATION",
+          "x": 30,
+          "y": 8,
+          "w": 30,
+          "h": 14,
+          "width": 30,
+          "height": 14,
+          "minH": 8,
+          "visualization": {
+            "id": "OhMslDiv001"
+          }
+        },
+        {
+          "id": "OhMslItem05",
+          "i": "OhMslItem05",
+          "type": "MAP",
+          "x": 0,
+          "y": 22,
+          "w": 30,
+          "h": 18,
+          "width": 30,
+          "height": 18,
+          "minH": 8,
+          "map": {
+            "id": "OhMslMap001"
+          }
+        },
+        {
+          "id": "OhMslItem06",
+          "i": "OhMslItem06",
+          "type": "VISUALIZATION",
+          "x": 30,
+          "y": 22,
+          "w": 30,
+          "h": 18,
+          "width": 30,
+          "height": 18,
+          "minH": 8,
+          "visualization": {
+            "id": "OhMslStack1"
+          }
+        },
+        {
+          "id": "OhMslItem07",
+          "i": "OhMslItem07",
+          "type": "VISUALIZATION",
+          "x": 0,
+          "y": 40,
+          "w": 60,
+          "h": 14,
+          "width": 60,
+          "height": 14,
+          "minH": 8,
+          "visualization": {
+            "id": "OhMslTable1"
+          }
+        }
+      ]
+    }
+  ]
+}

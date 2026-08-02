@@ -90,6 +90,12 @@ class DHIS2Client:
             params={"fields": "id,username,displayName,authorities"},
         )
 
+    def get_json(
+        self, path: str, *, params: Mapping[str, Any] | None = None
+    ) -> dict[str, Any]:
+        """Read a DHIS2 JSON object for controlled maintenance scripts."""
+        return self._request("GET", path, params=params)
+
     def import_metadata(
         self, metadata: Mapping[str, Any], *, dry_run: bool = True
     ) -> dict[str, Any]:
@@ -119,6 +125,9 @@ class DHIS2Client:
         self, uid: str, dashboard: Mapping[str, Any]
     ) -> dict[str, Any]:
         return self._request("PUT", f"dashboards/{uid}", payload=dashboard)
+
+    def update_map(self, uid: str, map_object: Mapping[str, Any]) -> dict[str, Any]:
+        return self._request("PUT", f"maps/{uid}", payload=map_object)
 
     def get_data_values(
         self,

@@ -42,6 +42,10 @@ def main() -> None:
                 uid = visualization["id"]
                 client.update_visualization(uid, visualization)
                 print(f"Updated visualization dimensions: {uid}")
+            for map_object in metadata.get("maps", []):
+                uid = map_object["id"]
+                client.update_map(uid, map_object)
+                print(f"Updated map layers: {uid}")
             for dashboard in metadata.get("dashboards", []):
                 uid = dashboard["id"]
                 client.update_dashboard(uid, dashboard)
