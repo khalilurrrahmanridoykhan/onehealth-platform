@@ -724,7 +724,7 @@
       "name": "Measles Division Case Map \u2014 Week 22",
       "description": "Native DHIS2 thematic map of source-available division measles cases",
       "publicAccess": "rw------",
-      "basemap": "{\"id\": \"osmLight\", \"opacity\": 1, \"hidden\": false}",
+      "basemap": "osmLight",
       "zoom": 6,
       "latitude": 23.7,
       "longitude": 90.35,
@@ -826,13 +826,14 @@
           ],
           "classes": 5,
           "method": 2,
-          "colorLow": "fff5eb",
-          "colorHigh": "b42318",
-          "opacity": 0.85,
-          "labels": true,
+          "colorLow": "f59e0b",
+          "colorHigh": "7f1d1d",
+          "colorScale": "#fde68a,#f59e0b,#f97316,#dc2626,#7f1d1d",
+          "opacity": 1,
+          "labels": false,
           "thematicMapType": "CHOROPLETH",
           "aggregationType": "DEFAULT",
-          "noDataColor": "d7e2de"
+          "noDataColor": "d1d5db"
         }
       ]
     }

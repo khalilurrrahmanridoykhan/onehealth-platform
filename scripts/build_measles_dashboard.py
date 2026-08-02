@@ -88,16 +88,15 @@ def build() -> dict:
         "columns": [dx_division], "rows": [ou_divisions], "filters": [pe_latest],
         "organisationUnits": [{"id": uid} for uid in DIVISIONS],
         "periods": [{"id": "2026W22"}], "classes": 5, "method": 2,
-        "colorLow": "fff5eb", "colorHigh": "b42318", "opacity": 0.85,
-        "labels": True, "thematicMapType": "CHOROPLETH",
-        "aggregationType": "DEFAULT", "noDataColor": "d7e2de",
+        "colorLow": "f59e0b", "colorHigh": "7f1d1d",
+        "colorScale": "#fde68a,#f59e0b,#f97316,#dc2626,#7f1d1d",
+        "opacity": 1, "labels": False, "thematicMapType": "CHOROPLETH",
+        "aggregationType": "DEFAULT", "noDataColor": "d1d5db",
     }
     maps = [{
         "id": "OhMslMap001", "name": "Measles Division Case Map — Week 22",
         "description": "Native DHIS2 thematic map of source-available division measles cases",
-        "publicAccess": "rw------",
-        "basemap": json.dumps({"id": "osmLight", "opacity": 1, "hidden": False}),
-        "zoom": 6,
+        "publicAccess": "rw------", "basemap": "osmLight", "zoom": 6,
         "latitude": 23.7, "longitude": 90.35, "mapViews": [map_view],
     }]
 
