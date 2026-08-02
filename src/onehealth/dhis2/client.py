@@ -129,6 +129,9 @@ class DHIS2Client:
     def update_map(self, uid: str, map_object: Mapping[str, Any]) -> dict[str, Any]:
         return self._request("PUT", f"maps/{uid}", payload=map_object)
 
+    def create_map(self, map_object: Mapping[str, Any]) -> dict[str, Any]:
+        return self._request("POST", "maps", payload=map_object)
+
     def get_data_values(
         self,
         *,

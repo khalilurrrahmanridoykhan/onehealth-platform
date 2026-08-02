@@ -89,11 +89,14 @@ def test_analytical_objects_use_dedicated_update_endpoints():
     ) as client:
         client.update_visualization("OhDngTrend1", {"id": "OhDngTrend1"})
         client.update_map("OhMslMap001", {"id": "OhMslMap001"})
+        client.create_map({"id": "OhMslMap002"})
         client.update_dashboard("OhDngDash01", {"id": "OhDngDash01"})
 
     assert requests[0].method == "PUT"
     assert requests[0].url.path == "/api/visualizations/OhDngTrend1"
     assert requests[1].method == "PUT"
     assert requests[1].url.path == "/api/maps/OhMslMap001"
-    assert requests[2].method == "PUT"
-    assert requests[2].url.path == "/api/dashboards/OhDngDash01"
+    assert requests[2].method == "POST"
+    assert requests[2].url.path == "/api/maps"
+    assert requests[3].method == "PUT"
+    assert requests[3].url.path == "/api/dashboards/OhDngDash01"

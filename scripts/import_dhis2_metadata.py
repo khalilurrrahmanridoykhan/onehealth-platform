@@ -33,7 +33,18 @@ def main() -> None:
     ) as client:
         info = client.system_info()
         print(f"Connected to DHIS2 {info.get('version', 'unknown version')}")
-        result = client.import_metadata(metadata, dry_run=not args.commit)
+        maps = metadata.get("maps", [])
+        dashboards = metadata.get("dashboards", [])
+        initial_metadata = metadata
+        if maps:
+            # DHIS2 2.42's generic importer cannot persist embedded MapView
+            # organisation-unit references. Import dependencies first and use
+            # the dedicated Maps endpoint after validation.
+            initial_metadata = {
+                key: value for key, value in metadata.items()
+                if key not in {"maps", "dashboards"}
+            }
+        result = client.import_metadata(initial_metadata, dry_run=not args.commit)
         print(json.dumps(result, indent=2))
         if args.commit:
             # DHIS2's generic metadata importer can omit visualization dimension
@@ -42,14 +53,30 @@ def main() -> None:
                 uid = visualization["id"]
                 client.update_visualization(uid, visualization)
                 print(f"Updated visualization dimensions: {uid}")
-            for map_object in metadata.get("maps", []):
+            for map_object in maps:
                 uid = map_object["id"]
-                client.update_map(uid, map_object)
+                existing = client.get_json(
+                    "maps.json", params={"filter": f"id:eq:{uid}", "fields": "id"}
+                ).get("maps", [])
+                if existing:
+                    client.update_map(uid, map_object)
+                else:
+                    client.create_map(map_object)
                 print(f"Updated map layers: {uid}")
-            for dashboard in metadata.get("dashboards", []):
+            if dashboards:
+                dashboard_result = client.import_metadata(
+                    {"dashboards": dashboards}, dry_run=False
+                )
+                print(json.dumps(dashboard_result, indent=2))
+            for dashboard in dashboards:
                 uid = dashboard["id"]
                 client.update_dashboard(uid, dashboard)
                 print(f"Updated dashboard layout: {uid}")
+        elif maps:
+            print(
+                f"Validated dependencies for {len(maps)} map(s) and "
+                f"{len(dashboards)} dashboard(s); dedicated endpoint writes remain disabled."
+            )
 
 
 if __name__ == "__main__":
