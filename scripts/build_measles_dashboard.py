@@ -86,8 +86,6 @@ def build() -> dict:
     map_view = {
         "layer": "thematic1", "name": "Measles suspected cases — Week 22",
         "columns": [dx_division], "rows": [ou_divisions], "filters": [pe_latest],
-        "dataDimensionItems": [{"dataDimensionItemType": "DATA_ELEMENT",
-                                "dataElement": {"id": "OhMslCase01"}}],
         "organisationUnits": [{"id": uid} for uid in DIVISIONS],
         "periods": [{"id": "2026W22"}], "classes": 5, "method": 2,
         "colorLow": "fff5eb", "colorHigh": "b42318", "opacity": 0.85,

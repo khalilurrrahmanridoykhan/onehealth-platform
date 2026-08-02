@@ -793,14 +793,6 @@
               ]
             }
           ],
-          "dataDimensionItems": [
-            {
-              "dataDimensionItemType": "DATA_ELEMENT",
-              "dataElement": {
-                "id": "OhMslCase01"
-              }
-            }
-          ],
           "organisationUnits": [
             {
               "id": "BdDivBar001"
