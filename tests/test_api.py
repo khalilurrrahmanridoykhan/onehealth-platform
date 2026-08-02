@@ -196,7 +196,8 @@ def test_ebs_signal_search_and_detail_read_from_tracker(monkeypatch):
     assert detail.json()["events"][0]["values"] == {"verification_status": "VERIFIED"}
     assert operations.status_code == 200
     assert operations.json()["summary"] == {
-        "total": 1, "open": 1, "closed": 0, "overdue": 0, "high_risk": 0,
+        "total": 1, "open": 1, "closed": 0, "overdue": 0, "due_soon": 0,
+        "unassigned": 1, "high_risk": 0,
     }
     assert operations.json()["signals"][0]["latest_stage"] == "verification"
 
@@ -255,6 +256,77 @@ def test_committed_signal_returns_the_identifiers_written_to_tracker(monkeypatch
     assert result["tracked_entity_uid"] == imported["trackedEntities"][0]["trackedEntity"]
     assert result["enrollment_uid"] == imported["enrollments"][0]["enrollment"]
     assert result["event_uid"] == imported["events"][0]["event"]
+
+
+def test_assignment_notifications_and_situation_report(monkeypatch):
+    monkeypatch.setenv("ONEHEALTH_EBS_READS_ENABLED", "true")
+    monkeypatch.setenv("ONEHEALTH_EBS_WRITES_ENABLED", "true")
+    monkeypatch.setenv("ONEHEALTH_AUTH_SECRET", "a-secure-test-secret-with-32-characters")
+    imported = {}
+
+    class FakeClient:
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_):
+            return None
+
+        def get_tracked_entities(self, **_):
+            return {"instances": [self.get_tracked_entity("Abcdef12345")]}
+
+        def get_tracked_entity(self, uid):
+            return {
+                "trackedEntity": uid, "orgUnit": "BdDivDha001",
+                "updatedAt": "2026-08-02T10:00:00.000",
+                "enrollments": [{"enrollment": "Bcdefg12345"}],
+                "attributes": [
+                    {"attribute": "OhEbsId0001", "value": "EBS-2026-0001"},
+                    {"attribute": "OhEbsTit001", "value": "Unusual fever cluster"},
+                    {"attribute": "OhEbsSrc001", "value": "Community worker"},
+                ],
+            }
+
+        def get_tracker_events(self, **_):
+            return {"instances": [{
+                "event": "Cdefgh12345", "programStage": "OhEbsRas001",
+                "status": "COMPLETED", "occurredAt": "2026-08-02T00:00:00.000",
+                "dataValues": [{"dataElement": "OhEbsRsk001", "value": "HIGH"}],
+            }]}
+
+        def import_tracker_bundle(self, bundle):
+            imported.update(bundle)
+            return {"status": "OK"}
+
+    monkeypatch.setattr(
+        api_module,
+        "_settings_and_client",
+        lambda: (SimpleNamespace(base_url="https://dhis.example"), FakeClient()),
+    )
+    responder_headers = {"Authorization": f"Bearer {issue_token(User('responder', 'responder'))}"}
+    viewer_headers = {"Authorization": f"Bearer {issue_token(User('viewer', 'viewer'))}"}
+
+    assignment = client.post(
+        "/api/v1/ebs/operations/Abcdef12345/assignment",
+        headers=responder_headers,
+        json={
+            "responsible_officer": "Dr Rahman",
+            "due_date": "2026-08-10",
+            "recommended_actions": "Verify facilities and collect samples",
+            "response_status": "IN_PROGRESS",
+        },
+    )
+    notifications = client.get("/api/v1/ebs/notifications", headers=viewer_headers)
+    report = client.get("/api/v1/ebs/reports/situation.csv", headers=viewer_headers)
+
+    assert assignment.status_code == 200
+    assert assignment.json()["officer"] == "Dr Rahman"
+    data_values = {item["dataElement"]: item["value"] for item in imported["events"][0]["dataValues"]}
+    assert data_values["OhEbsOff001"] == "Dr Rahman"
+    assert notifications.status_code == 200
+    assert notifications.json()["notifications"][0]["type"] == "UNASSIGNED"
+    assert report.status_code == 200
+    assert report.headers["content-type"].startswith("text/csv")
+    assert "EBS-2026-0001" in report.text
 
 
 def test_login_and_role_based_access(monkeypatch):

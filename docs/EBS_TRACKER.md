@@ -79,6 +79,21 @@ After a detection preview creates an enrollment UID, the custom workspace can bu
 
 The customized registry reads tracked entities and program events from DHIS2, supports local search over signal ID, title, and source, and maps metadata UIDs back to readable stages and fields. `GET /api/v1/ebs/status` reports configuration state without returning credentials.
 
+## Operational response queue
+
+The customized dashboard converts authorized Tracker records into an operational queue without creating a separate clinical data store. It derives the latest lifecycle stage, risk, officer, response status and deadline from EBS events. Active deadlines are classified as `ON_TRACK`, `DUE_SOON`, `DUE_TODAY`, `OVERDUE`, or `UNSCHEDULED`; completed or closed signals are excluded from overdue notifications.
+
+Responders can assign or update an officer, due date, recommended actions and response status. Each update is saved as a repeatable DHIS2 Response stage event, preserving the Tracker event history and audit trail. Viewers can filter the protected queue and download a server-generated CSV situation report. The notification endpoint produces action items for overdue, due-soon and unassigned signals; it does not send patient data or credentials to an external messaging provider.
+
+| Endpoint | Minimum role | Purpose |
+|---|---|---|
+| `GET /api/v1/ebs/operations` | Viewer | Queue, summary counts, filters and deadline state |
+| `POST /api/v1/ebs/operations/{trackedEntityUid}/assignment` | Responder | Write a repeatable assignment/response event to DHIS2 |
+| `GET /api/v1/ebs/notifications` | Viewer | Current operational action notices |
+| `GET /api/v1/ebs/reports/situation.csv` | Viewer | Downloadable situation report |
+
+External email, SMS or WhatsApp delivery is intentionally not enabled by default. It should be added only after an approved provider, recipient policy, message template, delivery audit and protected-data review are configured.
+
 Registry endpoints require an authenticated Viewer or higher and are also protected by `ONEHEALTH_EBS_READS_ENABLED=false`. Tracker writes require a Responder or Admin plus the independent write switch. Enabling either flag does not expose DHIS2 credentials to the browser; all DHIS2 requests remain server-side. See [Authentication and Roles](AUTHENTICATION.md).
 
 ## Safety boundaries

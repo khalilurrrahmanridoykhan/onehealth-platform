@@ -136,6 +136,7 @@ export interface EBSSignalDetail extends EBSSavedSignal {
 
 export interface EBSOperationItem {
   tracked_entity_uid: string
+  enrollment_uid: string | null
   signal_id: string
   title: string
   source: string
@@ -143,7 +144,10 @@ export interface EBSOperationItem {
   latest_stage: string
   risk_level: string | null
   responsible_officer: string | null
+  recommended_actions: string | null
   due_date: string | null
+  days_remaining: number | null
+  due_state: 'COMPLETED' | 'UNSCHEDULED' | 'OVERDUE' | 'DUE_TODAY' | 'DUE_SOON' | 'ON_TRACK'
   response_status: string | null
   closed: boolean
   overdue: boolean
@@ -153,6 +157,32 @@ export interface EBSOperationItem {
 
 export interface EBSOperations {
   signals: EBSOperationItem[]
-  summary: { total: number; open: number; closed: number; overdue: number; high_risk: number }
+  summary: { total: number; open: number; closed: number; overdue: number; due_soon: number; unassigned: number; high_risk: number }
+  filtered_count: number
   generated_at: string
+}
+
+export interface EBSNotification {
+  id: string
+  type: 'OVERDUE' | 'DUE_SOON' | 'UNASSIGNED'
+  severity: 'CRITICAL' | 'WARNING' | 'INFO'
+  title: string
+  message: string
+  signal_id: string
+  tracked_entity_uid: string
+  officer: string | null
+  due_date: string | null
+}
+
+export interface EBSNotifications {
+  notifications: EBSNotification[]
+  unread_count: number
+  generated_at: string
+}
+
+export interface EBSAssignmentDraft {
+  responsible_officer: string
+  due_date: string
+  recommended_actions: string
+  response_status: 'PLANNED' | 'IN_PROGRESS' | 'COMPLETED' | 'ON_HOLD'
 }

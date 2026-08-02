@@ -61,9 +61,12 @@ beforeEach(() => {
         dataValues: [{ dataElement: 'OhEbsVrf001', value: 'VERIFIED' }],
       }] },
     }
+    else if (url.includes('/ebs/notifications')) body = {
+      notifications: [{ id: 'unassigned:Abcdef12345', type: 'UNASSIGNED', severity: 'WARNING', title: 'EBS-2026-0001 needs an owner', message: 'Assign a responsible officer and response deadline.', signal_id: 'EBS-2026-0001', tracked_entity_uid: 'Abcdef12345', officer: null, due_date: null }], unread_count: 1, generated_at: '2026-08-02',
+    }
     else if (url.includes('/ebs/operations')) body = {
-      signals: [{ tracked_entity_uid: 'Abcdef12345', signal_id: 'EBS-2026-0001', title: 'Unusual fever cluster', source: 'Community worker', org_unit_uid: 'BdDivDha001', latest_stage: 'verification', risk_level: 'HIGH', responsible_officer: null, due_date: null, response_status: null, closed: false, overdue: false, event_count: 2, updated_at: '2026-08-02T10:00:00.000' }],
-      summary: { total: 1, open: 1, closed: 0, overdue: 0, high_risk: 1 }, generated_at: '2026-08-02',
+      signals: [{ tracked_entity_uid: 'Abcdef12345', enrollment_uid: 'Bcdefg12345', signal_id: 'EBS-2026-0001', title: 'Unusual fever cluster', source: 'Community worker', org_unit_uid: 'BdDivDha001', latest_stage: 'verification', risk_level: 'HIGH', responsible_officer: null, recommended_actions: null, due_date: null, days_remaining: null, due_state: 'UNSCHEDULED', response_status: null, closed: false, overdue: false, event_count: 2, updated_at: '2026-08-02T10:00:00.000' }],
+      summary: { total: 1, open: 1, closed: 0, overdue: 0, due_soon: 0, unassigned: 1, high_risk: 1 }, filtered_count: 1, generated_at: '2026-08-02',
     }
     else if (url.includes('/ebs/status')) body = { dhis2_configured: true, reads_enabled: true, writes_enabled: false, program_uid: 'OhEbsProg01' }
     else if (url.includes('/ebs/signals/Abcdef12345')) body = {
@@ -139,13 +142,13 @@ test('previews a verification event for the detection enrollment', async () => {
 
 test('loads a saved DHIS2 signal and displays its event history', async () => {
   render(<App />)
-  await waitFor(() => expect(screen.getByRole('button', { name: /EBS-2026-0001/i })).toBeInTheDocument())
+  await waitFor(() => expect(screen.getAllByRole('button', { name: /EBS-2026-0001/i })).toHaveLength(2))
 
-  fireEvent.click(screen.getByRole('button', { name: /EBS-2026-0001/i }))
+  fireEvent.click(screen.getAllByRole('button', { name: /EBS-2026-0001/i }).find((button) => button.classList.contains('signal-row'))!)
 
   await waitFor(() => expect(screen.getByRole('heading', { name: 'Unusual fever cluster' })).toBeInTheDocument())
   expect(screen.getAllByText('Verification')).toHaveLength(3)
-  expect(screen.getByRole('heading', { name: 'EBS signal command queue' })).toBeInTheDocument()
+  expect(screen.getByRole('heading', { name: 'Operational alert queue' })).toBeInTheDocument()
   expect(screen.getByText(/Verification Status:/)).toBeInTheDocument()
   expect(screen.getByText((_, element) => element?.tagName === 'P' && element.textContent?.includes('VERIFIED') === true)).toBeInTheDocument()
 })

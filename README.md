@@ -173,6 +173,9 @@ The current dashboard includes:
 - Interactive division risk map linked to location selection
 - Six-stage EBS workflow with safe detection and follow-up event previews
 - Protected DHIS2 signal registry with search, detail, and event history
+- Operational alert queue with officer assignment written to DHIS2 Tracker
+- Due-date monitoring with due-soon, due-today, overdue, and unassigned states
+- In-application operational notifications and downloadable CSV situation reports
 - Signed application sessions and Viewer/Analyst/Responder/Admin roles
 - Non-root container deployment baseline with automatic HTTPS
 - Responsive desktop and mobile layouts
@@ -194,6 +197,10 @@ The current dashboard includes:
 | `GET` | `/api/v1/ebs/status` | Non-secret DHIS2 registry readiness and safety status |
 | `GET` | `/api/v1/ebs/signals` | Search saved Tracker signals when protected reads are enabled |
 | `GET` | `/api/v1/ebs/signals/{uid}` | Read a saved signal and mapped event timeline |
+| `GET` | `/api/v1/ebs/operations` | Read and filter the operational response queue |
+| `POST` | `/api/v1/ebs/operations/{uid}/assignment` | Assign an officer, deadline, actions, and response status |
+| `GET` | `/api/v1/ebs/notifications` | Generate actionable deadline and ownership notifications |
+| `GET` | `/api/v1/ebs/reports/situation.csv` | Download the current protected situation report |
 | `POST` | `/api/v1/ebs/signals/preview` | Validate and preview a DHIS2 Tracker signal payload |
 | `POST` | `/api/v1/ebs/signals` | Submit a signal only when EBS writes are explicitly enabled |
 | `POST` | `/api/v1/ebs/stages/preview` | Validate and preview a follow-up Tracker stage event |

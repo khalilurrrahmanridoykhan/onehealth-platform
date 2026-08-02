@@ -1,9 +1,12 @@
+import csv
+import io
 import os
 from dataclasses import asdict
 from datetime import date
 from pathlib import Path
 
 from fastapi import Depends, FastAPI, HTTPException, Query
+from fastapi.responses import Response
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
@@ -25,6 +28,11 @@ from onehealth.dhis2.ebs import (
 )
 from onehealth.dhis2.sync import records_from_dhis2
 from onehealth.services.alerts import generate_latest_alert
+from onehealth.services.operations import (
+    build_notifications,
+    build_operation_item,
+    operation_summary,
+)
 from onehealth.services.surveillance import load_surveillance_records
 
 
@@ -297,6 +305,13 @@ class EBSStageRequest(BaseModel):
     values: dict[str, str | int]
 
 
+class EBSAssignmentRequest(BaseModel):
+    responsible_officer: str = Field(min_length=2, max_length=150)
+    due_date: date
+    recommended_actions: str = Field(min_length=3, max_length=2000)
+    response_status: str = Field(default="PLANNED", pattern="^(PLANNED|IN_PROGRESS|COMPLETED|ON_HOLD)$")
+
+
 def _ebs_org_unit_uid(location_code: str) -> str:
     mapping_path = Path(
         os.environ.get("DHIS2_MAPPING_PATH", DEFAULT_DHIS2_MAPPING_PATH)
@@ -471,8 +486,7 @@ def list_ebs_signals(
     return {"signals": signals, "pager": response.get("pager"), "dhis2_url": settings.base_url}
 
 
-@app.get("/api/v1/ebs/operations")
-def ebs_operations(_user: User = Depends(viewer)) -> dict:
+def _operation_rows() -> list[dict]:
     if os.environ.get("ONEHEALTH_EBS_READS_ENABLED", "false").lower() != "true":
         raise HTTPException(status_code=403, detail="EBS registry reads are disabled")
     try:
@@ -482,7 +496,6 @@ def ebs_operations(_user: User = Depends(viewer)) -> dict:
                 program=EBS_PROGRAM_UID, page=1, page_size=100
             )
             rows = []
-            stage_order = list(EBS_STAGES)
             for entity in _tracker_items(entity_response, "trackedEntities"):
                 tracked_entity_uid = entity.get("trackedEntity")
                 event_response = client.get_tracker_events(
@@ -494,53 +507,114 @@ def ebs_operations(_user: User = Depends(viewer)) -> dict:
                     for event in _tracker_items(event_response, "events")
                 ]
                 attributes = _attribute_values(entity)
-                present = {event["stage"] for event in events}
-                latest_stage = next(
-                    (stage for stage in reversed(stage_order) if stage in present),
-                    "detection",
-                )
-                risk_events = [event for event in events if event["stage"] == "risk_assessment"]
-                response_events = [event for event in events if event["stage"] == "response"]
-                risk_values = risk_events[-1]["values"] if risk_events else {}
-                response_values = response_events[-1]["values"] if response_events else {}
-                due_date = str(response_values.get("due_date") or "") or None
-                closed = "closure" in present
-                overdue = bool(
-                    due_date
-                    and due_date < date.today().isoformat()
-                    and not closed
-                    and response_values.get("response_status") != "COMPLETED"
-                )
-                rows.append({
-                    "tracked_entity_uid": tracked_entity_uid,
-                    "signal_id": attributes["signal_id"],
-                    "title": attributes["title"],
-                    "source": attributes["source"],
-                    "org_unit_uid": entity.get("orgUnit"),
-                    "latest_stage": latest_stage,
-                    "risk_level": risk_values.get("risk_level"),
-                    "responsible_officer": response_values.get("responsible_officer"),
-                    "due_date": due_date,
-                    "response_status": response_values.get("response_status"),
-                    "closed": closed,
-                    "overdue": overdue,
-                    "event_count": len(events),
-                    "updated_at": entity.get("updatedAt"),
-                })
+                rows.append(build_operation_item(entity, attributes, events, today=date.today()))
     except (ValueError, OSError, DHIS2APIError) as exc:
         raise HTTPException(status_code=503, detail=str(exc)) from exc
-    rows.sort(key=lambda row: (row["closed"], not row["overdue"], row["signal_id"]))
+    rows.sort(key=lambda row: (row["closed"], not row["overdue"], row["due_date"] or "9999", row["signal_id"]))
+    return rows
+
+
+@app.get("/api/v1/ebs/operations")
+def ebs_operations(
+    status: str = Query(default="ALL", pattern="^(ALL|OPEN|OVERDUE|DUE_SOON|UNASSIGNED|CLOSED)$"),
+    officer: str | None = Query(default=None, max_length=150),
+    _user: User = Depends(viewer),
+) -> dict:
+    all_rows = _operation_rows()
+    rows = all_rows
+    if status == "OPEN":
+        rows = [row for row in rows if not row["closed"]]
+    elif status == "OVERDUE":
+        rows = [row for row in rows if row["overdue"]]
+    elif status == "DUE_SOON":
+        rows = [row for row in rows if row["due_state"] in {"DUE_TODAY", "DUE_SOON"}]
+    elif status == "UNASSIGNED":
+        rows = [row for row in rows if not row["closed"] and not row["responsible_officer"]]
+    elif status == "CLOSED":
+        rows = [row for row in rows if row["closed"]]
+    if officer:
+        rows = [row for row in rows if (row["responsible_officer"] or "").casefold() == officer.casefold()]
     return {
         "signals": rows,
-        "summary": {
-            "total": len(rows),
-            "open": sum(not row["closed"] for row in rows),
-            "closed": sum(row["closed"] for row in rows),
-            "overdue": sum(row["overdue"] for row in rows),
-            "high_risk": sum(row["risk_level"] in {"HIGH", "CRITICAL"} and not row["closed"] for row in rows),
-        },
+        "summary": operation_summary(all_rows),
+        "filtered_count": len(rows),
         "generated_at": date.today().isoformat(),
     }
+
+
+@app.get("/api/v1/ebs/notifications")
+def ebs_notifications(_user: User = Depends(viewer)) -> dict:
+    notifications = build_notifications(_operation_rows(), today=date.today())
+    return {
+        "notifications": notifications,
+        "unread_count": len(notifications),
+        "generated_at": date.today().isoformat(),
+    }
+
+
+@app.post("/api/v1/ebs/operations/{tracked_entity_uid}/assignment")
+def assign_ebs_operation(
+    tracked_entity_uid: str,
+    request: EBSAssignmentRequest,
+    _user: User = Depends(responder),
+) -> dict:
+    if os.environ.get("ONEHEALTH_EBS_WRITES_ENABLED", "false").lower() != "true":
+        raise HTTPException(status_code=403, detail="EBS writes are disabled")
+    if request.due_date < date.today() and request.response_status != "COMPLETED":
+        raise HTTPException(status_code=422, detail="Due date cannot be in the past for an active response")
+    try:
+        _, client = _settings_and_client()
+        with client:
+            entity = client.get_tracked_entity(tracked_entity_uid)
+            enrollments = entity.get("enrollments") or []
+            if not enrollments:
+                raise HTTPException(status_code=409, detail="Signal has no active DHIS2 enrollment")
+            bundle = build_stage_event(
+                stage="response",
+                enrollment_uid=enrollments[0]["enrollment"],
+                org_unit_uid=entity["orgUnit"],
+                occurred_on=date.today(),
+                values={
+                    "recommended_actions": request.recommended_actions,
+                    "responsible_officer": request.responsible_officer,
+                    "due_date": request.due_date.isoformat(),
+                    "response_status": request.response_status,
+                },
+            )
+            result = client.import_tracker_bundle(bundle)
+    except HTTPException:
+        raise
+    except (ValueError, OSError, KeyError, DHIS2APIError) as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
+    return {
+        "mode": "COMMITTED",
+        "tracked_entity_uid": tracked_entity_uid,
+        "event_uid": bundle["events"][0]["event"],
+        "officer": request.responsible_officer,
+        "due_date": request.due_date.isoformat(),
+        "response": result,
+    }
+
+
+@app.get("/api/v1/ebs/reports/situation.csv")
+def ebs_situation_report(_user: User = Depends(viewer)) -> Response:
+    rows = _operation_rows()
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow(["Signal ID", "Title", "Source", "Stage", "Risk", "Officer", "Due date", "Due state", "Response status", "Recommended actions", "Closed", "Updated at"])
+    for row in rows:
+        writer.writerow([
+            row["signal_id"], row["title"], row["source"], row["latest_stage"],
+            row["risk_level"], row["responsible_officer"], row["due_date"],
+            row["due_state"], row["response_status"], row["recommended_actions"],
+            row["closed"], row["updated_at"],
+        ])
+    filename = f"onehealth-ebs-situation-{date.today().isoformat()}.csv"
+    return Response(
+        content=output.getvalue(),
+        media_type="text/csv; charset=utf-8",
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+    )
 
 
 @app.get("/api/v1/ebs/signals/{tracked_entity_uid}")

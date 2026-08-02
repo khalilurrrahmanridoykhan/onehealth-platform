@@ -4,6 +4,8 @@ import type {
   EBSConnectionStatus,
   EBSCommitResult,
   EBSOperations,
+  EBSNotifications,
+  EBSAssignmentDraft,
   EBSSavedSignal,
   EBSSignalDetail,
   EBSSignalDraft,
@@ -63,6 +65,19 @@ export const api = {
     postJson<EBSCommitResult>('/api/v1/ebs/stages', stage),
   ebsStatus: () => getJson<EBSConnectionStatus>('/api/v1/ebs/status'),
   ebsOperations: () => getJson<EBSOperations>('/api/v1/ebs/operations'),
+  ebsNotifications: () => getJson<EBSNotifications>('/api/v1/ebs/notifications'),
+  assignOperation: (trackedEntityUid: string, assignment: EBSAssignmentDraft) =>
+    postJson<{ mode: 'COMMITTED'; event_uid: string }>(`/api/v1/ebs/operations/${encodeURIComponent(trackedEntityUid)}/assignment`, assignment),
+  downloadSituationReport: async () => {
+    const token = localStorage.getItem('onehealth_session')
+    const response = await fetch('/api/v1/ebs/reports/situation.csv', { headers: token ? { Authorization: `Bearer ${token}` } : {} })
+    if (!response.ok) throw new Error(`Report download failed with HTTP ${response.status}`)
+    const blob = await response.blob()
+    const disposition = response.headers.get('Content-Disposition') ?? ''
+    const filename = disposition.match(/filename="?([^";]+)"?/)?.[1] ?? 'onehealth-ebs-situation.csv'
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a'); link.href = url; link.download = filename; link.click(); URL.revokeObjectURL(url)
+  },
   savedSignals: (query = '') =>
     getJson<{ signals: EBSSavedSignal[] }>(`/api/v1/ebs/signals?q=${encodeURIComponent(query)}`),
   savedSignal: (trackedEntityUid: string) =>
