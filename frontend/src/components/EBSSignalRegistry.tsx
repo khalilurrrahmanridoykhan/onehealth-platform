@@ -50,11 +50,11 @@ export function EBSSignalRegistry() {
         <div className="registry-layout">
           <div className="signal-list">
             <form className="registry-search" onSubmit={search}><label htmlFor="signal-search">Search signal ID, title, or source</label><div><input id="signal-search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search saved signals" /><button type="submit">Search</button></div></form>
-            {loading ? <p className="registry-message">Loading saved Tracker signals…</p> : signals.length === 0 ? <p className="registry-message">No matching signals found.</p> : signals.map((signal) => (
+            <div className="signal-scroll">{loading ? <p className="registry-message">Loading saved Tracker signals…</p> : signals.length === 0 ? <p className="registry-message">No matching signals found.</p> : signals.map((signal) => (
               <button type="button" className={`signal-row ${selected?.tracked_entity_uid === signal.tracked_entity_uid ? 'selected' : ''}`} key={signal.tracked_entity_uid} onClick={() => openSignal(signal.tracked_entity_uid)}>
                 <span><strong>{signal.signal_id}</strong><small>{signal.title}</small></span><time>{displayDate(signal.updated_at)}</time>
               </button>
-            ))}
+            ))}</div>
           </div>
           <div className="signal-detail">
             {selected ? <><div className="signal-detail-heading"><div><span>{selected.signal_id}</span><h3>{selected.title}</h3><p>{selected.source}</p></div><code>{selected.tracked_entity_uid}</code></div><ol className="event-timeline">{selected.events.map((event) => <li key={event.event_uid}><span /><div><strong>{label(event.stage)}</strong><small>{displayDate(event.occurred_at)} · {event.status}</small>{Object.entries(event.values).map(([key, value]) => <p key={key}><b>{label(key)}:</b> {String(value)}</p>)}</div></li>)}</ol></> : <div className="registry-empty"><strong>Select a saved signal</strong><p>Its enrollment stages and audit history will appear here.</p></div>}
