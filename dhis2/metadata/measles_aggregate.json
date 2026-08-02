@@ -1,4 +1,16 @@
 {
+  "organisationUnitLevels": [
+    {
+      "id": "OhNatLvl001",
+      "name": "Country",
+      "level": 1
+    },
+    {
+      "id": "OhDivLvl002",
+      "name": "Division",
+      "level": 2
+    }
+  ],
   "dataElements": [
     {
       "id": "OhMslCase01",

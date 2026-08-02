@@ -17,6 +17,12 @@ def test_measles_dashboard_metadata_has_valid_references_and_uids():
 
     visualization_ids = {item["id"] for item in metadata["visualizations"]}
     map_ids = {item["id"] for item in metadata["maps"]}
+    map_view = metadata["maps"][0]["mapViews"][0]
+    assert [item["id"] for item in map_view["rows"][0]["items"]] == [
+        "LEVEL-2", "BdOrgUnit01"
+    ]
+    assert map_view["organisationUnitLevels"] == [2]
+    assert map_view["organisationUnits"] == [{"id": "BdOrgUnit01"}]
     for item in metadata["dashboards"][0]["dashboardItems"]:
         if item["type"] == "MAP":
             assert item["map"]["id"] in map_ids

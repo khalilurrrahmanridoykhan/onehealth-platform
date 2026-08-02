@@ -59,6 +59,12 @@ def build() -> dict:
     dx_division = dimension("dx", ["OhMslCase01"], "DATA_ELEMENT")
     ou_national = dimension("ou", ["BdOrgUnit01"], "ORGANISATION_UNIT")
     ou_divisions = dimension("ou", DIVISIONS, "ORGANISATION_UNIT")
+    # Native DHIS2 Maps resolves thematic features from a level selection under
+    # a parent organisation unit. Explicit division UIDs work in analytics but
+    # can leave the dashboard map with outlines only and no thematic data join.
+    ou_division_level = dimension(
+        "ou", ["LEVEL-2", "BdOrgUnit01"], "ORGANISATION_UNIT"
+    )
     pe_all = dimension("pe", PERIODS, "PERIOD")
     pe_latest = dimension("pe", ["2026W22"], "PERIOD")
 
@@ -85,8 +91,9 @@ def build() -> dict:
 
     map_view = {
         "layer": "thematic", "name": "Measles suspected cases — Week 22",
-        "columns": [dx_division], "rows": [ou_divisions], "filters": [pe_latest],
-        "organisationUnits": [{"id": uid} for uid in DIVISIONS],
+        "columns": [dx_division], "rows": [ou_division_level], "filters": [pe_latest],
+        "organisationUnits": [{"id": "BdOrgUnit01"}],
+        "organisationUnitLevels": [2],
         "periods": [{"id": "2026W22"}], "classes": 5, "method": 2,
         "colorLow": "f59e0b", "colorHigh": "7f1d1d",
         "colorScale": "#fde68a,#f59e0b,#f97316,#dc2626,#7f1d1d",

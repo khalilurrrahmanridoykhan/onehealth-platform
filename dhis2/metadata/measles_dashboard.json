@@ -748,35 +748,11 @@
               "dimension": "ou",
               "items": [
                 {
-                  "id": "BdDivBar001",
+                  "id": "LEVEL-2",
                   "dimensionItemType": "ORGANISATION_UNIT"
                 },
                 {
-                  "id": "BdDivCtg001",
-                  "dimensionItemType": "ORGANISATION_UNIT"
-                },
-                {
-                  "id": "BdDivDha001",
-                  "dimensionItemType": "ORGANISATION_UNIT"
-                },
-                {
-                  "id": "BdDivKhu001",
-                  "dimensionItemType": "ORGANISATION_UNIT"
-                },
-                {
-                  "id": "BdDivMym001",
-                  "dimensionItemType": "ORGANISATION_UNIT"
-                },
-                {
-                  "id": "BdDivRaj001",
-                  "dimensionItemType": "ORGANISATION_UNIT"
-                },
-                {
-                  "id": "BdDivRan001",
-                  "dimensionItemType": "ORGANISATION_UNIT"
-                },
-                {
-                  "id": "BdDivSyl001",
+                  "id": "BdOrgUnit01",
                   "dimensionItemType": "ORGANISATION_UNIT"
                 }
               ]
@@ -795,29 +771,11 @@
           ],
           "organisationUnits": [
             {
-              "id": "BdDivBar001"
-            },
-            {
-              "id": "BdDivCtg001"
-            },
-            {
-              "id": "BdDivDha001"
-            },
-            {
-              "id": "BdDivKhu001"
-            },
-            {
-              "id": "BdDivMym001"
-            },
-            {
-              "id": "BdDivRaj001"
-            },
-            {
-              "id": "BdDivRan001"
-            },
-            {
-              "id": "BdDivSyl001"
+              "id": "BdOrgUnit01"
             }
+          ],
+          "organisationUnitLevels": [
+            2
           ],
           "periods": [
             {
