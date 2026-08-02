@@ -95,10 +95,10 @@ def build() -> dict:
         "organisationUnits": [{"id": "BdOrgUnit01"}],
         "organisationUnitLevels": [2],
         "periods": [{"id": "2026W22"}], "classes": 5, "method": 2,
-        "colorLow": "f59e0b", "colorHigh": "7f1d1d",
+        "colorLow": "#f59e0b", "colorHigh": "#7f1d1d",
         "colorScale": "#fde68a,#f59e0b,#f97316,#dc2626,#7f1d1d",
         "opacity": 1, "labels": False, "thematicMapType": "CHOROPLETH",
-        "aggregationType": "DEFAULT", "noDataColor": "d1d5db",
+        "aggregationType": "DEFAULT", "noDataColor": "#d1d5db",
     }
     maps = [{
         "id": "OhMslMap001", "name": "Measles Division Case Map — Week 22",

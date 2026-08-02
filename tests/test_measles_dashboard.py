@@ -23,6 +23,9 @@ def test_measles_dashboard_metadata_has_valid_references_and_uids():
     ]
     assert map_view["organisationUnitLevels"] == [2]
     assert map_view["organisationUnits"] == [{"id": "BdOrgUnit01"}]
+    assert map_view["noDataColor"].startswith("#")
+    assert map_view["colorLow"].startswith("#")
+    assert map_view["colorHigh"].startswith("#")
     for item in metadata["dashboards"][0]["dashboardItems"]:
         if item["type"] == "MAP":
             assert item["map"]["id"] in map_ids

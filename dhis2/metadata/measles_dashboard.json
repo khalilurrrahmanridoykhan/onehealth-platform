@@ -784,14 +784,14 @@
           ],
           "classes": 5,
           "method": 2,
-          "colorLow": "f59e0b",
-          "colorHigh": "7f1d1d",
+          "colorLow": "#f59e0b",
+          "colorHigh": "#7f1d1d",
           "colorScale": "#fde68a,#f59e0b,#f97316,#dc2626,#7f1d1d",
           "opacity": 1,
           "labels": false,
           "thematicMapType": "CHOROPLETH",
           "aggregationType": "DEFAULT",
-          "noDataColor": "d1d5db"
+          "noDataColor": "#d1d5db"
         }
       ]
     }
