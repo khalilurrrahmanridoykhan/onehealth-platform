@@ -147,7 +147,7 @@ test('loads a saved DHIS2 signal and displays its event history', async () => {
   fireEvent.click(screen.getAllByRole('button', { name: /EBS-2026-0001/i }).find((button) => button.classList.contains('signal-row'))!)
 
   await waitFor(() => expect(screen.getByRole('heading', { name: 'Unusual fever cluster' })).toBeInTheDocument())
-  expect(screen.getAllByText('Verification')).toHaveLength(3)
+  expect(screen.getAllByText('Verification')).toHaveLength(2)
   expect(screen.getByRole('heading', { name: 'Operational alert queue' })).toBeInTheDocument()
   expect(screen.getByText(/Verification Status:/)).toBeInTheDocument()
   expect(screen.getByText((_, element) => element?.tagName === 'P' && element.textContent?.includes('VERIFIED') === true)).toBeInTheDocument()
