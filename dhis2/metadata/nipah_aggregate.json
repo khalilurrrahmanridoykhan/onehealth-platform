@@ -1,0 +1,12 @@
+{
+  "dataElements": [
+    {"id":"OhNipNatC01","name":"OneHealth Nipah national annual reported cases","shortName":"OH Nipah national cases","code":"OH_NIPAH_NATIONAL_CASES","description":"Annual reported Nipah cases transcribed and cross-validated from cited peer-reviewed surveillance analyses","domainType":"AGGREGATE","valueType":"INTEGER_ZERO_OR_POSITIVE","aggregationType":"SUM","zeroIsSignificant":true},
+    {"id":"OhNipNatD01","name":"OneHealth Nipah national annual reported deaths","shortName":"OH Nipah national deaths","code":"OH_NIPAH_NATIONAL_DEATHS","description":"Annual reported Nipah deaths transcribed from cited peer-reviewed surveillance analyses","domainType":"AGGREGATE","valueType":"INTEGER_ZERO_OR_POSITIVE","aggregationType":"SUM","zeroIsSignificant":true},
+    {"id":"OhNipDivC01","name":"OneHealth Nipah division cumulative reported cases 2001-2021","shortName":"OH Nipah division burden","code":"OH_NIPAH_DIVISION_CUMULATIVE_CASES","description":"Division cumulative Nipah cases for 2001-2021 aggregated from cited district totals; stored at period 2021","domainType":"AGGREGATE","valueType":"INTEGER_ZERO_OR_POSITIVE","aggregationType":"SUM","zeroIsSignificant":false}
+  ],
+  "dataSets": [{
+    "id":"OhNipAnn001","name":"OneHealth Annual Nipah Literature Surveillance","shortName":"OH Annual Nipah","code":"OH_ANNUAL_NIPAH","periodType":"Yearly","openFuturePeriods":0,
+    "organisationUnits":[{"id":"BdOrgUnit01"},{"id":"BdDivBar001"},{"id":"BdDivCtg001"},{"id":"BdDivDha001"},{"id":"BdDivKhu001"},{"id":"BdDivMym001"},{"id":"BdDivRaj001"},{"id":"BdDivRan001"},{"id":"BdDivSyl001"}],
+    "dataSetElements":[{"dataElement":{"id":"OhNipNatC01"}},{"dataElement":{"id":"OhNipNatD01"}},{"dataElement":{"id":"OhNipDivC01"}}]
+  }]
+}

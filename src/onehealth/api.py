@@ -253,8 +253,10 @@ def summary(disease_code: str, location_code: str = "BD") -> dict:
         "location_name": latest.location_name,
         "periods": len(selected),
         "total_cases": sum(record.cases for record in selected),
+        "total_deaths": sum(record.deaths or 0 for record in selected),
         "latest_period": latest.period_label,
         "latest_cases": latest.cases,
+        "latest_deaths": latest.deaths,
         "risk_level": alert.risk_level if alert else None,
     }
 
@@ -285,8 +287,10 @@ def overview(disease_code: str) -> list[dict]:
                 "location_level": latest.location_level,
                 "periods": len(records),
                 "total_cases": sum(record.cases for record in records),
+                "total_deaths": sum(record.deaths or 0 for record in records),
                 "latest_period": latest.period_label,
                 "latest_cases": latest.cases,
+                "latest_deaths": latest.deaths,
                 "risk_level": alert.risk_level if alert else None,
                 "expected_cases": alert.expected_cases if alert else None,
             }

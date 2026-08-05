@@ -6,6 +6,7 @@ LOCAL_WEEK = re.compile(r"^(?P<year>\d{4})-W(?P<week>\d{2})$")
 DHIS2_WEEK = re.compile(r"^(?P<year>\d{4})W(?P<week>\d{1,2})$")
 LOCAL_SEMESTER = re.compile(r"^(?P<year>\d{4})-S(?P<semester>[12])$")
 DHIS2_SEMESTER = re.compile(r"^(?P<year>\d{4})S(?P<semester>[12])$")
+ANNUAL = re.compile(r"^(?P<year>\d{4})$")
 
 
 def local_week_to_dhis2(period_label: str) -> str:
@@ -36,6 +37,11 @@ def local_period_to_dhis2(period_label: str, period_type: str) -> str:
         if not match:
             raise ValueError(f"Invalid local six-monthly period: {period_label}")
         return f"{match.group('year')}S{match.group('semester')}"
+    if period_type.lower() in {"yearly", "annual"}:
+        match = ANNUAL.fullmatch(period_label)
+        if not match:
+            raise ValueError(f"Invalid local annual period: {period_label}")
+        return match.group("year")
     raise ValueError(f"Unsupported DHIS2 period type: {period_type}")
 
 
@@ -51,4 +57,10 @@ def dhis2_period_bounds(period: str, period_type: str) -> tuple[date, date, str]
         start = date(year, 1 if semester == 1 else 7, 1)
         end = date(year, 6, 30) if semester == 1 else date(year, 12, 31)
         return start, end, f"{year}-S{semester}"
+    if period_type.lower() in {"yearly", "annual"}:
+        match = ANNUAL.fullmatch(period)
+        if not match:
+            raise ValueError(f"Invalid DHIS2 annual period: {period}")
+        year = int(match.group("year"))
+        return date(year, 1, 1), date(year, 12, 31), str(year)
     raise ValueError(f"Unsupported DHIS2 period type: {period_type}")

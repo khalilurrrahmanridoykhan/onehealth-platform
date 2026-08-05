@@ -63,6 +63,13 @@ def test_six_monthly_period_conversion_round_trip():
     )
 
 
+def test_annual_period_conversion_round_trip():
+    assert local_period_to_dhis2("2024", "Yearly") == "2024"
+    assert dhis2_period_bounds("2024", "Yearly") == (
+        date(2024, 1, 1), date(2024, 12, 31), "2024"
+    )
+
+
 def test_complete_record_becomes_data_value_set():
     payloads = records_to_data_value_sets([record()], MAPPING)
     assert payloads == [
@@ -92,6 +99,28 @@ def test_national_records_can_use_a_separate_data_element():
     mapping = replace(MAPPING, national_cases_data_element_uid="OhDngNat001")
     payload = records_to_data_value_sets([record()], mapping)[0]
     assert payload["dataValues"][0]["dataElement"] == "OhDngNat001"
+
+
+def test_national_deaths_are_written_and_read_with_separate_element():
+    mapping = replace(
+        MAPPING, national_cases_data_element_uid="OhNipNatC01",
+        national_deaths_data_element_uid="OhNipNatD01", period_type="Yearly",
+    )
+    annual = replace(
+        record(), disease_code="DENGUE", period_start=date(2024, 1, 1),
+        period_end=date(2024, 12, 31), period_type="annual", period_label="2024",
+        deaths=5,
+    )
+    payload = records_to_data_value_sets([annual], mapping)[0]
+    assert payload["dataValues"][1] == {
+        "dataElement": "OhNipNatD01", "value": "5", "comment": "Source: DGHS"
+    }
+    response = {"dataValues": [
+        {"dataElement":"OhNipNatC01","period":"2024","orgUnit":"BdOrgUnit01","value":"5"},
+        {"dataElement":"OhNipNatD01","period":"2024","orgUnit":"BdOrgUnit01","value":"5"},
+    ]}
+    restored = records_from_dhis2(response, mapping)[0]
+    assert restored.cases == 5 and restored.deaths == 5
 
 
 def test_dhis2_values_become_surveillance_records():

@@ -1,0 +1,1339 @@
+{
+  "visualizations": [
+    {
+      "id": "OhNipTrend1",
+      "name": "Nipah Annual Cases and Deaths \u2014 2001\u20132024",
+      "type": "LINE",
+      "publicAccess": "rw------",
+      "showData": true,
+      "hideEmptyRows": true,
+      "hideEmptyColumns": true,
+      "showDimensionLabels": true,
+      "columns": [
+        {
+          "dimension": "dx",
+          "items": [
+            {
+              "id": "OhNipNatC01",
+              "dimensionItemType": "DATA_ELEMENT"
+            },
+            {
+              "id": "OhNipNatD01",
+              "dimensionItemType": "DATA_ELEMENT"
+            }
+          ]
+        }
+      ],
+      "rows": [
+        {
+          "dimension": "pe",
+          "items": [
+            {
+              "id": "2001",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2002",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2003",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2004",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2005",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2006",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2007",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2008",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2009",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2010",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2011",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2012",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2013",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2014",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2015",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2016",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2017",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2018",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2019",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2020",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2021",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2022",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2023",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2024",
+              "dimensionItemType": "PERIOD"
+            }
+          ]
+        }
+      ],
+      "filters": [
+        {
+          "dimension": "ou",
+          "items": [
+            {
+              "id": "BdOrgUnit01",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            }
+          ]
+        }
+      ],
+      "dataDimensionItems": [
+        {
+          "dataDimensionItemType": "DATA_ELEMENT",
+          "dataElement": {
+            "id": "OhNipNatC01"
+          }
+        },
+        {
+          "dataDimensionItemType": "DATA_ELEMENT",
+          "dataElement": {
+            "id": "OhNipNatD01"
+          }
+        }
+      ],
+      "organisationUnits": [
+        {
+          "id": "BdOrgUnit01"
+        }
+      ],
+      "periods": [
+        {
+          "id": "2001"
+        },
+        {
+          "id": "2002"
+        },
+        {
+          "id": "2003"
+        },
+        {
+          "id": "2004"
+        },
+        {
+          "id": "2005"
+        },
+        {
+          "id": "2006"
+        },
+        {
+          "id": "2007"
+        },
+        {
+          "id": "2008"
+        },
+        {
+          "id": "2009"
+        },
+        {
+          "id": "2010"
+        },
+        {
+          "id": "2011"
+        },
+        {
+          "id": "2012"
+        },
+        {
+          "id": "2013"
+        },
+        {
+          "id": "2014"
+        },
+        {
+          "id": "2015"
+        },
+        {
+          "id": "2016"
+        },
+        {
+          "id": "2017"
+        },
+        {
+          "id": "2018"
+        },
+        {
+          "id": "2019"
+        },
+        {
+          "id": "2020"
+        },
+        {
+          "id": "2021"
+        },
+        {
+          "id": "2022"
+        },
+        {
+          "id": "2023"
+        },
+        {
+          "id": "2024"
+        }
+      ],
+      "relativePeriods": {}
+    },
+    {
+      "id": "OhNipCaseK1",
+      "name": "Latest National Nipah Cases \u2014 2024",
+      "type": "SINGLE_VALUE",
+      "publicAccess": "rw------",
+      "showData": true,
+      "hideEmptyRows": true,
+      "hideEmptyColumns": true,
+      "showDimensionLabels": true,
+      "columns": [
+        {
+          "dimension": "dx",
+          "items": [
+            {
+              "id": "OhNipNatC01",
+              "dimensionItemType": "DATA_ELEMENT"
+            }
+          ]
+        }
+      ],
+      "rows": [],
+      "filters": [
+        {
+          "dimension": "pe",
+          "items": [
+            {
+              "id": "2024",
+              "dimensionItemType": "PERIOD"
+            }
+          ]
+        },
+        {
+          "dimension": "ou",
+          "items": [
+            {
+              "id": "BdOrgUnit01",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            }
+          ]
+        }
+      ],
+      "dataDimensionItems": [
+        {
+          "dataDimensionItemType": "DATA_ELEMENT",
+          "dataElement": {
+            "id": "OhNipNatC01"
+          }
+        }
+      ],
+      "organisationUnits": [
+        {
+          "id": "BdOrgUnit01"
+        }
+      ],
+      "periods": [
+        {
+          "id": "2024"
+        }
+      ],
+      "relativePeriods": {}
+    },
+    {
+      "id": "OhNipDeadK1",
+      "name": "Latest National Nipah Deaths \u2014 2024",
+      "type": "SINGLE_VALUE",
+      "publicAccess": "rw------",
+      "showData": true,
+      "hideEmptyRows": true,
+      "hideEmptyColumns": true,
+      "showDimensionLabels": true,
+      "columns": [
+        {
+          "dimension": "dx",
+          "items": [
+            {
+              "id": "OhNipNatD01",
+              "dimensionItemType": "DATA_ELEMENT"
+            }
+          ]
+        }
+      ],
+      "rows": [],
+      "filters": [
+        {
+          "dimension": "pe",
+          "items": [
+            {
+              "id": "2024",
+              "dimensionItemType": "PERIOD"
+            }
+          ]
+        },
+        {
+          "dimension": "ou",
+          "items": [
+            {
+              "id": "BdOrgUnit01",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            }
+          ]
+        }
+      ],
+      "dataDimensionItems": [
+        {
+          "dataDimensionItemType": "DATA_ELEMENT",
+          "dataElement": {
+            "id": "OhNipNatD01"
+          }
+        }
+      ],
+      "organisationUnits": [
+        {
+          "id": "BdOrgUnit01"
+        }
+      ],
+      "periods": [
+        {
+          "id": "2024"
+        }
+      ],
+      "relativePeriods": {}
+    },
+    {
+      "id": "OhNipTotalC",
+      "name": "Cumulative National Nipah Cases \u2014 2001\u20132024",
+      "type": "SINGLE_VALUE",
+      "publicAccess": "rw------",
+      "showData": true,
+      "hideEmptyRows": true,
+      "hideEmptyColumns": true,
+      "showDimensionLabels": true,
+      "columns": [
+        {
+          "dimension": "dx",
+          "items": [
+            {
+              "id": "OhNipNatC01",
+              "dimensionItemType": "DATA_ELEMENT"
+            }
+          ]
+        }
+      ],
+      "rows": [],
+      "filters": [
+        {
+          "dimension": "pe",
+          "items": [
+            {
+              "id": "2001",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2002",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2003",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2004",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2005",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2006",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2007",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2008",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2009",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2010",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2011",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2012",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2013",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2014",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2015",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2016",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2017",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2018",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2019",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2020",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2021",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2022",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2023",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2024",
+              "dimensionItemType": "PERIOD"
+            }
+          ]
+        },
+        {
+          "dimension": "ou",
+          "items": [
+            {
+              "id": "BdOrgUnit01",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            }
+          ]
+        }
+      ],
+      "dataDimensionItems": [
+        {
+          "dataDimensionItemType": "DATA_ELEMENT",
+          "dataElement": {
+            "id": "OhNipNatC01"
+          }
+        }
+      ],
+      "organisationUnits": [
+        {
+          "id": "BdOrgUnit01"
+        }
+      ],
+      "periods": [
+        {
+          "id": "2001"
+        },
+        {
+          "id": "2002"
+        },
+        {
+          "id": "2003"
+        },
+        {
+          "id": "2004"
+        },
+        {
+          "id": "2005"
+        },
+        {
+          "id": "2006"
+        },
+        {
+          "id": "2007"
+        },
+        {
+          "id": "2008"
+        },
+        {
+          "id": "2009"
+        },
+        {
+          "id": "2010"
+        },
+        {
+          "id": "2011"
+        },
+        {
+          "id": "2012"
+        },
+        {
+          "id": "2013"
+        },
+        {
+          "id": "2014"
+        },
+        {
+          "id": "2015"
+        },
+        {
+          "id": "2016"
+        },
+        {
+          "id": "2017"
+        },
+        {
+          "id": "2018"
+        },
+        {
+          "id": "2019"
+        },
+        {
+          "id": "2020"
+        },
+        {
+          "id": "2021"
+        },
+        {
+          "id": "2022"
+        },
+        {
+          "id": "2023"
+        },
+        {
+          "id": "2024"
+        }
+      ],
+      "relativePeriods": {}
+    },
+    {
+      "id": "OhNipTotalD",
+      "name": "Cumulative National Nipah Deaths \u2014 2001\u20132024",
+      "type": "SINGLE_VALUE",
+      "publicAccess": "rw------",
+      "showData": true,
+      "hideEmptyRows": true,
+      "hideEmptyColumns": true,
+      "showDimensionLabels": true,
+      "columns": [
+        {
+          "dimension": "dx",
+          "items": [
+            {
+              "id": "OhNipNatD01",
+              "dimensionItemType": "DATA_ELEMENT"
+            }
+          ]
+        }
+      ],
+      "rows": [],
+      "filters": [
+        {
+          "dimension": "pe",
+          "items": [
+            {
+              "id": "2001",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2002",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2003",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2004",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2005",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2006",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2007",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2008",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2009",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2010",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2011",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2012",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2013",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2014",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2015",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2016",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2017",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2018",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2019",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2020",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2021",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2022",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2023",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2024",
+              "dimensionItemType": "PERIOD"
+            }
+          ]
+        },
+        {
+          "dimension": "ou",
+          "items": [
+            {
+              "id": "BdOrgUnit01",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            }
+          ]
+        }
+      ],
+      "dataDimensionItems": [
+        {
+          "dataDimensionItemType": "DATA_ELEMENT",
+          "dataElement": {
+            "id": "OhNipNatD01"
+          }
+        }
+      ],
+      "organisationUnits": [
+        {
+          "id": "BdOrgUnit01"
+        }
+      ],
+      "periods": [
+        {
+          "id": "2001"
+        },
+        {
+          "id": "2002"
+        },
+        {
+          "id": "2003"
+        },
+        {
+          "id": "2004"
+        },
+        {
+          "id": "2005"
+        },
+        {
+          "id": "2006"
+        },
+        {
+          "id": "2007"
+        },
+        {
+          "id": "2008"
+        },
+        {
+          "id": "2009"
+        },
+        {
+          "id": "2010"
+        },
+        {
+          "id": "2011"
+        },
+        {
+          "id": "2012"
+        },
+        {
+          "id": "2013"
+        },
+        {
+          "id": "2014"
+        },
+        {
+          "id": "2015"
+        },
+        {
+          "id": "2016"
+        },
+        {
+          "id": "2017"
+        },
+        {
+          "id": "2018"
+        },
+        {
+          "id": "2019"
+        },
+        {
+          "id": "2020"
+        },
+        {
+          "id": "2021"
+        },
+        {
+          "id": "2022"
+        },
+        {
+          "id": "2023"
+        },
+        {
+          "id": "2024"
+        }
+      ],
+      "relativePeriods": {}
+    },
+    {
+      "id": "OhNipDiv001",
+      "name": "Division Cumulative Nipah Burden \u2014 2001\u20132021",
+      "type": "BAR",
+      "publicAccess": "rw------",
+      "showData": true,
+      "hideEmptyRows": true,
+      "hideEmptyColumns": true,
+      "showDimensionLabels": true,
+      "columns": [
+        {
+          "dimension": "ou",
+          "items": [
+            {
+              "id": "BdDivBar001",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            },
+            {
+              "id": "BdDivCtg001",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            },
+            {
+              "id": "BdDivDha001",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            },
+            {
+              "id": "BdDivKhu001",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            },
+            {
+              "id": "BdDivMym001",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            },
+            {
+              "id": "BdDivRaj001",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            },
+            {
+              "id": "BdDivRan001",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            }
+          ]
+        }
+      ],
+      "rows": [
+        {
+          "dimension": "dx",
+          "items": [
+            {
+              "id": "OhNipDivC01",
+              "dimensionItemType": "DATA_ELEMENT"
+            }
+          ]
+        }
+      ],
+      "filters": [
+        {
+          "dimension": "pe",
+          "items": [
+            {
+              "id": "2021",
+              "dimensionItemType": "PERIOD"
+            }
+          ]
+        }
+      ],
+      "dataDimensionItems": [
+        {
+          "dataDimensionItemType": "DATA_ELEMENT",
+          "dataElement": {
+            "id": "OhNipDivC01"
+          }
+        }
+      ],
+      "organisationUnits": [
+        {
+          "id": "BdDivBar001"
+        },
+        {
+          "id": "BdDivCtg001"
+        },
+        {
+          "id": "BdDivDha001"
+        },
+        {
+          "id": "BdDivKhu001"
+        },
+        {
+          "id": "BdDivMym001"
+        },
+        {
+          "id": "BdDivRaj001"
+        },
+        {
+          "id": "BdDivRan001"
+        }
+      ],
+      "periods": [
+        {
+          "id": "2021"
+        }
+      ],
+      "relativePeriods": {}
+    },
+    {
+      "id": "OhNipTable1",
+      "name": "Nipah Annual Cases and Deaths Table",
+      "type": "PIVOT_TABLE",
+      "publicAccess": "rw------",
+      "showData": true,
+      "hideEmptyRows": true,
+      "hideEmptyColumns": true,
+      "showDimensionLabels": true,
+      "columns": [
+        {
+          "dimension": "pe",
+          "items": [
+            {
+              "id": "2001",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2002",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2003",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2004",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2005",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2006",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2007",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2008",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2009",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2010",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2011",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2012",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2013",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2014",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2015",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2016",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2017",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2018",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2019",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2020",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2021",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2022",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2023",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2024",
+              "dimensionItemType": "PERIOD"
+            }
+          ]
+        }
+      ],
+      "rows": [
+        {
+          "dimension": "dx",
+          "items": [
+            {
+              "id": "OhNipNatC01",
+              "dimensionItemType": "DATA_ELEMENT"
+            },
+            {
+              "id": "OhNipNatD01",
+              "dimensionItemType": "DATA_ELEMENT"
+            }
+          ]
+        }
+      ],
+      "filters": [
+        {
+          "dimension": "ou",
+          "items": [
+            {
+              "id": "BdOrgUnit01",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            }
+          ]
+        }
+      ],
+      "dataDimensionItems": [
+        {
+          "dataDimensionItemType": "DATA_ELEMENT",
+          "dataElement": {
+            "id": "OhNipNatC01"
+          }
+        },
+        {
+          "dataDimensionItemType": "DATA_ELEMENT",
+          "dataElement": {
+            "id": "OhNipNatD01"
+          }
+        }
+      ],
+      "organisationUnits": [
+        {
+          "id": "BdOrgUnit01"
+        }
+      ],
+      "periods": [
+        {
+          "id": "2001"
+        },
+        {
+          "id": "2002"
+        },
+        {
+          "id": "2003"
+        },
+        {
+          "id": "2004"
+        },
+        {
+          "id": "2005"
+        },
+        {
+          "id": "2006"
+        },
+        {
+          "id": "2007"
+        },
+        {
+          "id": "2008"
+        },
+        {
+          "id": "2009"
+        },
+        {
+          "id": "2010"
+        },
+        {
+          "id": "2011"
+        },
+        {
+          "id": "2012"
+        },
+        {
+          "id": "2013"
+        },
+        {
+          "id": "2014"
+        },
+        {
+          "id": "2015"
+        },
+        {
+          "id": "2016"
+        },
+        {
+          "id": "2017"
+        },
+        {
+          "id": "2018"
+        },
+        {
+          "id": "2019"
+        },
+        {
+          "id": "2020"
+        },
+        {
+          "id": "2021"
+        },
+        {
+          "id": "2022"
+        },
+        {
+          "id": "2023"
+        },
+        {
+          "id": "2024"
+        }
+      ],
+      "relativePeriods": {}
+    }
+  ],
+  "maps": [
+    {
+      "id": "OhNipMap001",
+      "name": "Nipah Division Hotspot Map \u2014 2001\u20132021",
+      "publicAccess": "rw------",
+      "basemap": "osmLight",
+      "zoom": 6,
+      "latitude": 23.7,
+      "longitude": 90.35,
+      "mapViews": [
+        {
+          "layer": "thematic",
+          "name": "Cumulative Nipah cases by division \u2014 2001\u20132021",
+          "columns": [
+            {
+              "dimension": "dx",
+              "items": [
+                {
+                  "id": "OhNipDivC01",
+                  "dimensionItemType": "DATA_ELEMENT"
+                }
+              ]
+            }
+          ],
+          "rows": [
+            {
+              "dimension": "ou",
+              "items": [
+                {
+                  "id": "LEVEL-2",
+                  "dimensionItemType": "ORGANISATION_UNIT"
+                },
+                {
+                  "id": "BdOrgUnit01",
+                  "dimensionItemType": "ORGANISATION_UNIT"
+                }
+              ]
+            }
+          ],
+          "filters": [
+            {
+              "dimension": "pe",
+              "items": [
+                {
+                  "id": "2021",
+                  "dimensionItemType": "PERIOD"
+                }
+              ]
+            }
+          ],
+          "organisationUnits": [
+            {
+              "id": "BdOrgUnit01"
+            }
+          ],
+          "organisationUnitLevels": [
+            2
+          ],
+          "periods": [
+            {
+              "id": "2021"
+            }
+          ],
+          "classes": 5,
+          "method": 2,
+          "colorLow": "#fde68a",
+          "colorHigh": "#7f1d1d",
+          "colorScale": "#fde68a,#f59e0b,#f97316,#dc2626,#7f1d1d",
+          "opacity": 1,
+          "labels": false,
+          "thematicMapType": "CHOROPLETH",
+          "aggregationType": "DEFAULT",
+          "noDataColor": "#d1d5db"
+        }
+      ]
+    }
+  ],
+  "dashboards": [
+    {
+      "id": "OhNipDash01",
+      "name": "OneHealth Nipah Literature Surveillance",
+      "description": "Historical literature-compiled Nipah cases, deaths, and division hotspots for Bangladesh; not live surveillance",
+      "publicAccess": "rw------",
+      "dashboardItems": [
+        {
+          "id": "OhNipItem01",
+          "i": "OhNipItem01",
+          "type": "VISUALIZATION",
+          "x": 0,
+          "y": 0,
+          "w": 15,
+          "h": 8,
+          "width": 15,
+          "height": 8,
+          "visualization": {
+            "id": "OhNipCaseK1"
+          }
+        },
+        {
+          "id": "OhNipItem02",
+          "i": "OhNipItem02",
+          "type": "VISUALIZATION",
+          "x": 15,
+          "y": 0,
+          "w": 15,
+          "h": 8,
+          "width": 15,
+          "height": 8,
+          "visualization": {
+            "id": "OhNipDeadK1"
+          }
+        },
+        {
+          "id": "OhNipItem03",
+          "i": "OhNipItem03",
+          "type": "VISUALIZATION",
+          "x": 30,
+          "y": 0,
+          "w": 15,
+          "h": 8,
+          "width": 15,
+          "height": 8,
+          "visualization": {
+            "id": "OhNipTotalC"
+          }
+        },
+        {
+          "id": "OhNipItem04",
+          "i": "OhNipItem04",
+          "type": "VISUALIZATION",
+          "x": 45,
+          "y": 0,
+          "w": 15,
+          "h": 8,
+          "width": 15,
+          "height": 8,
+          "visualization": {
+            "id": "OhNipTotalD"
+          }
+        },
+        {
+          "id": "OhNipItem05",
+          "i": "OhNipItem05",
+          "type": "VISUALIZATION",
+          "x": 0,
+          "y": 8,
+          "w": 60,
+          "h": 16,
+          "width": 60,
+          "height": 16,
+          "visualization": {
+            "id": "OhNipTrend1"
+          }
+        },
+        {
+          "id": "OhNipItem06",
+          "i": "OhNipItem06",
+          "type": "MAP",
+          "x": 0,
+          "y": 24,
+          "w": 30,
+          "h": 18,
+          "width": 30,
+          "height": 18,
+          "map": {
+            "id": "OhNipMap001"
+          }
+        },
+        {
+          "id": "OhNipItem07",
+          "i": "OhNipItem07",
+          "type": "VISUALIZATION",
+          "x": 30,
+          "y": 24,
+          "w": 30,
+          "h": 18,
+          "width": 30,
+          "height": 18,
+          "visualization": {
+            "id": "OhNipDiv001"
+          }
+        },
+        {
+          "id": "OhNipItem08",
+          "i": "OhNipItem08",
+          "type": "VISUALIZATION",
+          "x": 0,
+          "y": 42,
+          "w": 60,
+          "h": 14,
+          "width": 60,
+          "height": 14,
+          "visualization": {
+            "id": "OhNipTable1"
+          }
+        }
+      ]
+    }
+  ]
+}

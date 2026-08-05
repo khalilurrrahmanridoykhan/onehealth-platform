@@ -61,8 +61,9 @@ export default function App() {
   const diseaseName =
     diseases.find((disease) => disease.code === selectedDisease)?.name ??
     `${selectedDisease.charAt(0)}${selectedDisease.slice(1).toLowerCase()}`
-  const metricLabel = selectedDisease === 'HPAI' ? 'reported outbreaks' : 'cases'
-  const periodLabel = selectedDisease === 'HPAI' ? 'semester' : 'week'
+  const metricLabel = selectedDisease === 'HPAI' ? 'reported outbreaks' : selectedDisease === 'NIPAH' ? 'reported cases' : 'cases'
+  const periodLabel = selectedDisease === 'HPAI' ? 'semester' : selectedDisease === 'NIPAH' ? 'year' : 'week'
+  const historicalOnly = selectedDisease === 'HPAI' || selectedDisease === 'NIPAH'
 
   const navigation = [
     ['dashboard', 'OV', 'Command overview'], ['surveillance', 'TR', 'Trends & forecast'],
@@ -88,7 +89,7 @@ export default function App() {
           <div>
             <p className="eyebrow">National surveillance command centre</p>
             <h1>{diseaseName} intelligence</h1>
-            <p>Early warning, spatial risk and coordinated response · {latestPeriod}</p>
+            <p>{historicalOnly ? 'Historical evidence, geographic burden and research intelligence' : 'Early warning, spatial risk and coordinated response'} · {latestPeriod}</p>
           </div>
           <div className="topbar-actions"><label className="location-select disease-select">
             <span>Disease programme</span>
@@ -110,9 +111,9 @@ export default function App() {
               <RiskMap items={overview} selected={selected} diseaseName={diseaseName} metricLabel={metricLabel} onSelect={setSelected} />
               <LocationTable items={overview} selected={selected} onSelect={setSelected} />
             </div>
-            <SummaryCards summary={selectedSummary} alert={alert} metricLabel={metricLabel} periodLabel={periodLabel} />
+            <SummaryCards summary={selectedSummary} alert={alert} metricLabel={metricLabel} periodLabel={periodLabel} diseaseCode={selectedDisease} />
             <div className="dashboard-grid" id="surveillance">
-              <TrendChart records={trend} alert={alert} diseaseName={diseaseName} metricLabel={metricLabel} periodLabel={periodLabel} />
+              <TrendChart records={trend} alert={alert} diseaseName={diseaseName} metricLabel={metricLabel} periodLabel={periodLabel} historicalOnly={historicalOnly} />
               <div id="alerts"><AlertPanel alert={alert} /></div>
             </div>
             {locations.length > 1 && <ComparisonWorkbench diseaseCode={selectedDisease} locations={locations} primaryCode={selected} primaryRecords={trend} metricLabel={metricLabel} />}

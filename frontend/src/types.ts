@@ -21,6 +21,7 @@ export interface SurveillanceRecord {
   location_name: string
   location_level: string
   cases: number
+  deaths?: number | null
   complete_period: boolean
 }
 
@@ -43,8 +44,10 @@ export interface OverviewItem {
   location_level: 'national' | 'division'
   periods: number
   total_cases: number
+  total_deaths?: number
   latest_period: string
   latest_cases: number
+  latest_deaths?: number | null
   risk_level: RiskLevel | null
   expected_cases: number | null
 }
