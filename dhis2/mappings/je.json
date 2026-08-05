@@ -1,0 +1,12 @@
+{
+  "diseaseCode":"JE", "diseaseName":"Japanese Encephalitis", "periodType":"Yearly",
+  "dataSetUid":"OhJeAnn0001", "casesDataElementUid":"OhJeDivC001",
+  "nationalCasesDataElementUid":"OhJeNatC001",
+  "locations": {
+    "BD":{"uid":"BdOrgUnit01","name":"Bangladesh","level":"national"},
+    "BD-CTG":{"uid":"BdDivCtg001","name":"Chattogram","level":"division"},
+    "BD-KHU":{"uid":"BdDivKhu001","name":"Khulna","level":"division"},
+    "BD-RAJ":{"uid":"BdDivRaj001","name":"Rajshahi","level":"division"},
+    "BD-RAN":{"uid":"BdDivRan001","name":"Rangpur","level":"division"}
+  }
+}

@@ -1,0 +1,846 @@
+{
+  "visualizations": [
+    {
+      "id": "OhJeTrend01",
+      "name": "JE Annual Confirmed Cases \u2014 2007\u20132016",
+      "type": "LINE",
+      "publicAccess": "rw------",
+      "showData": true,
+      "hideEmptyRows": true,
+      "hideEmptyColumns": true,
+      "showDimensionLabels": true,
+      "columns": [
+        {
+          "dimension": "pe",
+          "items": [
+            {
+              "id": "2007",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2008",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2009",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2010",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2011",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2012",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2013",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2014",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2015",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2016",
+              "dimensionItemType": "PERIOD"
+            }
+          ]
+        }
+      ],
+      "rows": [
+        {
+          "dimension": "dx",
+          "items": [
+            {
+              "id": "OhJeNatC001",
+              "dimensionItemType": "DATA_ELEMENT"
+            }
+          ]
+        }
+      ],
+      "filters": [
+        {
+          "dimension": "ou",
+          "items": [
+            {
+              "id": "BdOrgUnit01",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            }
+          ]
+        }
+      ],
+      "dataDimensionItems": [
+        {
+          "dataDimensionItemType": "DATA_ELEMENT",
+          "dataElement": {
+            "id": "OhJeNatC001"
+          }
+        }
+      ],
+      "organisationUnits": [
+        {
+          "id": "BdOrgUnit01"
+        }
+      ],
+      "periods": [
+        {
+          "id": "2007"
+        },
+        {
+          "id": "2008"
+        },
+        {
+          "id": "2009"
+        },
+        {
+          "id": "2010"
+        },
+        {
+          "id": "2011"
+        },
+        {
+          "id": "2012"
+        },
+        {
+          "id": "2013"
+        },
+        {
+          "id": "2014"
+        },
+        {
+          "id": "2015"
+        },
+        {
+          "id": "2016"
+        }
+      ],
+      "relativePeriods": {}
+    },
+    {
+      "id": "OhJeLatest1",
+      "name": "Latest JE Confirmed Cases \u2014 2016 Partial",
+      "type": "SINGLE_VALUE",
+      "publicAccess": "rw------",
+      "showData": true,
+      "hideEmptyRows": true,
+      "hideEmptyColumns": true,
+      "showDimensionLabels": true,
+      "columns": [
+        {
+          "dimension": "dx",
+          "items": [
+            {
+              "id": "OhJeNatC001",
+              "dimensionItemType": "DATA_ELEMENT"
+            }
+          ]
+        }
+      ],
+      "rows": [],
+      "filters": [
+        {
+          "dimension": "pe",
+          "items": [
+            {
+              "id": "2016",
+              "dimensionItemType": "PERIOD"
+            }
+          ]
+        },
+        {
+          "dimension": "ou",
+          "items": [
+            {
+              "id": "BdOrgUnit01",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            }
+          ]
+        }
+      ],
+      "dataDimensionItems": [
+        {
+          "dataDimensionItemType": "DATA_ELEMENT",
+          "dataElement": {
+            "id": "OhJeNatC001"
+          }
+        }
+      ],
+      "organisationUnits": [
+        {
+          "id": "BdOrgUnit01"
+        }
+      ],
+      "periods": [
+        {
+          "id": "2016"
+        }
+      ],
+      "relativePeriods": {}
+    },
+    {
+      "id": "OhJeTotal01",
+      "name": "Total JE Confirmed Cases \u2014 2007\u20132016",
+      "type": "SINGLE_VALUE",
+      "publicAccess": "rw------",
+      "showData": true,
+      "hideEmptyRows": true,
+      "hideEmptyColumns": true,
+      "showDimensionLabels": true,
+      "columns": [
+        {
+          "dimension": "dx",
+          "items": [
+            {
+              "id": "OhJeNatC001",
+              "dimensionItemType": "DATA_ELEMENT"
+            }
+          ]
+        }
+      ],
+      "rows": [],
+      "filters": [
+        {
+          "dimension": "pe",
+          "items": [
+            {
+              "id": "2007",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2008",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2009",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2010",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2011",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2012",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2013",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2014",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2015",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2016",
+              "dimensionItemType": "PERIOD"
+            }
+          ]
+        },
+        {
+          "dimension": "ou",
+          "items": [
+            {
+              "id": "BdOrgUnit01",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            }
+          ]
+        }
+      ],
+      "dataDimensionItems": [
+        {
+          "dataDimensionItemType": "DATA_ELEMENT",
+          "dataElement": {
+            "id": "OhJeNatC001"
+          }
+        }
+      ],
+      "organisationUnits": [
+        {
+          "id": "BdOrgUnit01"
+        }
+      ],
+      "periods": [
+        {
+          "id": "2007"
+        },
+        {
+          "id": "2008"
+        },
+        {
+          "id": "2009"
+        },
+        {
+          "id": "2010"
+        },
+        {
+          "id": "2011"
+        },
+        {
+          "id": "2012"
+        },
+        {
+          "id": "2013"
+        },
+        {
+          "id": "2014"
+        },
+        {
+          "id": "2015"
+        },
+        {
+          "id": "2016"
+        }
+      ],
+      "relativePeriods": {}
+    },
+    {
+      "id": "OhJeSites01",
+      "name": "JE Cases by Sentinel Site \u2014 2007\u20132016",
+      "type": "STACKED_COLUMN",
+      "publicAccess": "rw------",
+      "showData": false,
+      "hideEmptyRows": true,
+      "hideEmptyColumns": true,
+      "showDimensionLabels": true,
+      "columns": [
+        {
+          "dimension": "pe",
+          "items": [
+            {
+              "id": "2007",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2008",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2009",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2010",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2011",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2012",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2013",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2014",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2015",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2016",
+              "dimensionItemType": "PERIOD"
+            }
+          ]
+        }
+      ],
+      "rows": [
+        {
+          "dimension": "ou",
+          "items": [
+            {
+              "id": "BdDivCtg001",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            },
+            {
+              "id": "BdDivKhu001",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            },
+            {
+              "id": "BdDivRaj001",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            },
+            {
+              "id": "BdDivRan001",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            }
+          ]
+        }
+      ],
+      "filters": [
+        {
+          "dimension": "dx",
+          "items": [
+            {
+              "id": "OhJeDivC001",
+              "dimensionItemType": "DATA_ELEMENT"
+            }
+          ]
+        }
+      ],
+      "dataDimensionItems": [
+        {
+          "dataDimensionItemType": "DATA_ELEMENT",
+          "dataElement": {
+            "id": "OhJeDivC001"
+          }
+        }
+      ],
+      "organisationUnits": [
+        {
+          "id": "BdDivCtg001"
+        },
+        {
+          "id": "BdDivKhu001"
+        },
+        {
+          "id": "BdDivRaj001"
+        },
+        {
+          "id": "BdDivRan001"
+        }
+      ],
+      "periods": [
+        {
+          "id": "2007"
+        },
+        {
+          "id": "2008"
+        },
+        {
+          "id": "2009"
+        },
+        {
+          "id": "2010"
+        },
+        {
+          "id": "2011"
+        },
+        {
+          "id": "2012"
+        },
+        {
+          "id": "2013"
+        },
+        {
+          "id": "2014"
+        },
+        {
+          "id": "2015"
+        },
+        {
+          "id": "2016"
+        }
+      ],
+      "relativePeriods": {}
+    },
+    {
+      "id": "OhJeBurden1",
+      "name": "Cumulative JE Burden by Sentinel Site",
+      "type": "BAR",
+      "publicAccess": "rw------",
+      "showData": true,
+      "hideEmptyRows": true,
+      "hideEmptyColumns": true,
+      "showDimensionLabels": true,
+      "columns": [
+        {
+          "dimension": "ou",
+          "items": [
+            {
+              "id": "BdDivCtg001",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            },
+            {
+              "id": "BdDivKhu001",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            },
+            {
+              "id": "BdDivRaj001",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            },
+            {
+              "id": "BdDivRan001",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            }
+          ]
+        }
+      ],
+      "rows": [
+        {
+          "dimension": "dx",
+          "items": [
+            {
+              "id": "OhJeDivC001",
+              "dimensionItemType": "DATA_ELEMENT"
+            }
+          ]
+        }
+      ],
+      "filters": [
+        {
+          "dimension": "pe",
+          "items": [
+            {
+              "id": "2007",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2008",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2009",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2010",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2011",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2012",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2013",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2014",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2015",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2016",
+              "dimensionItemType": "PERIOD"
+            }
+          ]
+        }
+      ],
+      "dataDimensionItems": [
+        {
+          "dataDimensionItemType": "DATA_ELEMENT",
+          "dataElement": {
+            "id": "OhJeDivC001"
+          }
+        }
+      ],
+      "organisationUnits": [
+        {
+          "id": "BdDivCtg001"
+        },
+        {
+          "id": "BdDivKhu001"
+        },
+        {
+          "id": "BdDivRaj001"
+        },
+        {
+          "id": "BdDivRan001"
+        }
+      ],
+      "periods": [
+        {
+          "id": "2007"
+        },
+        {
+          "id": "2008"
+        },
+        {
+          "id": "2009"
+        },
+        {
+          "id": "2010"
+        },
+        {
+          "id": "2011"
+        },
+        {
+          "id": "2012"
+        },
+        {
+          "id": "2013"
+        },
+        {
+          "id": "2014"
+        },
+        {
+          "id": "2015"
+        },
+        {
+          "id": "2016"
+        }
+      ],
+      "relativePeriods": {}
+    },
+    {
+      "id": "OhJeTable01",
+      "name": "JE Annual Sentinel Surveillance Table",
+      "type": "PIVOT_TABLE",
+      "publicAccess": "rw------",
+      "showData": true,
+      "hideEmptyRows": true,
+      "hideEmptyColumns": true,
+      "showDimensionLabels": true,
+      "columns": [
+        {
+          "dimension": "pe",
+          "items": [
+            {
+              "id": "2007",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2008",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2009",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2010",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2011",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2012",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2013",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2014",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2015",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2016",
+              "dimensionItemType": "PERIOD"
+            }
+          ]
+        }
+      ],
+      "rows": [
+        {
+          "dimension": "ou",
+          "items": [
+            {
+              "id": "BdDivCtg001",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            },
+            {
+              "id": "BdDivKhu001",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            },
+            {
+              "id": "BdDivRaj001",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            },
+            {
+              "id": "BdDivRan001",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            }
+          ]
+        }
+      ],
+      "filters": [
+        {
+          "dimension": "dx",
+          "items": [
+            {
+              "id": "OhJeDivC001",
+              "dimensionItemType": "DATA_ELEMENT"
+            }
+          ]
+        }
+      ],
+      "dataDimensionItems": [
+        {
+          "dataDimensionItemType": "DATA_ELEMENT",
+          "dataElement": {
+            "id": "OhJeDivC001"
+          }
+        }
+      ],
+      "organisationUnits": [
+        {
+          "id": "BdDivCtg001"
+        },
+        {
+          "id": "BdDivKhu001"
+        },
+        {
+          "id": "BdDivRaj001"
+        },
+        {
+          "id": "BdDivRan001"
+        }
+      ],
+      "periods": [
+        {
+          "id": "2007"
+        },
+        {
+          "id": "2008"
+        },
+        {
+          "id": "2009"
+        },
+        {
+          "id": "2010"
+        },
+        {
+          "id": "2011"
+        },
+        {
+          "id": "2012"
+        },
+        {
+          "id": "2013"
+        },
+        {
+          "id": "2014"
+        },
+        {
+          "id": "2015"
+        },
+        {
+          "id": "2016"
+        }
+      ],
+      "relativePeriods": {}
+    }
+  ],
+  "dashboards": [
+    {
+      "id": "OhJeDash001",
+      "name": "OneHealth Japanese Encephalitis Sentinel Surveillance",
+      "description": "Historical hospital-based sentinel surveillance from Paul et al. (2020). The 2016 period covers January-July only. Site records represent sentinel hospitals, not population-wide division incidence.",
+      "publicAccess": "rw------",
+      "dashboardItems": [
+        {
+          "id": "OhJeItem001",
+          "i": "OhJeItem001",
+          "type": "VISUALIZATION",
+          "x": 0,
+          "y": 0,
+          "w": 20,
+          "h": 8,
+          "width": 20,
+          "height": 8,
+          "visualization": {
+            "id": "OhJeLatest1"
+          }
+        },
+        {
+          "id": "OhJeItem002",
+          "i": "OhJeItem002",
+          "type": "VISUALIZATION",
+          "x": 20,
+          "y": 0,
+          "w": 40,
+          "h": 8,
+          "width": 40,
+          "height": 8,
+          "visualization": {
+            "id": "OhJeTotal01"
+          }
+        },
+        {
+          "id": "OhJeItem003",
+          "i": "OhJeItem003",
+          "type": "VISUALIZATION",
+          "x": 0,
+          "y": 8,
+          "w": 60,
+          "h": 16,
+          "width": 60,
+          "height": 16,
+          "visualization": {
+            "id": "OhJeTrend01"
+          }
+        },
+        {
+          "id": "OhJeItem004",
+          "i": "OhJeItem004",
+          "type": "VISUALIZATION",
+          "x": 0,
+          "y": 24,
+          "w": 30,
+          "h": 18,
+          "width": 30,
+          "height": 18,
+          "visualization": {
+            "id": "OhJeSites01"
+          }
+        },
+        {
+          "id": "OhJeItem005",
+          "i": "OhJeItem005",
+          "type": "VISUALIZATION",
+          "x": 30,
+          "y": 24,
+          "w": 30,
+          "h": 18,
+          "width": 30,
+          "height": 18,
+          "visualization": {
+            "id": "OhJeBurden1"
+          }
+        },
+        {
+          "id": "OhJeItem006",
+          "i": "OhJeItem006",
+          "type": "VISUALIZATION",
+          "x": 0,
+          "y": 42,
+          "w": 60,
+          "h": 14,
+          "width": 60,
+          "height": 14,
+          "visualization": {
+            "id": "OhJeTable01"
+          }
+        }
+      ]
+    }
+  ]
+}

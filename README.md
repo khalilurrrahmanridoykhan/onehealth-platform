@@ -6,7 +6,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Project status: early development](https://img.shields.io/badge/status-early%20development-orange)](#project-status)
 
-An open-source disease-surveillance, early-warning, and response platform for Bangladesh. The project is being developed incrementally from reproducible dengue, measles, highly pathogenic avian influenza (HPAI), Nipah, and acute watery diarrhea research workflows.
+An open-source disease-surveillance, early-warning, and response platform for Bangladesh. The project is being developed incrementally from reproducible dengue, measles, highly pathogenic avian influenza (HPAI), Nipah, Japanese encephalitis (JE), and acute watery diarrhea research workflows.
 
 Created and maintained by **Khalilur Rahman Ridoy Khan** ([khalilurrrahmanridoykhan](https://github.com/khalilurrrahmanridoykhan)).
 
@@ -100,7 +100,7 @@ These examples are described in the official [DHIS2 One Health](https://dhis2.or
 - Exposes FastAPI endpoints for diseases, trends, and latest alerts
 - Previews, validates, submits, and reads DHIS2 aggregate surveillance payloads
 - Displays an interactive Bangladesh division risk map
-- Includes native DHIS2 Dengue, Measles, HPAI, and Nipah analytical dashboards
+- Includes native DHIS2 Dengue, Measles, HPAI, Nipah, and Japanese encephalitis analytical dashboards
 - Previews EBS signal enrollment payloads while DHIS2 writes remain disabled by default
 - Includes automated tests and continuous integration
 
@@ -122,6 +122,8 @@ These examples are described in the official [DHIS2 One Health](https://dhis2.or
 | Native DHIS2 Measles dashboard | Implemented with KPIs, trends, division comparisons, table, and thematic map |
 | HPAI / WAHIS integration | Implemented with sparse national and division semester records; reporting gaps remain missing, not zero |
 | Native DHIS2 HPAI dashboard | Implemented with outbreak KPIs, trend, comparison, table, and thematic map |
+| Japanese encephalitis sentinel surveillance | Implemented from Paul et al. (2020): 548 confirmed cases across four hospital sentinel sites, 2007–2016; 2016 is partial through July |
+| Native DHIS2 JE dashboard | Implemented with historical KPIs, annual trend, sentinel-site comparison, cumulative burden, and table; no district choropleth is claimed |
 | Nipah literature integration | Implemented with national annual cases/deaths and division cumulative burden |
 | Native DHIS2 Nipah dashboard | Implemented with cases/deaths KPIs, historical trend, hotspot comparison, table, and map |
 | AWD/environmental-risk integration | Planned |
@@ -180,6 +182,16 @@ python scripts/import_hpai.py /path/to/hpai_modeling_dataset.csv
 ```
 
 The importer converts the public WOAH WAHIS division-semester quantitative export into `data/processed/hpai_semester.csv`, combines poultry/wildlife rows for the same place and semester, maps the Narayanganj Sadar record to Dhaka Division, and adds an auditable national sum. Semesters absent from the WAHIS export remain **missing**, not zero. The source uses the historical seven-division geography, where Mymensingh is included within Dhaka; the platform therefore leaves Mymensingh unreported instead of inventing a separate value. The normalized field named `cases` is a common internal measure slot; in the HPAI interface it is correctly presented as **reported outbreaks**.
+
+### Import Japanese encephalitis data
+
+```bash
+PYTHONPATH=src python scripts/import_je.py \
+  /path/to/je_cases_by_site_year.csv
+python scripts/build_je_dashboard.py
+```
+
+The JE integration uses the exact year-by-site table transcribed from Paul et al. (2020). It creates a national annual series and four sentinel-hospital series mapped to Rangpur, Rajshahi, Chattogram, and Khulna divisions. These are **sentinel-site counts**, not population-wide division incidence. Blank site-years remain missing. The 2016 value covers January through July only and is labelled partial in the normalized source data and native dashboard. No district map, mortality series, real-time forecast, or alert is inferred from unavailable data.
 
 ### Import Nipah data
 
@@ -253,6 +265,7 @@ The current dashboard includes:
 | `GET` | `/api/v1/trends/MEASLES?location_code=BD` | Complete national weekly measles records |
 | `GET` | `/api/v1/trends/HPAI?location_code=BD` | National six-monthly HPAI outbreak records |
 | `GET` | `/api/v1/trends/NIPAH?location_code=BD` | National annual Nipah cases and deaths |
+| `GET` | `/api/v1/trends/JE?location_code=BD` | Historical national annual JE confirmed cases |
 | `GET` | `/api/v1/trends/DENGUE?location_code=BD-DHA` | Dhaka Division weekly trend |
 | `GET` | `/api/v1/trends/DENGUE?complete_only=false&limit=10` | Include partial weeks and limit results |
 | `GET` | `/api/v1/alerts/DENGUE/latest` | Latest explainable dengue alert |

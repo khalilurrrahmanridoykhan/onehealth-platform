@@ -51,7 +51,7 @@ export function RiskMap({ items, selected, diseaseName, metricLabel, onSelect }:
   }, [])
 
   useEffect(() => {
-    setLayer(diseaseName.includes('HPAI') || diseaseName.includes('Nipah') ? 'total' : diseaseName === 'Measles' ? 'cases' : 'risk')
+    setLayer(diseaseName.includes('HPAI') || diseaseName.includes('Nipah') || diseaseName.includes('Japanese') ? 'total' : diseaseName === 'Measles' ? 'cases' : 'risk')
   }, [diseaseName])
 
   const map = useMemo(() => {

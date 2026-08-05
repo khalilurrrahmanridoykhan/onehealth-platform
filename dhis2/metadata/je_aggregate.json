@@ -1,0 +1,11 @@
+{
+  "dataElements": [
+    {"id":"OhJeNatC001","name":"OneHealth JE national annual confirmed cases","shortName":"OH JE national cases","code":"OH_JE_NATIONAL_CASES","description":"Annual laboratory-confirmed JE cases from four hospital-based sentinel sites; 2016 covers January-July only","domainType":"AGGREGATE","valueType":"INTEGER_ZERO_OR_POSITIVE","aggregationType":"SUM","zeroIsSignificant":true},
+    {"id":"OhJeDivC001","name":"OneHealth JE sentinel-site annual confirmed cases","shortName":"OH JE sentinel cases","code":"OH_JE_SENTINEL_SITE_CASES","description":"Annual laboratory-confirmed JE cases attributed to the division containing each sentinel hospital; missing site-years remain missing, not zero","domainType":"AGGREGATE","valueType":"INTEGER_ZERO_OR_POSITIVE","aggregationType":"SUM","zeroIsSignificant":false}
+  ],
+  "dataSets": [{
+    "id":"OhJeAnn0001","name":"OneHealth Annual JE Sentinel Surveillance","shortName":"OH Annual JE","code":"OH_ANNUAL_JE","periodType":"Yearly","openFuturePeriods":0,
+    "organisationUnits":[{"id":"BdOrgUnit01"},{"id":"BdDivCtg001"},{"id":"BdDivKhu001"},{"id":"BdDivRaj001"},{"id":"BdDivRan001"}],
+    "dataSetElements":[{"dataElement":{"id":"OhJeNatC001"}},{"dataElement":{"id":"OhJeDivC001"}}]
+  }]
+}
