@@ -61,9 +61,9 @@ export default function App() {
   const diseaseName =
     diseases.find((disease) => disease.code === selectedDisease)?.name ??
     `${selectedDisease.charAt(0)}${selectedDisease.slice(1).toLowerCase()}`
-  const metricLabel = selectedDisease === 'HPAI' ? 'reported outbreaks' : selectedDisease === 'NIPAH' ? 'reported cases' : 'cases'
-  const periodLabel = selectedDisease === 'HPAI' ? 'semester' : selectedDisease === 'NIPAH' || selectedDisease === 'JE' ? 'year' : 'week'
-  const historicalOnly = selectedDisease === 'HPAI' || selectedDisease === 'NIPAH' || selectedDisease === 'JE'
+  const metricLabel = selectedDisease === 'HPAI' ? 'reported outbreaks' : selectedDisease === 'NIPAH' ? 'reported cases' : selectedDisease === 'AWD' ? 'estimated AWD cases' : 'cases'
+  const periodLabel = selectedDisease === 'HPAI' ? 'semester' : ['NIPAH', 'JE', 'AWD'].includes(selectedDisease) ? 'year' : 'week'
+  const historicalOnly = ['HPAI', 'NIPAH', 'JE', 'AWD'].includes(selectedDisease)
 
   const navigation = [
     ['dashboard', 'OV', 'Command overview'], ['surveillance', 'TR', 'Trends & forecast'],

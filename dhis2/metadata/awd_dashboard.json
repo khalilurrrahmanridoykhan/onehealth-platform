@@ -1,0 +1,986 @@
+{
+  "visualizations": [
+    {
+      "id": "OhAwdTrend1",
+      "name": "AWD National Annual Estimated Cases \u2014 2014\u20132024",
+      "type": "LINE",
+      "publicAccess": "rw------",
+      "showData": true,
+      "hideEmptyRows": true,
+      "hideEmptyColumns": true,
+      "showDimensionLabels": true,
+      "columns": [
+        {
+          "dimension": "pe",
+          "items": [
+            {
+              "id": "2014",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2015",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2016",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2017",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2018",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2019",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2020",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2021",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2022",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2023",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2024",
+              "dimensionItemType": "PERIOD"
+            }
+          ]
+        }
+      ],
+      "rows": [
+        {
+          "dimension": "dx",
+          "items": [
+            {
+              "id": "OhAwdNatC01",
+              "dimensionItemType": "DATA_ELEMENT"
+            }
+          ]
+        }
+      ],
+      "filters": [
+        {
+          "dimension": "ou",
+          "items": [
+            {
+              "id": "BdOrgUnit01",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            }
+          ]
+        }
+      ],
+      "dataDimensionItems": [
+        {
+          "dataDimensionItemType": "DATA_ELEMENT",
+          "dataElement": {
+            "id": "OhAwdNatC01"
+          }
+        }
+      ],
+      "organisationUnits": [
+        {
+          "id": "BdOrgUnit01"
+        }
+      ],
+      "periods": [
+        {
+          "id": "2014"
+        },
+        {
+          "id": "2015"
+        },
+        {
+          "id": "2016"
+        },
+        {
+          "id": "2017"
+        },
+        {
+          "id": "2018"
+        },
+        {
+          "id": "2019"
+        },
+        {
+          "id": "2020"
+        },
+        {
+          "id": "2021"
+        },
+        {
+          "id": "2022"
+        },
+        {
+          "id": "2023"
+        },
+        {
+          "id": "2024"
+        }
+      ],
+      "relativePeriods": {}
+    },
+    {
+      "id": "OhAwdLatest",
+      "name": "Latest National AWD Estimated Cases \u2014 2024",
+      "type": "SINGLE_VALUE",
+      "publicAccess": "rw------",
+      "showData": true,
+      "hideEmptyRows": true,
+      "hideEmptyColumns": true,
+      "showDimensionLabels": true,
+      "columns": [
+        {
+          "dimension": "dx",
+          "items": [
+            {
+              "id": "OhAwdNatC01",
+              "dimensionItemType": "DATA_ELEMENT"
+            }
+          ]
+        }
+      ],
+      "rows": [],
+      "filters": [
+        {
+          "dimension": "pe",
+          "items": [
+            {
+              "id": "2024",
+              "dimensionItemType": "PERIOD"
+            }
+          ]
+        },
+        {
+          "dimension": "ou",
+          "items": [
+            {
+              "id": "BdOrgUnit01",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            }
+          ]
+        }
+      ],
+      "dataDimensionItems": [
+        {
+          "dataDimensionItemType": "DATA_ELEMENT",
+          "dataElement": {
+            "id": "OhAwdNatC01"
+          }
+        }
+      ],
+      "organisationUnits": [
+        {
+          "id": "BdOrgUnit01"
+        }
+      ],
+      "periods": [
+        {
+          "id": "2024"
+        }
+      ],
+      "relativePeriods": {}
+    },
+    {
+      "id": "OhAwdTotal1",
+      "name": "Cumulative AWD Estimated Cases \u2014 2014\u20132024",
+      "type": "SINGLE_VALUE",
+      "publicAccess": "rw------",
+      "showData": true,
+      "hideEmptyRows": true,
+      "hideEmptyColumns": true,
+      "showDimensionLabels": true,
+      "columns": [
+        {
+          "dimension": "dx",
+          "items": [
+            {
+              "id": "OhAwdNatC01",
+              "dimensionItemType": "DATA_ELEMENT"
+            }
+          ]
+        }
+      ],
+      "rows": [],
+      "filters": [
+        {
+          "dimension": "pe",
+          "items": [
+            {
+              "id": "2014",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2015",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2016",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2017",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2018",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2019",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2020",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2021",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2022",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2023",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2024",
+              "dimensionItemType": "PERIOD"
+            }
+          ]
+        },
+        {
+          "dimension": "ou",
+          "items": [
+            {
+              "id": "BdOrgUnit01",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            }
+          ]
+        }
+      ],
+      "dataDimensionItems": [
+        {
+          "dataDimensionItemType": "DATA_ELEMENT",
+          "dataElement": {
+            "id": "OhAwdNatC01"
+          }
+        }
+      ],
+      "organisationUnits": [
+        {
+          "id": "BdOrgUnit01"
+        }
+      ],
+      "periods": [
+        {
+          "id": "2014"
+        },
+        {
+          "id": "2015"
+        },
+        {
+          "id": "2016"
+        },
+        {
+          "id": "2017"
+        },
+        {
+          "id": "2018"
+        },
+        {
+          "id": "2019"
+        },
+        {
+          "id": "2020"
+        },
+        {
+          "id": "2021"
+        },
+        {
+          "id": "2022"
+        },
+        {
+          "id": "2023"
+        },
+        {
+          "id": "2024"
+        }
+      ],
+      "relativePeriods": {}
+    },
+    {
+      "id": "OhAwdDivBar",
+      "name": "AWD Estimated Cases by Division \u2014 2024",
+      "type": "BAR",
+      "publicAccess": "rw------",
+      "showData": true,
+      "hideEmptyRows": true,
+      "hideEmptyColumns": true,
+      "showDimensionLabels": true,
+      "columns": [
+        {
+          "dimension": "ou",
+          "items": [
+            {
+              "id": "BdDivBar001",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            },
+            {
+              "id": "BdDivCtg001",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            },
+            {
+              "id": "BdDivDha001",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            },
+            {
+              "id": "BdDivKhu001",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            },
+            {
+              "id": "BdDivMym001",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            },
+            {
+              "id": "BdDivRaj001",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            },
+            {
+              "id": "BdDivRan001",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            },
+            {
+              "id": "BdDivSyl001",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            }
+          ]
+        }
+      ],
+      "rows": [
+        {
+          "dimension": "dx",
+          "items": [
+            {
+              "id": "OhAwdDivC01",
+              "dimensionItemType": "DATA_ELEMENT"
+            }
+          ]
+        }
+      ],
+      "filters": [
+        {
+          "dimension": "pe",
+          "items": [
+            {
+              "id": "2024",
+              "dimensionItemType": "PERIOD"
+            }
+          ]
+        }
+      ],
+      "dataDimensionItems": [
+        {
+          "dataDimensionItemType": "DATA_ELEMENT",
+          "dataElement": {
+            "id": "OhAwdDivC01"
+          }
+        }
+      ],
+      "organisationUnits": [
+        {
+          "id": "BdDivBar001"
+        },
+        {
+          "id": "BdDivCtg001"
+        },
+        {
+          "id": "BdDivDha001"
+        },
+        {
+          "id": "BdDivKhu001"
+        },
+        {
+          "id": "BdDivMym001"
+        },
+        {
+          "id": "BdDivRaj001"
+        },
+        {
+          "id": "BdDivRan001"
+        },
+        {
+          "id": "BdDivSyl001"
+        }
+      ],
+      "periods": [
+        {
+          "id": "2024"
+        }
+      ],
+      "relativePeriods": {}
+    },
+    {
+      "id": "OhAwdBurden",
+      "name": "Division AWD Estimated Burden \u2014 2014\u20132024",
+      "type": "STACKED_COLUMN",
+      "publicAccess": "rw------",
+      "showData": false,
+      "hideEmptyRows": true,
+      "hideEmptyColumns": true,
+      "showDimensionLabels": true,
+      "columns": [
+        {
+          "dimension": "pe",
+          "items": [
+            {
+              "id": "2014",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2015",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2016",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2017",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2018",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2019",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2020",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2021",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2022",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2023",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2024",
+              "dimensionItemType": "PERIOD"
+            }
+          ]
+        }
+      ],
+      "rows": [
+        {
+          "dimension": "ou",
+          "items": [
+            {
+              "id": "BdDivBar001",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            },
+            {
+              "id": "BdDivCtg001",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            },
+            {
+              "id": "BdDivDha001",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            },
+            {
+              "id": "BdDivKhu001",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            },
+            {
+              "id": "BdDivMym001",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            },
+            {
+              "id": "BdDivRaj001",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            },
+            {
+              "id": "BdDivRan001",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            },
+            {
+              "id": "BdDivSyl001",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            }
+          ]
+        }
+      ],
+      "filters": [
+        {
+          "dimension": "dx",
+          "items": [
+            {
+              "id": "OhAwdDivC01",
+              "dimensionItemType": "DATA_ELEMENT"
+            }
+          ]
+        }
+      ],
+      "dataDimensionItems": [
+        {
+          "dataDimensionItemType": "DATA_ELEMENT",
+          "dataElement": {
+            "id": "OhAwdDivC01"
+          }
+        }
+      ],
+      "organisationUnits": [
+        {
+          "id": "BdDivBar001"
+        },
+        {
+          "id": "BdDivCtg001"
+        },
+        {
+          "id": "BdDivDha001"
+        },
+        {
+          "id": "BdDivKhu001"
+        },
+        {
+          "id": "BdDivMym001"
+        },
+        {
+          "id": "BdDivRaj001"
+        },
+        {
+          "id": "BdDivRan001"
+        },
+        {
+          "id": "BdDivSyl001"
+        }
+      ],
+      "periods": [
+        {
+          "id": "2014"
+        },
+        {
+          "id": "2015"
+        },
+        {
+          "id": "2016"
+        },
+        {
+          "id": "2017"
+        },
+        {
+          "id": "2018"
+        },
+        {
+          "id": "2019"
+        },
+        {
+          "id": "2020"
+        },
+        {
+          "id": "2021"
+        },
+        {
+          "id": "2022"
+        },
+        {
+          "id": "2023"
+        },
+        {
+          "id": "2024"
+        }
+      ],
+      "relativePeriods": {}
+    },
+    {
+      "id": "OhAwdTable1",
+      "name": "AWD Division Annual Estimates Table",
+      "type": "PIVOT_TABLE",
+      "publicAccess": "rw------",
+      "showData": true,
+      "hideEmptyRows": true,
+      "hideEmptyColumns": true,
+      "showDimensionLabels": true,
+      "columns": [
+        {
+          "dimension": "pe",
+          "items": [
+            {
+              "id": "2014",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2015",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2016",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2017",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2018",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2019",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2020",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2021",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2022",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2023",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2024",
+              "dimensionItemType": "PERIOD"
+            }
+          ]
+        }
+      ],
+      "rows": [
+        {
+          "dimension": "ou",
+          "items": [
+            {
+              "id": "BdDivBar001",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            },
+            {
+              "id": "BdDivCtg001",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            },
+            {
+              "id": "BdDivDha001",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            },
+            {
+              "id": "BdDivKhu001",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            },
+            {
+              "id": "BdDivMym001",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            },
+            {
+              "id": "BdDivRaj001",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            },
+            {
+              "id": "BdDivRan001",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            },
+            {
+              "id": "BdDivSyl001",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            }
+          ]
+        }
+      ],
+      "filters": [
+        {
+          "dimension": "dx",
+          "items": [
+            {
+              "id": "OhAwdDivC01",
+              "dimensionItemType": "DATA_ELEMENT"
+            }
+          ]
+        }
+      ],
+      "dataDimensionItems": [
+        {
+          "dataDimensionItemType": "DATA_ELEMENT",
+          "dataElement": {
+            "id": "OhAwdDivC01"
+          }
+        }
+      ],
+      "organisationUnits": [
+        {
+          "id": "BdDivBar001"
+        },
+        {
+          "id": "BdDivCtg001"
+        },
+        {
+          "id": "BdDivDha001"
+        },
+        {
+          "id": "BdDivKhu001"
+        },
+        {
+          "id": "BdDivMym001"
+        },
+        {
+          "id": "BdDivRaj001"
+        },
+        {
+          "id": "BdDivRan001"
+        },
+        {
+          "id": "BdDivSyl001"
+        }
+      ],
+      "periods": [
+        {
+          "id": "2014"
+        },
+        {
+          "id": "2015"
+        },
+        {
+          "id": "2016"
+        },
+        {
+          "id": "2017"
+        },
+        {
+          "id": "2018"
+        },
+        {
+          "id": "2019"
+        },
+        {
+          "id": "2020"
+        },
+        {
+          "id": "2021"
+        },
+        {
+          "id": "2022"
+        },
+        {
+          "id": "2023"
+        },
+        {
+          "id": "2024"
+        }
+      ],
+      "relativePeriods": {}
+    }
+  ],
+  "maps": [
+    {
+      "id": "OhAwdMap001",
+      "name": "AWD Division Estimated Burden Map \u2014 2024",
+      "publicAccess": "rw------",
+      "basemap": "osmLight",
+      "zoom": 6,
+      "latitude": 23.7,
+      "longitude": 90.35,
+      "mapViews": [
+        {
+          "layer": "thematic",
+          "name": "AWD annual estimated cases by division \u2014 2024",
+          "columns": [
+            {
+              "dimension": "dx",
+              "items": [
+                {
+                  "id": "OhAwdDivC01",
+                  "dimensionItemType": "DATA_ELEMENT"
+                }
+              ]
+            }
+          ],
+          "rows": [
+            {
+              "dimension": "ou",
+              "items": [
+                {
+                  "id": "LEVEL-2",
+                  "dimensionItemType": "ORGANISATION_UNIT"
+                },
+                {
+                  "id": "BdOrgUnit01",
+                  "dimensionItemType": "ORGANISATION_UNIT"
+                }
+              ]
+            }
+          ],
+          "filters": [
+            {
+              "dimension": "pe",
+              "items": [
+                {
+                  "id": "2024",
+                  "dimensionItemType": "PERIOD"
+                }
+              ]
+            }
+          ],
+          "organisationUnits": [
+            {
+              "id": "BdOrgUnit01"
+            }
+          ],
+          "organisationUnitLevels": [
+            2
+          ],
+          "periods": [
+            {
+              "id": "2024"
+            }
+          ],
+          "classes": 5,
+          "method": 2,
+          "colorLow": "#d1fae5",
+          "colorHigh": "#7f1d1d",
+          "colorScale": "#d1fae5,#fef3c7,#f59e0b,#ef4444,#7f1d1d",
+          "opacity": 1,
+          "labels": false,
+          "thematicMapType": "CHOROPLETH",
+          "aggregationType": "DEFAULT",
+          "noDataColor": "#d1d5db"
+        }
+      ]
+    }
+  ],
+  "dashboards": [
+    {
+      "id": "OhAwdDash01",
+      "name": "OneHealth AWD Ecological Estimates",
+      "description": "Literature-derived ecological AWD estimates for research demonstration. Division values use published proxy weights and are not authenticated live EWARS observations.",
+      "publicAccess": "rw------",
+      "dashboardItems": [
+        {
+          "id": "OhAwdItem01",
+          "i": "OhAwdItem01",
+          "type": "VISUALIZATION",
+          "x": 0,
+          "y": 0,
+          "w": 20,
+          "h": 8,
+          "width": 20,
+          "height": 8,
+          "visualization": {
+            "id": "OhAwdLatest"
+          }
+        },
+        {
+          "id": "OhAwdItem02",
+          "i": "OhAwdItem02",
+          "type": "VISUALIZATION",
+          "x": 20,
+          "y": 0,
+          "w": 40,
+          "h": 8,
+          "width": 40,
+          "height": 8,
+          "visualization": {
+            "id": "OhAwdTotal1"
+          }
+        },
+        {
+          "id": "OhAwdItem03",
+          "i": "OhAwdItem03",
+          "type": "VISUALIZATION",
+          "x": 0,
+          "y": 8,
+          "w": 60,
+          "h": 16,
+          "width": 60,
+          "height": 16,
+          "visualization": {
+            "id": "OhAwdTrend1"
+          }
+        },
+        {
+          "id": "OhAwdItem04",
+          "i": "OhAwdItem04",
+          "type": "MAP",
+          "x": 0,
+          "y": 24,
+          "w": 30,
+          "h": 18,
+          "width": 30,
+          "height": 18,
+          "map": {
+            "id": "OhAwdMap001"
+          }
+        },
+        {
+          "id": "OhAwdItem05",
+          "i": "OhAwdItem05",
+          "type": "VISUALIZATION",
+          "x": 30,
+          "y": 24,
+          "w": 30,
+          "h": 18,
+          "width": 30,
+          "height": 18,
+          "visualization": {
+            "id": "OhAwdDivBar"
+          }
+        },
+        {
+          "id": "OhAwdItem06",
+          "i": "OhAwdItem06",
+          "type": "VISUALIZATION",
+          "x": 0,
+          "y": 42,
+          "w": 60,
+          "h": 16,
+          "width": 60,
+          "height": 16,
+          "visualization": {
+            "id": "OhAwdBurden"
+          }
+        },
+        {
+          "id": "OhAwdItem07",
+          "i": "OhAwdItem07",
+          "type": "VISUALIZATION",
+          "x": 0,
+          "y": 58,
+          "w": 60,
+          "h": 14,
+          "width": 60,
+          "height": 14,
+          "visualization": {
+            "id": "OhAwdTable1"
+          }
+        }
+      ]
+    }
+  ]
+}

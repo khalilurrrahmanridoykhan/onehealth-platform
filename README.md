@@ -124,6 +124,8 @@ These examples are described in the official [DHIS2 One Health](https://dhis2.or
 | Native DHIS2 HPAI dashboard | Implemented with outbreak KPIs, trend, comparison, table, and thematic map |
 | Japanese encephalitis sentinel surveillance | Implemented from Paul et al. (2020): 548 confirmed cases across four hospital sentinel sites, 2007–2016; 2016 is partial through July |
 | Native DHIS2 JE dashboard | Implemented with historical KPIs, annual trend, sentinel-site comparison, cumulative burden, and table; no district choropleth is claimed |
+| AWD ecological-estimate integration | Implemented for 2014–2024 with national sums and all eight divisions; values are literature-derived estimates, not authenticated live EWARS observations |
+| Native DHIS2 AWD dashboard | Implemented with estimated-case KPIs, annual trend, division comparison, table, and explicitly labelled thematic map |
 | Nipah literature integration | Implemented with national annual cases/deaths and division cumulative burden |
 | Native DHIS2 Nipah dashboard | Implemented with cases/deaths KPIs, historical trend, hotspot comparison, table, and map |
 | AWD/environmental-risk integration | Planned |
@@ -192,6 +194,15 @@ python scripts/build_je_dashboard.py
 ```
 
 The JE integration uses the exact year-by-site table transcribed from Paul et al. (2020). It creates a national annual series and four sentinel-hospital series mapped to Rangpur, Rajshahi, Chattogram, and Khulna divisions. These are **sentinel-site counts**, not population-wide division incidence. Blank site-years remain missing. The 2016 value covers January through July only and is labelled partial in the normalized source data and native dashboard. No district map, mortality series, real-time forecast, or alert is inferred from unavailable data.
+
+### Import acute watery diarrhoea estimates
+
+```bash
+PYTHONPATH=src python scripts/import_awd.py /path/to/awd_annual_paper_sourced.csv
+python scripts/build_awd_dashboard.py
+```
+
+The AWD importer preserves the eight annual division estimates and computes an auditable national sum for each year. These values are derived from published national totals and proxy division weights described by the source research project. They must not be presented as direct division-level DHIS2/EWARS observations. The platform therefore labels the metric as **estimated AWD cases** and disables operational prediction alerts.
 
 ### Import Nipah data
 
@@ -266,6 +277,7 @@ The current dashboard includes:
 | `GET` | `/api/v1/trends/HPAI?location_code=BD` | National six-monthly HPAI outbreak records |
 | `GET` | `/api/v1/trends/NIPAH?location_code=BD` | National annual Nipah cases and deaths |
 | `GET` | `/api/v1/trends/JE?location_code=BD` | Historical national annual JE confirmed cases |
+| `GET` | `/api/v1/trends/AWD?location_code=BD` | National annual literature-derived AWD estimates |
 | `GET` | `/api/v1/trends/DENGUE?location_code=BD-DHA` | Dhaka Division weekly trend |
 | `GET` | `/api/v1/trends/DENGUE?complete_only=false&limit=10` | Include partial weeks and limit results |
 | `GET` | `/api/v1/alerts/DENGUE/latest` | Latest explainable dengue alert |

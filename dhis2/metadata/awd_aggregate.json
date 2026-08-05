@@ -1,0 +1,9 @@
+{
+  "dataElements": [
+    {"id":"OhAwdNatC01","name":"OneHealth AWD national annual estimated cases","shortName":"OH AWD national estimate","code":"OH_AWD_NATIONAL_ESTIMATED_CASES","description":"National annual sum of literature-derived ecological AWD estimates; not authenticated live EWARS reporting","domainType":"AGGREGATE","valueType":"INTEGER_ZERO_OR_POSITIVE","aggregationType":"SUM","zeroIsSignificant":true},
+    {"id":"OhAwdDivC01","name":"OneHealth AWD division annual estimated cases","shortName":"OH AWD division estimate","code":"OH_AWD_DIVISION_ESTIMATED_CASES","description":"Literature-derived annual division AWD estimates based on published totals and proxy division weights; not observed division surveillance counts","domainType":"AGGREGATE","valueType":"INTEGER_ZERO_OR_POSITIVE","aggregationType":"SUM","zeroIsSignificant":true}
+  ],
+  "dataSets": [{"id":"OhAwdAnn001","name":"OneHealth Annual AWD Ecological Estimates","shortName":"OH Annual AWD","code":"OH_ANNUAL_AWD_ESTIMATES","periodType":"Yearly","openFuturePeriods":0,
+    "organisationUnits":[{"id":"BdOrgUnit01"},{"id":"BdDivBar001"},{"id":"BdDivCtg001"},{"id":"BdDivDha001"},{"id":"BdDivKhu001"},{"id":"BdDivMym001"},{"id":"BdDivRaj001"},{"id":"BdDivRan001"},{"id":"BdDivSyl001"}],
+    "dataSetElements":[{"dataElement":{"id":"OhAwdNatC01"}},{"dataElement":{"id":"OhAwdDivC01"}}]}]
+}
