@@ -35,7 +35,7 @@ export function TrendChart({ records, alert, diseaseName, metricLabel, periodLab
           <p className="eyebrow">Epidemic curve</p>
           <h2>{historicalOnly ? 'Historical observed trend' : `Observed trend and next-${periodLabel} outlook`}</h2>
         </div>
-        <span className="source-label">{diseaseName.includes('HPAI') ? 'WOAH WAHIS' : diseaseName.includes('Rabies') ? 'WHO Global Health Observatory' : diseaseName.includes('Nipah') || diseaseName.includes('Japanese') ? 'Peer-reviewed literature' : diseaseName.includes('Watery') ? 'Literature-derived ecological estimates' : 'DGHS aggregate surveillance'}</span>
+        <span className="source-label">{diseaseName.includes('HPAI') ? 'WOAH WAHIS' : diseaseName.includes('Rabies') || diseaseName === 'Malaria' ? 'WHO Global Health Observatory' : diseaseName.includes('Nipah') || diseaseName.includes('Japanese') ? 'Peer-reviewed literature' : diseaseName.includes('Watery') ? 'Literature-derived ecological estimates' : 'DGHS aggregate surveillance'}</span>
       </div>
       <div className="chart-wrap" aria-label={`${diseaseName} ${periodLabel} trend chart`}>
         <ResponsiveContainer width="100%" height="100%">

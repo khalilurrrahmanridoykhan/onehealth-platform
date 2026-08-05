@@ -6,7 +6,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Project status: early development](https://img.shields.io/badge/status-early%20development-orange)](#project-status)
 
-An open-source disease-surveillance, early-warning, and response platform for Bangladesh. The project is being developed incrementally from reproducible dengue, measles, highly pathogenic avian influenza (HPAI), Nipah, Japanese encephalitis (JE), acute watery diarrhoea, and human rabies research workflows.
+An open-source disease-surveillance, early-warning, and response platform for Bangladesh. The project is being developed incrementally from reproducible dengue, measles, highly pathogenic avian influenza (HPAI), Nipah, Japanese encephalitis (JE), acute watery diarrhoea, human rabies, and malaria research workflows.
 
 Created and maintained by **Khalilur Rahman Ridoy Khan** ([khalilurrrahmanridoykhan](https://github.com/khalilurrrahmanridoykhan)).
 
@@ -100,7 +100,7 @@ These examples are described in the official [DHIS2 One Health](https://dhis2.or
 - Exposes FastAPI endpoints for diseases, trends, and latest alerts
 - Previews, validates, submits, and reads DHIS2 aggregate surveillance payloads
 - Displays an interactive Bangladesh division risk map
-- Includes native DHIS2 Dengue, Measles, HPAI, Nipah, Japanese encephalitis, AWD, and human rabies analytical dashboards
+- Includes native DHIS2 Dengue, Measles, HPAI, Nipah, Japanese encephalitis, AWD, human rabies, and malaria analytical dashboards
 - Previews EBS signal enrollment payloads while DHIS2 writes remain disabled by default
 - Includes automated tests and continuous integration
 
@@ -128,6 +128,8 @@ These examples are described in the official [DHIS2 One Health](https://dhis2.or
 | Native DHIS2 AWD dashboard | Implemented with estimated-case KPIs, annual trend, division comparison, table, and explicitly labelled thematic map |
 | Human rabies mortality integration | Implemented from WHO GHO indicator NTD_RAB2 with ten national annual reported-death records, 2015–2024 |
 | Native DHIS2 rabies dashboard | Implemented with mortality KPIs, full trend, post-2020 view, and annual table; no subnational map is fabricated |
+| Malaria confirmed-case integration | Implemented from official WHO GHO annual confirmed-case records for Bangladesh, 2015–2024 |
+| Native DHIS2 malaria dashboard | Implemented with confirmed-case KPIs, full and recent trends, and annual table; the synthetic training dataset is not presented as observed data |
 | Nipah literature integration | Implemented with national annual cases/deaths and division cumulative burden |
 | Native DHIS2 Nipah dashboard | Implemented with cases/deaths KPIs, historical trend, hotspot comparison, table, and map |
 | AWD/environmental-risk integration | Planned |
@@ -215,6 +217,15 @@ python scripts/build_rabies_dashboard.py
 
 The rabies programme stores WHO GHO indicator NTD_RAB2 as annual **reported human rabies deaths**. Public data provide national resolution only, so the custom dashboard substitutes a national evidence-coverage panel for the division map, and the native dashboard does not claim a subnational visualization. Automated outbreak alerts are disabled for this retrospective annual series.
 
+### Import confirmed malaria cases
+
+```bash
+PYTHONPATH=src python scripts/import_malaria.py data/raw/malaria_confirmed_who_gho.csv
+python scripts/build_malaria_dashboard.py
+```
+
+The malaria integration uses WHO GHO indicator `MALARIA_CONF_CASES`, defined as cases confirmed by microscopy or rapid diagnostic testing and compiled from national malaria control programme reporting. The public series is national annual data, so no division map is fabricated and automated outbreak alerts are disabled. The separate synthetic monthly malaria case-study repository remains a training resource and is not loaded as observed surveillance.
+
 ### Import Nipah data
 
 ```bash
@@ -290,6 +301,7 @@ The current dashboard includes:
 | `GET` | `/api/v1/trends/JE?location_code=BD` | Historical national annual JE confirmed cases |
 | `GET` | `/api/v1/trends/AWD?location_code=BD` | National annual literature-derived AWD estimates |
 | `GET` | `/api/v1/trends/RABIES?location_code=BD` | WHO GHO national annual reported human rabies deaths |
+| `GET` | `/api/v1/trends/MALARIA?location_code=BD` | WHO GHO national annual confirmed malaria cases |
 | `GET` | `/api/v1/trends/DENGUE?location_code=BD-DHA` | Dhaka Division weekly trend |
 | `GET` | `/api/v1/trends/DENGUE?complete_only=false&limit=10` | Include partial weeks and limit results |
 | `GET` | `/api/v1/alerts/DENGUE/latest` | Latest explainable dengue alert |

@@ -10,7 +10,7 @@ def generate_latest_alert(
     # WAHIS HPAI records are a sparse historical event series, not a continuous
     # reporting feed. A rolling baseline across multi-year reporting gaps would
     # create a misleading early-warning classification.
-    if complete and complete[0].disease_code in {"HPAI", "NIPAH", "JE", "AWD", "RABIES"}:
+    if complete and complete[0].disease_code in {"HPAI", "NIPAH", "JE", "AWD", "RABIES", "MALARIA"}:
         return None
     if len(complete) <= baseline_weeks:
         return None

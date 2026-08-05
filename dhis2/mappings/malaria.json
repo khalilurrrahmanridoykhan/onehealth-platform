@@ -1,0 +1,5 @@
+{
+  "diseaseCode":"MALARIA", "diseaseName":"Malaria", "periodType":"Yearly",
+  "dataSetUid":"OhMalAnn001", "casesDataElementUid":"OhMalNatC01", "nationalCasesDataElementUid":"OhMalNatC01",
+  "locations":{"BD":{"uid":"BdOrgUnit01","name":"Bangladesh","level":"national"}}
+}

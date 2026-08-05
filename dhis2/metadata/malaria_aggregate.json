@@ -1,0 +1,4 @@
+{
+  "dataElements":[{"id":"OhMalNatC01","name":"OneHealth malaria annual confirmed cases","shortName":"OH malaria confirmed","code":"OH_MALARIA_CONFIRMED_CASES","description":"National annual confirmed malaria cases reported through WHO GHO; confirmed by microscopy or rapid diagnostic test according to indicator metadata","domainType":"AGGREGATE","valueType":"INTEGER_ZERO_OR_POSITIVE","aggregationType":"SUM","zeroIsSignificant":true}],
+  "dataSets":[{"id":"OhMalAnn001","name":"OneHealth Annual Malaria Confirmed Cases","shortName":"OH Annual Malaria","code":"OH_ANNUAL_MALARIA_CONFIRMED","periodType":"Yearly","openFuturePeriods":0,"organisationUnits":[{"id":"BdOrgUnit01"}],"dataSetElements":[{"dataElement":{"id":"OhMalNatC01"}}]}]
+}

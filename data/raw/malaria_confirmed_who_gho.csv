@@ -1,0 +1,11 @@
+year,confirmed_cases,source_indicator,source_url
+2015,39719,MALARIA_CONF_CASES,https://ghoapi.azureedge.net/api/MALARIA_CONF_CASES
+2016,27737,MALARIA_CONF_CASES,https://ghoapi.azureedge.net/api/MALARIA_CONF_CASES
+2017,29247,MALARIA_CONF_CASES,https://ghoapi.azureedge.net/api/MALARIA_CONF_CASES
+2018,10523,MALARIA_CONF_CASES,https://ghoapi.azureedge.net/api/MALARIA_CONF_CASES
+2019,17225,MALARIA_CONF_CASES,https://ghoapi.azureedge.net/api/MALARIA_CONF_CASES
+2020,6130,MALARIA_CONF_CASES,https://ghoapi.azureedge.net/api/MALARIA_CONF_CASES
+2021,7294,MALARIA_CONF_CASES,https://ghoapi.azureedge.net/api/MALARIA_CONF_CASES
+2022,18246,MALARIA_CONF_CASES,https://ghoapi.azureedge.net/api/MALARIA_CONF_CASES
+2023,16567,MALARIA_CONF_CASES,https://ghoapi.azureedge.net/api/MALARIA_CONF_CASES
+2024,13100,MALARIA_CONF_CASES,https://ghoapi.azureedge.net/api/MALARIA_CONF_CASES

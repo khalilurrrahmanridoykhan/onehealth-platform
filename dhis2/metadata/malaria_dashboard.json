@@ -1,0 +1,609 @@
+{
+  "visualizations": [
+    {
+      "id": "OhMalLatest",
+      "name": "Latest Confirmed Malaria Cases \u2014 2024",
+      "type": "SINGLE_VALUE",
+      "publicAccess": "rw------",
+      "showData": true,
+      "hideEmptyRows": true,
+      "hideEmptyColumns": true,
+      "showDimensionLabels": true,
+      "columns": [
+        {
+          "dimension": "dx",
+          "items": [
+            {
+              "id": "OhMalNatC01",
+              "dimensionItemType": "DATA_ELEMENT"
+            }
+          ]
+        }
+      ],
+      "rows": [],
+      "filters": [
+        {
+          "dimension": "pe",
+          "items": [
+            {
+              "id": "2024",
+              "dimensionItemType": "PERIOD"
+            }
+          ]
+        },
+        {
+          "dimension": "ou",
+          "items": [
+            {
+              "id": "BdOrgUnit01",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            }
+          ]
+        }
+      ],
+      "dataDimensionItems": [
+        {
+          "dataDimensionItemType": "DATA_ELEMENT",
+          "dataElement": {
+            "id": "OhMalNatC01"
+          }
+        }
+      ],
+      "organisationUnits": [
+        {
+          "id": "BdOrgUnit01"
+        }
+      ],
+      "periods": [
+        {
+          "id": "2024"
+        }
+      ],
+      "relativePeriods": {}
+    },
+    {
+      "id": "OhMalTotal1",
+      "name": "Cumulative Confirmed Malaria Cases \u2014 2015\u20132024",
+      "type": "SINGLE_VALUE",
+      "publicAccess": "rw------",
+      "showData": true,
+      "hideEmptyRows": true,
+      "hideEmptyColumns": true,
+      "showDimensionLabels": true,
+      "columns": [
+        {
+          "dimension": "dx",
+          "items": [
+            {
+              "id": "OhMalNatC01",
+              "dimensionItemType": "DATA_ELEMENT"
+            }
+          ]
+        }
+      ],
+      "rows": [],
+      "filters": [
+        {
+          "dimension": "pe",
+          "items": [
+            {
+              "id": "2015",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2016",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2017",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2018",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2019",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2020",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2021",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2022",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2023",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2024",
+              "dimensionItemType": "PERIOD"
+            }
+          ]
+        },
+        {
+          "dimension": "ou",
+          "items": [
+            {
+              "id": "BdOrgUnit01",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            }
+          ]
+        }
+      ],
+      "dataDimensionItems": [
+        {
+          "dataDimensionItemType": "DATA_ELEMENT",
+          "dataElement": {
+            "id": "OhMalNatC01"
+          }
+        }
+      ],
+      "organisationUnits": [
+        {
+          "id": "BdOrgUnit01"
+        }
+      ],
+      "periods": [
+        {
+          "id": "2015"
+        },
+        {
+          "id": "2016"
+        },
+        {
+          "id": "2017"
+        },
+        {
+          "id": "2018"
+        },
+        {
+          "id": "2019"
+        },
+        {
+          "id": "2020"
+        },
+        {
+          "id": "2021"
+        },
+        {
+          "id": "2022"
+        },
+        {
+          "id": "2023"
+        },
+        {
+          "id": "2024"
+        }
+      ],
+      "relativePeriods": {}
+    },
+    {
+      "id": "OhMalTrend1",
+      "name": "Confirmed Malaria Cases \u2014 2015\u20132024",
+      "type": "LINE",
+      "publicAccess": "rw------",
+      "showData": true,
+      "hideEmptyRows": true,
+      "hideEmptyColumns": true,
+      "showDimensionLabels": true,
+      "columns": [
+        {
+          "dimension": "pe",
+          "items": [
+            {
+              "id": "2015",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2016",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2017",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2018",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2019",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2020",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2021",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2022",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2023",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2024",
+              "dimensionItemType": "PERIOD"
+            }
+          ]
+        }
+      ],
+      "rows": [
+        {
+          "dimension": "dx",
+          "items": [
+            {
+              "id": "OhMalNatC01",
+              "dimensionItemType": "DATA_ELEMENT"
+            }
+          ]
+        }
+      ],
+      "filters": [
+        {
+          "dimension": "ou",
+          "items": [
+            {
+              "id": "BdOrgUnit01",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            }
+          ]
+        }
+      ],
+      "dataDimensionItems": [
+        {
+          "dataDimensionItemType": "DATA_ELEMENT",
+          "dataElement": {
+            "id": "OhMalNatC01"
+          }
+        }
+      ],
+      "organisationUnits": [
+        {
+          "id": "BdOrgUnit01"
+        }
+      ],
+      "periods": [
+        {
+          "id": "2015"
+        },
+        {
+          "id": "2016"
+        },
+        {
+          "id": "2017"
+        },
+        {
+          "id": "2018"
+        },
+        {
+          "id": "2019"
+        },
+        {
+          "id": "2020"
+        },
+        {
+          "id": "2021"
+        },
+        {
+          "id": "2022"
+        },
+        {
+          "id": "2023"
+        },
+        {
+          "id": "2024"
+        }
+      ],
+      "relativePeriods": {}
+    },
+    {
+      "id": "OhMalRecent",
+      "name": "Recent Confirmed Malaria Cases \u2014 2020\u20132024",
+      "type": "COLUMN",
+      "publicAccess": "rw------",
+      "showData": true,
+      "hideEmptyRows": true,
+      "hideEmptyColumns": true,
+      "showDimensionLabels": true,
+      "columns": [
+        {
+          "dimension": "pe",
+          "items": [
+            {
+              "id": "2020",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2021",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2022",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2023",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2024",
+              "dimensionItemType": "PERIOD"
+            }
+          ]
+        }
+      ],
+      "rows": [
+        {
+          "dimension": "dx",
+          "items": [
+            {
+              "id": "OhMalNatC01",
+              "dimensionItemType": "DATA_ELEMENT"
+            }
+          ]
+        }
+      ],
+      "filters": [
+        {
+          "dimension": "ou",
+          "items": [
+            {
+              "id": "BdOrgUnit01",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            }
+          ]
+        }
+      ],
+      "dataDimensionItems": [
+        {
+          "dataDimensionItemType": "DATA_ELEMENT",
+          "dataElement": {
+            "id": "OhMalNatC01"
+          }
+        }
+      ],
+      "organisationUnits": [
+        {
+          "id": "BdOrgUnit01"
+        }
+      ],
+      "periods": [
+        {
+          "id": "2020"
+        },
+        {
+          "id": "2021"
+        },
+        {
+          "id": "2022"
+        },
+        {
+          "id": "2023"
+        },
+        {
+          "id": "2024"
+        }
+      ],
+      "relativePeriods": {}
+    },
+    {
+      "id": "OhMalTable1",
+      "name": "Confirmed Malaria Annual Table",
+      "type": "PIVOT_TABLE",
+      "publicAccess": "rw------",
+      "showData": true,
+      "hideEmptyRows": true,
+      "hideEmptyColumns": true,
+      "showDimensionLabels": true,
+      "columns": [
+        {
+          "dimension": "pe",
+          "items": [
+            {
+              "id": "2015",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2016",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2017",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2018",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2019",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2020",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2021",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2022",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2023",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2024",
+              "dimensionItemType": "PERIOD"
+            }
+          ]
+        }
+      ],
+      "rows": [
+        {
+          "dimension": "dx",
+          "items": [
+            {
+              "id": "OhMalNatC01",
+              "dimensionItemType": "DATA_ELEMENT"
+            }
+          ]
+        }
+      ],
+      "filters": [
+        {
+          "dimension": "ou",
+          "items": [
+            {
+              "id": "BdOrgUnit01",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            }
+          ]
+        }
+      ],
+      "dataDimensionItems": [
+        {
+          "dataDimensionItemType": "DATA_ELEMENT",
+          "dataElement": {
+            "id": "OhMalNatC01"
+          }
+        }
+      ],
+      "organisationUnits": [
+        {
+          "id": "BdOrgUnit01"
+        }
+      ],
+      "periods": [
+        {
+          "id": "2015"
+        },
+        {
+          "id": "2016"
+        },
+        {
+          "id": "2017"
+        },
+        {
+          "id": "2018"
+        },
+        {
+          "id": "2019"
+        },
+        {
+          "id": "2020"
+        },
+        {
+          "id": "2021"
+        },
+        {
+          "id": "2022"
+        },
+        {
+          "id": "2023"
+        },
+        {
+          "id": "2024"
+        }
+      ],
+      "relativePeriods": {}
+    }
+  ],
+  "dashboards": [
+    {
+      "id": "OhMalDash01",
+      "name": "OneHealth Malaria Confirmed Case Surveillance",
+      "description": "National annual confirmed malaria cases from WHO GHO. Public source series has national resolution; no subnational values are inferred.",
+      "publicAccess": "rw------",
+      "dashboardItems": [
+        {
+          "id": "OhMalItem01",
+          "i": "OhMalItem01",
+          "type": "VISUALIZATION",
+          "x": 0,
+          "y": 0,
+          "w": 20,
+          "h": 8,
+          "width": 20,
+          "height": 8,
+          "visualization": {
+            "id": "OhMalLatest"
+          }
+        },
+        {
+          "id": "OhMalItem02",
+          "i": "OhMalItem02",
+          "type": "VISUALIZATION",
+          "x": 20,
+          "y": 0,
+          "w": 40,
+          "h": 8,
+          "width": 40,
+          "height": 8,
+          "visualization": {
+            "id": "OhMalTotal1"
+          }
+        },
+        {
+          "id": "OhMalItem03",
+          "i": "OhMalItem03",
+          "type": "VISUALIZATION",
+          "x": 0,
+          "y": 8,
+          "w": 60,
+          "h": 18,
+          "width": 60,
+          "height": 18,
+          "visualization": {
+            "id": "OhMalTrend1"
+          }
+        },
+        {
+          "id": "OhMalItem04",
+          "i": "OhMalItem04",
+          "type": "VISUALIZATION",
+          "x": 0,
+          "y": 26,
+          "w": 30,
+          "h": 16,
+          "width": 30,
+          "height": 16,
+          "visualization": {
+            "id": "OhMalRecent"
+          }
+        },
+        {
+          "id": "OhMalItem05",
+          "i": "OhMalItem05",
+          "type": "VISUALIZATION",
+          "x": 30,
+          "y": 26,
+          "w": 30,
+          "h": 16,
+          "width": 30,
+          "height": 16,
+          "visualization": {
+            "id": "OhMalTable1"
+          }
+        }
+      ]
+    }
+  ]
+}

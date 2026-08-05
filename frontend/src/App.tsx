@@ -62,9 +62,9 @@ export default function App() {
   const diseaseName =
     diseases.find((disease) => disease.code === selectedDisease)?.name ??
     `${selectedDisease.charAt(0)}${selectedDisease.slice(1).toLowerCase()}`
-  const metricLabel = selectedDisease === 'HPAI' ? 'reported outbreaks' : selectedDisease === 'NIPAH' ? 'reported cases' : selectedDisease === 'AWD' ? 'estimated AWD cases' : selectedDisease === 'RABIES' ? 'reported deaths' : 'cases'
-  const periodLabel = selectedDisease === 'HPAI' ? 'semester' : ['NIPAH', 'JE', 'AWD', 'RABIES'].includes(selectedDisease) ? 'year' : 'week'
-  const historicalOnly = ['HPAI', 'NIPAH', 'JE', 'AWD', 'RABIES'].includes(selectedDisease)
+  const metricLabel = selectedDisease === 'HPAI' ? 'reported outbreaks' : selectedDisease === 'NIPAH' ? 'reported cases' : selectedDisease === 'AWD' ? 'estimated AWD cases' : selectedDisease === 'RABIES' ? 'reported deaths' : selectedDisease === 'MALARIA' ? 'confirmed cases' : 'cases'
+  const periodLabel = selectedDisease === 'HPAI' ? 'semester' : ['NIPAH', 'JE', 'AWD', 'RABIES', 'MALARIA'].includes(selectedDisease) ? 'year' : 'week'
+  const historicalOnly = ['HPAI', 'NIPAH', 'JE', 'AWD', 'RABIES', 'MALARIA'].includes(selectedDisease)
 
   const navigation = [
     ['dashboard', 'OV', 'Command overview'], ['surveillance', 'TR', 'Trends & forecast'],
@@ -108,7 +108,7 @@ export default function App() {
         {error && <div className="error-banner" role="alert">Could not load surveillance data: {error}</div>}
         {loading ? <div className="loading-state">Loading {selectedLocation?.name ?? 'surveillance'} data…</div> : (
           <>
-            {selectedDisease !== 'RABIES' ? <div className="geo-grid hero-geo" id="geography">
+            {!['RABIES', 'MALARIA'].includes(selectedDisease) ? <div className="geo-grid hero-geo" id="geography">
               <RiskMap items={overview} selected={selected} diseaseName={diseaseName} metricLabel={metricLabel} onSelect={setSelected} />
               <LocationTable items={overview} selected={selected} onSelect={setSelected} />
             </div> : <NationalEvidencePanel records={trend} diseaseName={diseaseName} metricLabel={metricLabel} />}
