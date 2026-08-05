@@ -15,6 +15,7 @@ export function SummaryCards({ summary, alert, metricLabel, periodLabel, disease
     ? ((alert.observed_cases - alert.expected_cases) / alert.expected_cases) * 100
     : null
   const isNipah = diseaseCode === 'NIPAH'
+  const isRabies = diseaseCode === 'RABIES'
   const cfr = summary?.total_cases && summary.total_deaths
     ? (summary.total_deaths / summary.total_cases) * 100
     : null
@@ -27,16 +28,16 @@ export function SummaryCards({ summary, alert, metricLabel, periodLabel, disease
         <small>{diseaseCode === 'JE' && summary?.latest_period === '2016' ? '2016 · January–July partial' : summary?.latest_period ?? 'No reporting period'}</small>
       </article>
       <article className="metric-card">
-        <span>{isNipah ? 'Latest reported deaths' : `Expected ${metricLabel}`}</span>
-        <strong>{isNipah ? number.format(summary?.latest_deaths ?? 0) : alert ? number.format(Math.round(alert.expected_cases)) : '—'}</strong>
-        <small>{isNipah ? summary?.latest_period : 'Previous four-period mean'}</small>
+        <span>{isNipah ? 'Latest reported deaths' : isRabies ? 'Geographic resolution' : `Expected ${metricLabel}`}</span>
+        <strong>{isNipah ? number.format(summary?.latest_deaths ?? 0) : isRabies ? 'National' : alert ? number.format(Math.round(alert.expected_cases)) : '—'}</strong>
+        <small>{isNipah ? summary?.latest_period : isRabies ? 'WHO GHO NTD_RAB2' : 'Previous four-period mean'}</small>
       </article>
       <article className="metric-card">
-        <span>{isNipah ? 'Cumulative case fatality' : 'Change from baseline'}</span>
+        <span>{isNipah ? 'Cumulative case fatality' : isRabies ? 'Observed annual series' : 'Change from baseline'}</span>
         <strong className={change !== null && change > 0 ? 'text-alert' : 'text-stable'}>
-          {isNipah ? cfr === null ? '—' : `${cfr.toFixed(1)}%` : change === null ? '—' : `${change > 0 ? '+' : ''}${change.toFixed(1)}%`}
+          {isNipah ? cfr === null ? '—' : `${cfr.toFixed(1)}%` : isRabies ? `${summary?.periods ?? 0} years` : change === null ? '—' : `${change > 0 ? '+' : ''}${change.toFixed(1)}%`}
         </strong>
-        <small>{isNipah ? `${number.format(summary?.total_deaths ?? 0)} deaths` : `Latest complete ${periodLabel}`}</small>
+        <small>{isNipah ? `${number.format(summary?.total_deaths ?? 0)} deaths` : isRabies ? '2015–2024 historical reporting' : `Latest complete ${periodLabel}`}</small>
       </article>
       <article className="metric-card">
         <span>Total observed {metricLabel}</span>

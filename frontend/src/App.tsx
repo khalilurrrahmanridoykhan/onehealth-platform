@@ -6,6 +6,7 @@ import { EBSWorkspace } from './components/EBSWorkspace'
 import { EBSOperationsQueue } from './components/EBSOperationsQueue'
 import { EBSSignalRegistry } from './components/EBSSignalRegistry'
 import { LocationTable } from './components/LocationTable'
+import { NationalEvidencePanel } from './components/NationalEvidencePanel'
 import { RiskMap } from './components/RiskMap'
 import { SummaryCards } from './components/SummaryCards'
 import { SessionControl } from './components/SessionControl'
@@ -61,9 +62,9 @@ export default function App() {
   const diseaseName =
     diseases.find((disease) => disease.code === selectedDisease)?.name ??
     `${selectedDisease.charAt(0)}${selectedDisease.slice(1).toLowerCase()}`
-  const metricLabel = selectedDisease === 'HPAI' ? 'reported outbreaks' : selectedDisease === 'NIPAH' ? 'reported cases' : selectedDisease === 'AWD' ? 'estimated AWD cases' : 'cases'
-  const periodLabel = selectedDisease === 'HPAI' ? 'semester' : ['NIPAH', 'JE', 'AWD'].includes(selectedDisease) ? 'year' : 'week'
-  const historicalOnly = ['HPAI', 'NIPAH', 'JE', 'AWD'].includes(selectedDisease)
+  const metricLabel = selectedDisease === 'HPAI' ? 'reported outbreaks' : selectedDisease === 'NIPAH' ? 'reported cases' : selectedDisease === 'AWD' ? 'estimated AWD cases' : selectedDisease === 'RABIES' ? 'reported deaths' : 'cases'
+  const periodLabel = selectedDisease === 'HPAI' ? 'semester' : ['NIPAH', 'JE', 'AWD', 'RABIES'].includes(selectedDisease) ? 'year' : 'week'
+  const historicalOnly = ['HPAI', 'NIPAH', 'JE', 'AWD', 'RABIES'].includes(selectedDisease)
 
   const navigation = [
     ['dashboard', 'OV', 'Command overview'], ['surveillance', 'TR', 'Trends & forecast'],
@@ -107,10 +108,10 @@ export default function App() {
         {error && <div className="error-banner" role="alert">Could not load surveillance data: {error}</div>}
         {loading ? <div className="loading-state">Loading {selectedLocation?.name ?? 'surveillance'} data…</div> : (
           <>
-            <div className="geo-grid hero-geo" id="geography">
+            {selectedDisease !== 'RABIES' ? <div className="geo-grid hero-geo" id="geography">
               <RiskMap items={overview} selected={selected} diseaseName={diseaseName} metricLabel={metricLabel} onSelect={setSelected} />
               <LocationTable items={overview} selected={selected} onSelect={setSelected} />
-            </div>
+            </div> : <NationalEvidencePanel records={trend} diseaseName={diseaseName} metricLabel={metricLabel} />}
             <SummaryCards summary={selectedSummary} alert={alert} metricLabel={metricLabel} periodLabel={periodLabel} diseaseCode={selectedDisease} />
             <div className="dashboard-grid" id="surveillance">
               <TrendChart records={trend} alert={alert} diseaseName={diseaseName} metricLabel={metricLabel} periodLabel={periodLabel} historicalOnly={historicalOnly} />

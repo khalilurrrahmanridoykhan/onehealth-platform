@@ -1,0 +1,4 @@
+{
+  "dataElements":[{"id":"OhRabNatD01","name":"OneHealth human rabies annual reported deaths","shortName":"OH rabies deaths","code":"OH_RABIES_REPORTED_DEATHS","description":"National annual reported human rabies deaths from WHO Global Health Observatory indicator NTD_RAB2","domainType":"AGGREGATE","valueType":"INTEGER_ZERO_OR_POSITIVE","aggregationType":"SUM","zeroIsSignificant":true}],
+  "dataSets":[{"id":"OhRabAnn001","name":"OneHealth Annual Human Rabies Mortality","shortName":"OH Annual Rabies","code":"OH_ANNUAL_RABIES_DEATHS","periodType":"Yearly","openFuturePeriods":0,"organisationUnits":[{"id":"BdOrgUnit01"}],"dataSetElements":[{"dataElement":{"id":"OhRabNatD01"}}]}]
+}

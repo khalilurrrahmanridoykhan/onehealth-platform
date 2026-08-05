@@ -1,0 +1,11 @@
+disease_code,disease_name,period_start,period_end,period_type,period_label,location_code,location_name,location_level,cases,deaths,population,incidence_per_100k,data_status,source_name,source_url,complete_period
+RABIES,Human Rabies,2015-01-01,2015-12-31,annual,2015,BD,Bangladesh,national,83,,159383179,0.05207575888544676,who_reported_national_deaths,WHO Global Health Observatory (NTD_RAB2),https://www.who.int/data/gho,True
+RABIES,Human Rabies,2016-01-01,2016-12-31,annual,2016,BD,Bangladesh,national,66,,160811932,0.04104173065963787,who_reported_national_deaths,WHO Global Health Observatory (NTD_RAB2),https://www.who.int/data/gho,True
+RABIES,Human Rabies,2017-01-01,2017-12-31,annual,2017,BD,Bangladesh,national,80,,162186147,0.04932603769173948,who_reported_national_deaths,WHO Global Health Observatory (NTD_RAB2),https://www.who.int/data/gho,True
+RABIES,Human Rabies,2018-01-01,2018-12-31,annual,2018,BD,Bangladesh,national,57,,163523103,0.03485745986608388,who_reported_national_deaths,WHO Global Health Observatory (NTD_RAB2),https://www.who.int/data/gho,True
+RABIES,Human Rabies,2019-01-01,2019-12-31,annual,2019,BD,Bangladesh,national,57,,164913055,0.03456366750346114,who_reported_national_deaths,WHO Global Health Observatory (NTD_RAB2),https://www.who.int/data/gho,True
+RABIES,Human Rabies,2020-01-01,2020-12-31,annual,2020,BD,Bangladesh,national,26,,166298024,0.015634581442771682,who_reported_national_deaths,WHO Global Health Observatory (NTD_RAB2),https://www.who.int/data/gho,True
+RABIES,Human Rabies,2021-01-01,2021-12-31,annual,2021,BD,Bangladesh,national,40,,167658854,0.023857970542969356,who_reported_national_deaths,WHO Global Health Observatory (NTD_RAB2),https://www.who.int/data/gho,True
+RABIES,Human Rabies,2022-01-01,2022-12-31,annual,2022,BD,Bangladesh,national,45,,169384897,0.026566713323915768,who_reported_national_deaths,WHO Global Health Observatory (NTD_RAB2),https://www.who.int/data/gho,True
+RABIES,Human Rabies,2023-01-01,2023-12-31,annual,2023,BD,Bangladesh,national,47,,171466990,0.02741052373987553,who_reported_national_deaths,WHO Global Health Observatory (NTD_RAB2),https://www.who.int/data/gho,True
+RABIES,Human Rabies,2024-01-01,2024-12-31,annual,2024,BD,Bangladesh,national,56,,173562364,0.03226505949181471,who_reported_national_deaths,WHO Global Health Observatory (NTD_RAB2),https://www.who.int/data/gho,True

@@ -1,0 +1,6 @@
+{
+  "diseaseCode":"RABIES", "diseaseName":"Human Rabies", "periodType":"Yearly",
+  "dataSetUid":"OhRabAnn001", "casesDataElementUid":"OhRabNatD01",
+  "nationalCasesDataElementUid":"OhRabNatD01",
+  "locations":{"BD":{"uid":"BdOrgUnit01","name":"Bangladesh","level":"national"}}
+}
