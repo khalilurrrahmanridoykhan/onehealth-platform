@@ -86,7 +86,7 @@ export function RiskMap({ items, selected, diseaseName, metricLabel, onSelect }:
       <div className="panel-heading">
         <div>
           <p className="eyebrow">Spatial risk</p>
-          <h2>Bangladesh division map</h2>
+          <h2>{diseaseName.includes('Japanese') ? 'Sentinel-site geographic context' : 'Bangladesh division map'}</h2>
         </div>
         <div className="map-controls"><label className="map-layer">Map layer<select value={layer} onChange={(event) => setLayer(event.target.value as typeof layer)}><option value="risk">Alert risk</option><option value="cases">Latest {metricLabel}</option><option value="total">Historical outbreak burden</option><option value="deviation">Baseline deviation</option></select></label><div className="map-tool-buttons" aria-label="Map display controls"><button type="button" onClick={() => setZoom((value) => Math.min(1.8, value + .2))} aria-label="Zoom in">+</button><button type="button" onClick={() => setZoom((value) => Math.max(1, value - .2))} aria-label="Zoom out">−</button><button type="button" className={showLabels ? 'active' : ''} onClick={() => setShowLabels((value) => !value)} aria-label="Toggle division labels">Aa</button><button type="button" onClick={() => { setZoom(1); setShowLabels(true) }} aria-label="Reset map">Reset</button></div></div>
       </div>
@@ -123,7 +123,7 @@ export function RiskMap({ items, selected, diseaseName, metricLabel, onSelect }:
         </svg>
       )}
       <div className="map-footer">
-        <div className="map-legend">{layer === 'cases' || layer === 'total' ? `${layer === 'total' ? 'Historical burden' : metricLabel} · light to dark` : <><span className="low" />Low <span className="medium" />Watch <span className="high" />High</>}</div>
+        <div className="map-legend">{diseaseName.includes('Japanese') ? 'Hospital sentinel-site counts · not division incidence' : layer === 'cases' || layer === 'total' ? `${layer === 'total' ? 'Historical burden' : metricLabel} · light to dark` : <><span className="low" />Low <span className="medium" />Watch <span className="high" />High</>}</div>
         <div className="map-selection"><span>Selected area</span><strong>{selectedSummary?.location_name ?? 'Select a division'}</strong><small>{selectedSummary ? `${selectedSummary.latest_cases.toLocaleString()} ${metricLabel} · ${selectedSummary.risk_level ?? 'Unknown'} risk` : 'Click a boundary to inspect'}</small></div>
       </div>
     </section>

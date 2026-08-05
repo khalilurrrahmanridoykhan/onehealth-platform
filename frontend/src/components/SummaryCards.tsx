@@ -24,7 +24,7 @@ export function SummaryCards({ summary, alert, metricLabel, periodLabel, disease
       <article className="metric-card metric-primary">
         <span>{periodLabel === 'week' ? `Latest weekly ${metricLabel}` : `Latest ${periodLabel} ${metricLabel}`}</span>
         <strong>{summary ? number.format(summary.latest_cases) : '—'}</strong>
-        <small>{summary?.latest_period ?? 'No reporting period'}</small>
+        <small>{diseaseCode === 'JE' && summary?.latest_period === '2016' ? '2016 · January–July partial' : summary?.latest_period ?? 'No reporting period'}</small>
       </article>
       <article className="metric-card">
         <span>{isNipah ? 'Latest reported deaths' : `Expected ${metricLabel}`}</span>
@@ -41,7 +41,7 @@ export function SummaryCards({ summary, alert, metricLabel, periodLabel, disease
       <article className="metric-card">
         <span>Total observed {metricLabel}</span>
         <strong>{summary ? number.format(summary.total_cases) : '—'}</strong>
-        <small>{summary ? `${summary.periods} complete periods` : 'No data'}</small>
+        <small>{summary ? diseaseCode === 'JE' ? `${summary.periods} reported periods · hospital sentinel data` : `${summary.periods} complete periods` : 'No data'}</small>
       </article>
     </section>
   )
