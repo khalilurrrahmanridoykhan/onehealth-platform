@@ -61,6 +61,8 @@ export default function App() {
   const diseaseName =
     diseases.find((disease) => disease.code === selectedDisease)?.name ??
     `${selectedDisease.charAt(0)}${selectedDisease.slice(1).toLowerCase()}`
+  const metricLabel = selectedDisease === 'HPAI' ? 'reported outbreaks' : 'cases'
+  const periodLabel = selectedDisease === 'HPAI' ? 'semester' : 'week'
 
   const navigation = [
     ['dashboard', 'OV', 'Command overview'], ['surveillance', 'TR', 'Trends & forecast'],
@@ -105,15 +107,15 @@ export default function App() {
         {loading ? <div className="loading-state">Loading {selectedLocation?.name ?? 'surveillance'} data…</div> : (
           <>
             <div className="geo-grid hero-geo" id="geography">
-              <RiskMap items={overview} selected={selected} diseaseName={diseaseName} onSelect={setSelected} />
+              <RiskMap items={overview} selected={selected} diseaseName={diseaseName} metricLabel={metricLabel} onSelect={setSelected} />
               <LocationTable items={overview} selected={selected} onSelect={setSelected} />
             </div>
-            <SummaryCards summary={selectedSummary} alert={alert} />
+            <SummaryCards summary={selectedSummary} alert={alert} metricLabel={metricLabel} periodLabel={periodLabel} />
             <div className="dashboard-grid" id="surveillance">
-              <TrendChart records={trend} alert={alert} diseaseName={diseaseName} />
+              <TrendChart records={trend} alert={alert} diseaseName={diseaseName} metricLabel={metricLabel} periodLabel={periodLabel} />
               <div id="alerts"><AlertPanel alert={alert} /></div>
             </div>
-            {locations.length > 1 && <ComparisonWorkbench diseaseCode={selectedDisease} locations={locations} primaryCode={selected} primaryRecords={trend} />}
+            {locations.length > 1 && <ComparisonWorkbench diseaseCode={selectedDisease} locations={locations} primaryCode={selected} primaryRecords={trend} metricLabel={metricLabel} />}
             <EBSOperationsQueue />
             <EBSWorkspace locations={locations} />
             <EBSSignalRegistry />

@@ -1,0 +1,32 @@
+{
+  "dataElements": [
+    {
+      "id": "OhHpaiOut01", "name": "OneHealth HPAI division six-monthly reported outbreaks",
+      "shortName": "OH HPAI division", "code": "OH_HPAI_DIVISION_OUTBREAKS",
+      "description": "Division-semester reported HPAI outbreaks from public WOAH WAHIS quantitative data",
+      "domainType": "AGGREGATE", "valueType": "INTEGER_ZERO_OR_POSITIVE",
+      "aggregationType": "SUM", "zeroIsSignificant": true
+    },
+    {
+      "id": "OhHpaiNat01", "name": "OneHealth HPAI national six-monthly reported outbreaks",
+      "shortName": "OH HPAI national", "code": "OH_HPAI_NATIONAL_OUTBREAKS",
+      "description": "National sum of division-semester HPAI outbreaks reported in public WOAH WAHIS quantitative data",
+      "domainType": "AGGREGATE", "valueType": "INTEGER_ZERO_OR_POSITIVE",
+      "aggregationType": "SUM", "zeroIsSignificant": true
+    }
+  ],
+  "dataSets": [{
+    "id": "OhHpaiSem01", "name": "OneHealth Six-Monthly HPAI Surveillance",
+    "shortName": "OH HPAI Semester", "code": "OH_SIX_MONTHLY_HPAI",
+    "periodType": "SixMonthly", "openFuturePeriods": 0,
+    "organisationUnits": [
+      {"id":"BdOrgUnit01"},{"id":"BdDivBar001"},{"id":"BdDivCtg001"},
+      {"id":"BdDivDha001"},{"id":"BdDivKhu001"},{"id":"BdDivMym001"},
+      {"id":"BdDivRaj001"},{"id":"BdDivRan001"},{"id":"BdDivSyl001"}
+    ],
+    "dataSetElements": [
+      {"dataElement":{"id":"OhHpaiOut01"}},
+      {"dataElement":{"id":"OhHpaiNat01"}}
+    ]
+  }]
+}

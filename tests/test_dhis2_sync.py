@@ -4,7 +4,10 @@ from datetime import date, timedelta
 import pytest
 
 from onehealth.dhis2.mapping import DHIS2Mapping, LocationMapping
-from onehealth.dhis2.periods import dhis2_week_bounds, local_week_to_dhis2
+from onehealth.dhis2.periods import (
+    dhis2_period_bounds, dhis2_week_bounds, local_period_to_dhis2,
+    local_week_to_dhis2,
+)
 from onehealth.dhis2.sync import records_from_dhis2, records_to_data_value_sets
 from onehealth.models import SurveillanceRecord
 
@@ -50,6 +53,13 @@ def test_period_conversion_round_trip():
         date(2026, 1, 5),
         date(2026, 1, 11),
         "2026-W02",
+    )
+
+
+def test_six_monthly_period_conversion_round_trip():
+    assert local_period_to_dhis2("2025-S1", "SixMonthly") == "2025S1"
+    assert dhis2_period_bounds("2025S2", "SixMonthly") == (
+        date(2025, 7, 1), date(2025, 12, 31), "2025-S2"
     )
 
 

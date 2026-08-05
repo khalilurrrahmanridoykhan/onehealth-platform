@@ -10,11 +10,12 @@ interface Props {
   locations: Location[]
   primaryCode: string
   primaryRecords: SurveillanceRecord[]
+  metricLabel: string
 }
 
 const number = new Intl.NumberFormat('en-US')
 
-export function ComparisonWorkbench({ diseaseCode, locations, primaryCode, primaryRecords }: Props) {
+export function ComparisonWorkbench({ diseaseCode, locations, primaryCode, primaryRecords, metricLabel }: Props) {
   const alternatives = locations.filter((location) => location.code !== primaryCode)
   const [comparisonCode, setComparisonCode] = useState('')
   const [comparisonRecords, setComparisonRecords] = useState<SurveillanceRecord[]>([])
@@ -54,13 +55,13 @@ export function ComparisonWorkbench({ diseaseCode, locations, primaryCode, prima
         <div><p className="eyebrow">Comparison intelligence</p><h2>Location and reporting-window analysis</h2></div>
         <div className="comparison-filters">
           <label>Compare with<select value={comparisonCode} onChange={(event) => setComparisonCode(event.target.value)}>{alternatives.map((location) => <option key={location.code} value={location.code}>{location.name}</option>)}</select></label>
-          <label>Window<select value={windowSize} onChange={(event) => setWindowSize(Number(event.target.value))}><option value={4}>4 weeks</option><option value={8}>8 weeks</option><option value={12}>12 weeks</option><option value={21}>All available</option></select></label>
+          <label>Window<select value={windowSize} onChange={(event) => setWindowSize(Number(event.target.value))}><option value={4}>4 periods</option><option value={8}>8 periods</option><option value={12}>12 periods</option><option value={21}>All available</option></select></label>
         </div>
       </div>
       {error ? <p className="comparison-error">Could not load comparison: {error}</p> : <>
         <div className="comparison-kpis">
-          <div><span>{primaryName}</span><strong>{number.format(primaryTotal)}</strong><small>cases in selected window</small></div>
-          <div><span>{comparisonName}</span><strong>{number.format(comparisonTotal)}</strong><small>cases in selected window</small></div>
+          <div><span>{primaryName}</span><strong>{number.format(primaryTotal)}</strong><small>{metricLabel} in selected window</small></div>
+          <div><span>{comparisonName}</span><strong>{number.format(comparisonTotal)}</strong><small>{metricLabel} in selected window</small></div>
           <div><span>Relative difference</span><strong className={difference !== null && difference > 0 ? 'text-alert' : 'text-stable'}>{difference === null ? '—' : `${difference > 0 ? '+' : ''}${difference.toFixed(1)}%`}</strong><small>{primaryName} versus {comparisonName}</small></div>
         </div>
         <div className="comparison-chart" aria-label={`${primaryName} and ${comparisonName} trend comparison`}>

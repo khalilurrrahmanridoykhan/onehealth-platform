@@ -4,7 +4,7 @@ from typing import Any
 
 from onehealth.dhis2.client import DHIS2Client
 from onehealth.dhis2.mapping import DHIS2Mapping
-from onehealth.dhis2.periods import dhis2_week_bounds, local_week_to_dhis2
+from onehealth.dhis2.periods import dhis2_period_bounds, local_period_to_dhis2
 from onehealth.models import SurveillanceRecord
 
 
@@ -39,7 +39,7 @@ def records_to_data_value_sets(
         payloads.append(
             {
                 "dataSet": mapping.data_set_uid,
-                "period": local_week_to_dhis2(record.period_label),
+                "period": local_period_to_dhis2(record.period_label, mapping.period_type),
                 "orgUnit": location.uid,
                 "completeDate": record.period_end.isoformat(),
                 "dataValues": [
@@ -95,14 +95,14 @@ def records_from_dhis2(
         location = mapping.location_for_code(location_code)
         if value.get("dataElement") != mapping.cases_uid_for_location(location):
             continue
-        start, end, label = dhis2_week_bounds(value["period"])
+        start, end, label = dhis2_period_bounds(value["period"], mapping.period_type)
         records.append(
             SurveillanceRecord(
                 disease_code=mapping.disease_code,
                 disease_name=mapping.disease_name,
                 period_start=start,
                 period_end=end,
-                period_type="weekly",
+                period_type=mapping.period_type.lower(),
                 period_label=label,
                 location_code=location_code,
                 location_name=location.name,

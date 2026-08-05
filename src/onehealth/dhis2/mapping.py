@@ -18,6 +18,7 @@ class DHIS2Mapping:
     cases_data_element_uid: str
     locations: dict[str, LocationMapping]
     national_cases_data_element_uid: str | None = None
+    period_type: str = "Weekly"
 
     @classmethod
     def from_path(cls, path: Path) -> "DHIS2Mapping":
@@ -37,6 +38,7 @@ class DHIS2Mapping:
             cases_data_element_uid=raw["casesDataElementUid"],
             locations=locations,
             national_cases_data_element_uid=raw.get("nationalCasesDataElementUid"),
+            period_type=raw.get("periodType", "Weekly"),
         )
 
     def cases_uid_for_location(self, location: LocationMapping) -> str:

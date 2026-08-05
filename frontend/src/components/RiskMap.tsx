@@ -12,6 +12,7 @@ interface Props {
   items: OverviewItem[]
   selected: string
   diseaseName: string
+  metricLabel: string
   onSelect: (code: string) => void
 }
 
@@ -33,7 +34,7 @@ const RISK_COLOR: Record<RiskLevel | 'UNKNOWN', string> = {
   UNKNOWN: '#d7e2de',
 }
 
-export function RiskMap({ items, selected, diseaseName, onSelect }: Props) {
+export function RiskMap({ items, selected, diseaseName, metricLabel, onSelect }: Props) {
   const [geoData, setGeoData] = useState<FeatureCollection<Geometry, DivisionProperties>>()
   const [layer, setLayer] = useState<'risk' | 'cases' | 'deviation'>('risk')
   const [zoom, setZoom] = useState(1)
@@ -50,7 +51,7 @@ export function RiskMap({ items, selected, diseaseName, onSelect }: Props) {
   }, [])
 
   useEffect(() => {
-    setLayer(diseaseName === 'Measles' ? 'cases' : 'risk')
+    setLayer(diseaseName === 'Measles' || diseaseName.includes('HPAI') ? 'cases' : 'risk')
   }, [diseaseName])
 
   const map = useMemo(() => {
@@ -82,7 +83,7 @@ export function RiskMap({ items, selected, diseaseName, onSelect }: Props) {
           <p className="eyebrow">Spatial risk</p>
           <h2>Bangladesh division map</h2>
         </div>
-        <div className="map-controls"><label className="map-layer">Map layer<select value={layer} onChange={(event) => setLayer(event.target.value as typeof layer)}><option value="risk">Alert risk</option><option value="cases">Latest cases</option><option value="deviation">Baseline deviation</option></select></label><div className="map-tool-buttons" aria-label="Map display controls"><button type="button" onClick={() => setZoom((value) => Math.min(1.8, value + .2))} aria-label="Zoom in">+</button><button type="button" onClick={() => setZoom((value) => Math.max(1, value - .2))} aria-label="Zoom out">−</button><button type="button" className={showLabels ? 'active' : ''} onClick={() => setShowLabels((value) => !value)} aria-label="Toggle division labels">Aa</button><button type="button" onClick={() => { setZoom(1); setShowLabels(true) }} aria-label="Reset map">Reset</button></div></div>
+        <div className="map-controls"><label className="map-layer">Map layer<select value={layer} onChange={(event) => setLayer(event.target.value as typeof layer)}><option value="risk">Alert risk</option><option value="cases">Latest {metricLabel}</option><option value="deviation">Baseline deviation</option></select></label><div className="map-tool-buttons" aria-label="Map display controls"><button type="button" onClick={() => setZoom((value) => Math.min(1.8, value + .2))} aria-label="Zoom in">+</button><button type="button" onClick={() => setZoom((value) => Math.max(1, value - .2))} aria-label="Zoom out">−</button><button type="button" className={showLabels ? 'active' : ''} onClick={() => setShowLabels((value) => !value)} aria-label="Toggle division labels">Aa</button><button type="button" onClick={() => { setZoom(1); setShowLabels(true) }} aria-label="Reset map">Reset</button></div></div>
       </div>
       {!geoData || !map ? <div className="map-loading">Loading boundaries…</div> : (
         <svg className="risk-map" viewBox="0 0 500 455" role="img" aria-label={`${diseaseName} risk by Bangladesh division`}>
@@ -107,7 +108,7 @@ export function RiskMap({ items, selected, diseaseName, onSelect }: Props) {
                     if (summary && (event.key === 'Enter' || event.key === ' ')) onSelect(locationCode)
                   }}
                 >
-                  <title>{summary?.location_name ?? feature.properties.shapeName}: {risk} risk, {summary?.latest_cases ?? 0} latest cases</title>
+                  <title>{summary?.location_name ?? feature.properties.shapeName}: {risk} risk, {summary?.latest_cases ?? 0} latest {metricLabel}</title>
                 </path>
                 {showLabels && <text x={centroid[0]} y={centroid[1]} className="map-label">{summary?.location_name ?? feature.properties.shapeName}</text>}
               </g>
@@ -117,8 +118,8 @@ export function RiskMap({ items, selected, diseaseName, onSelect }: Props) {
         </svg>
       )}
       <div className="map-footer">
-        <div className="map-legend">{layer === 'cases' ? 'Case intensity · light to dark' : <><span className="low" />Low <span className="medium" />Watch <span className="high" />High</>}</div>
-        <div className="map-selection"><span>Selected area</span><strong>{selectedSummary?.location_name ?? 'Select a division'}</strong><small>{selectedSummary ? `${selectedSummary.latest_cases.toLocaleString()} cases · ${selectedSummary.risk_level ?? 'Unknown'} risk` : 'Click a boundary to inspect'}</small></div>
+        <div className="map-legend">{layer === 'cases' ? `${metricLabel} intensity · light to dark` : <><span className="low" />Low <span className="medium" />Watch <span className="high" />High</>}</div>
+        <div className="map-selection"><span>Selected area</span><strong>{selectedSummary?.location_name ?? 'Select a division'}</strong><small>{selectedSummary ? `${selectedSummary.latest_cases.toLocaleString()} ${metricLabel} · ${selectedSummary.risk_level ?? 'Unknown'} risk` : 'Click a boundary to inspect'}</small></div>
       </div>
     </section>
   )

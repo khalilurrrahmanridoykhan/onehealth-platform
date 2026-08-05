@@ -1,0 +1,963 @@
+{
+  "visualizations": [
+    {
+      "id": "OhHpaiTrend",
+      "name": "HPAI National Outbreak Trend",
+      "type": "LINE",
+      "publicAccess": "rw------",
+      "showData": true,
+      "hideEmptyRows": true,
+      "hideEmptyColumns": true,
+      "showDimensionLabels": true,
+      "columns": [
+        {
+          "dimension": "dx",
+          "items": [
+            {
+              "id": "OhHpaiNat01",
+              "dimensionItemType": "DATA_ELEMENT"
+            }
+          ]
+        }
+      ],
+      "rows": [
+        {
+          "dimension": "pe",
+          "items": [
+            {
+              "id": "2020S1",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2020S2",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2021S1",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2021S2",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2022S1",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2022S2",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2023S1",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2023S2",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2024S1",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2024S2",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2025S1",
+              "dimensionItemType": "PERIOD"
+            }
+          ]
+        }
+      ],
+      "filters": [
+        {
+          "dimension": "ou",
+          "items": [
+            {
+              "id": "BdOrgUnit01",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            }
+          ]
+        }
+      ],
+      "dataDimensionItems": [
+        {
+          "dataDimensionItemType": "DATA_ELEMENT",
+          "dataElement": {
+            "id": "OhHpaiNat01"
+          }
+        }
+      ],
+      "organisationUnits": [
+        {
+          "id": "BdOrgUnit01"
+        }
+      ],
+      "periods": [
+        {
+          "id": "2020S1"
+        },
+        {
+          "id": "2020S2"
+        },
+        {
+          "id": "2021S1"
+        },
+        {
+          "id": "2021S2"
+        },
+        {
+          "id": "2022S1"
+        },
+        {
+          "id": "2022S2"
+        },
+        {
+          "id": "2023S1"
+        },
+        {
+          "id": "2023S2"
+        },
+        {
+          "id": "2024S1"
+        },
+        {
+          "id": "2024S2"
+        },
+        {
+          "id": "2025S1"
+        }
+      ],
+      "relativePeriods": {}
+    },
+    {
+      "id": "OhHpaiDiv01",
+      "name": "HPAI Outbreaks by Division \u2014 2025 S1",
+      "type": "COLUMN",
+      "publicAccess": "rw------",
+      "showData": true,
+      "hideEmptyRows": true,
+      "hideEmptyColumns": true,
+      "showDimensionLabels": true,
+      "columns": [
+        {
+          "dimension": "ou",
+          "items": [
+            {
+              "id": "BdDivBar001",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            },
+            {
+              "id": "BdDivCtg001",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            },
+            {
+              "id": "BdDivDha001",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            },
+            {
+              "id": "BdDivKhu001",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            },
+            {
+              "id": "BdDivRaj001",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            },
+            {
+              "id": "BdDivRan001",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            },
+            {
+              "id": "BdDivSyl001",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            }
+          ]
+        }
+      ],
+      "rows": [
+        {
+          "dimension": "dx",
+          "items": [
+            {
+              "id": "OhHpaiOut01",
+              "dimensionItemType": "DATA_ELEMENT"
+            }
+          ]
+        }
+      ],
+      "filters": [
+        {
+          "dimension": "pe",
+          "items": [
+            {
+              "id": "2025S1",
+              "dimensionItemType": "PERIOD"
+            }
+          ]
+        }
+      ],
+      "dataDimensionItems": [
+        {
+          "dataDimensionItemType": "DATA_ELEMENT",
+          "dataElement": {
+            "id": "OhHpaiOut01"
+          }
+        }
+      ],
+      "organisationUnits": [
+        {
+          "id": "BdDivBar001"
+        },
+        {
+          "id": "BdDivCtg001"
+        },
+        {
+          "id": "BdDivDha001"
+        },
+        {
+          "id": "BdDivKhu001"
+        },
+        {
+          "id": "BdDivRaj001"
+        },
+        {
+          "id": "BdDivRan001"
+        },
+        {
+          "id": "BdDivSyl001"
+        }
+      ],
+      "periods": [
+        {
+          "id": "2025S1"
+        }
+      ],
+      "relativePeriods": {}
+    },
+    {
+      "id": "OhHpaiKpi01",
+      "name": "Latest National Reported HPAI Outbreaks",
+      "type": "SINGLE_VALUE",
+      "publicAccess": "rw------",
+      "showData": true,
+      "hideEmptyRows": true,
+      "hideEmptyColumns": true,
+      "showDimensionLabels": true,
+      "columns": [
+        {
+          "dimension": "dx",
+          "items": [
+            {
+              "id": "OhHpaiNat01",
+              "dimensionItemType": "DATA_ELEMENT"
+            }
+          ]
+        }
+      ],
+      "rows": [],
+      "filters": [
+        {
+          "dimension": "pe",
+          "items": [
+            {
+              "id": "2025S1",
+              "dimensionItemType": "PERIOD"
+            }
+          ]
+        },
+        {
+          "dimension": "ou",
+          "items": [
+            {
+              "id": "BdOrgUnit01",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            }
+          ]
+        }
+      ],
+      "dataDimensionItems": [
+        {
+          "dataDimensionItemType": "DATA_ELEMENT",
+          "dataElement": {
+            "id": "OhHpaiNat01"
+          }
+        }
+      ],
+      "organisationUnits": [
+        {
+          "id": "BdOrgUnit01"
+        }
+      ],
+      "periods": [
+        {
+          "id": "2025S1"
+        }
+      ],
+      "relativePeriods": {}
+    },
+    {
+      "id": "OhHpaiTot01",
+      "name": "Reported HPAI Outbreaks \u2014 2020\u20132025",
+      "type": "SINGLE_VALUE",
+      "publicAccess": "rw------",
+      "showData": true,
+      "hideEmptyRows": true,
+      "hideEmptyColumns": true,
+      "showDimensionLabels": true,
+      "columns": [
+        {
+          "dimension": "dx",
+          "items": [
+            {
+              "id": "OhHpaiNat01",
+              "dimensionItemType": "DATA_ELEMENT"
+            }
+          ]
+        }
+      ],
+      "rows": [],
+      "filters": [
+        {
+          "dimension": "pe",
+          "items": [
+            {
+              "id": "2020S1",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2020S2",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2021S1",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2021S2",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2022S1",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2022S2",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2023S1",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2023S2",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2024S1",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2024S2",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2025S1",
+              "dimensionItemType": "PERIOD"
+            }
+          ]
+        },
+        {
+          "dimension": "ou",
+          "items": [
+            {
+              "id": "BdOrgUnit01",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            }
+          ]
+        }
+      ],
+      "dataDimensionItems": [
+        {
+          "dataDimensionItemType": "DATA_ELEMENT",
+          "dataElement": {
+            "id": "OhHpaiNat01"
+          }
+        }
+      ],
+      "organisationUnits": [
+        {
+          "id": "BdOrgUnit01"
+        }
+      ],
+      "periods": [
+        {
+          "id": "2020S1"
+        },
+        {
+          "id": "2020S2"
+        },
+        {
+          "id": "2021S1"
+        },
+        {
+          "id": "2021S2"
+        },
+        {
+          "id": "2022S1"
+        },
+        {
+          "id": "2022S2"
+        },
+        {
+          "id": "2023S1"
+        },
+        {
+          "id": "2023S2"
+        },
+        {
+          "id": "2024S1"
+        },
+        {
+          "id": "2024S2"
+        },
+        {
+          "id": "2025S1"
+        }
+      ],
+      "relativePeriods": {}
+    },
+    {
+      "id": "OhHpaiStack",
+      "name": "Division HPAI Outbreak Burden",
+      "type": "STACKED_COLUMN",
+      "publicAccess": "rw------",
+      "showData": false,
+      "hideEmptyRows": true,
+      "hideEmptyColumns": true,
+      "showDimensionLabels": true,
+      "columns": [
+        {
+          "dimension": "ou",
+          "items": [
+            {
+              "id": "BdDivBar001",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            },
+            {
+              "id": "BdDivCtg001",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            },
+            {
+              "id": "BdDivDha001",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            },
+            {
+              "id": "BdDivKhu001",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            },
+            {
+              "id": "BdDivRaj001",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            },
+            {
+              "id": "BdDivRan001",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            },
+            {
+              "id": "BdDivSyl001",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            }
+          ]
+        }
+      ],
+      "rows": [
+        {
+          "dimension": "dx",
+          "items": [
+            {
+              "id": "OhHpaiOut01",
+              "dimensionItemType": "DATA_ELEMENT"
+            }
+          ]
+        },
+        {
+          "dimension": "pe",
+          "items": [
+            {
+              "id": "2020S1",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2020S2",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2021S1",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2021S2",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2022S1",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2022S2",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2023S1",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2023S2",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2024S1",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2024S2",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2025S1",
+              "dimensionItemType": "PERIOD"
+            }
+          ]
+        }
+      ],
+      "filters": [],
+      "dataDimensionItems": [
+        {
+          "dataDimensionItemType": "DATA_ELEMENT",
+          "dataElement": {
+            "id": "OhHpaiOut01"
+          }
+        }
+      ],
+      "organisationUnits": [
+        {
+          "id": "BdDivBar001"
+        },
+        {
+          "id": "BdDivCtg001"
+        },
+        {
+          "id": "BdDivDha001"
+        },
+        {
+          "id": "BdDivKhu001"
+        },
+        {
+          "id": "BdDivRaj001"
+        },
+        {
+          "id": "BdDivRan001"
+        },
+        {
+          "id": "BdDivSyl001"
+        }
+      ],
+      "periods": [
+        {
+          "id": "2020S1"
+        },
+        {
+          "id": "2020S2"
+        },
+        {
+          "id": "2021S1"
+        },
+        {
+          "id": "2021S2"
+        },
+        {
+          "id": "2022S1"
+        },
+        {
+          "id": "2022S2"
+        },
+        {
+          "id": "2023S1"
+        },
+        {
+          "id": "2023S2"
+        },
+        {
+          "id": "2024S1"
+        },
+        {
+          "id": "2024S2"
+        },
+        {
+          "id": "2025S1"
+        }
+      ],
+      "relativePeriods": {}
+    },
+    {
+      "id": "OhHpaiTable",
+      "name": "HPAI Division-Semester Surveillance Table",
+      "type": "PIVOT_TABLE",
+      "publicAccess": "rw------",
+      "showData": true,
+      "hideEmptyRows": true,
+      "hideEmptyColumns": true,
+      "showDimensionLabels": true,
+      "columns": [
+        {
+          "dimension": "pe",
+          "items": [
+            {
+              "id": "2020S1",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2020S2",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2021S1",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2021S2",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2022S1",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2022S2",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2023S1",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2023S2",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2024S1",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2024S2",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2025S1",
+              "dimensionItemType": "PERIOD"
+            }
+          ]
+        }
+      ],
+      "rows": [
+        {
+          "dimension": "ou",
+          "items": [
+            {
+              "id": "BdDivBar001",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            },
+            {
+              "id": "BdDivCtg001",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            },
+            {
+              "id": "BdDivDha001",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            },
+            {
+              "id": "BdDivKhu001",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            },
+            {
+              "id": "BdDivRaj001",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            },
+            {
+              "id": "BdDivRan001",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            },
+            {
+              "id": "BdDivSyl001",
+              "dimensionItemType": "ORGANISATION_UNIT"
+            }
+          ]
+        },
+        {
+          "dimension": "dx",
+          "items": [
+            {
+              "id": "OhHpaiOut01",
+              "dimensionItemType": "DATA_ELEMENT"
+            }
+          ]
+        }
+      ],
+      "filters": [],
+      "dataDimensionItems": [
+        {
+          "dataDimensionItemType": "DATA_ELEMENT",
+          "dataElement": {
+            "id": "OhHpaiOut01"
+          }
+        }
+      ],
+      "organisationUnits": [
+        {
+          "id": "BdDivBar001"
+        },
+        {
+          "id": "BdDivCtg001"
+        },
+        {
+          "id": "BdDivDha001"
+        },
+        {
+          "id": "BdDivKhu001"
+        },
+        {
+          "id": "BdDivRaj001"
+        },
+        {
+          "id": "BdDivRan001"
+        },
+        {
+          "id": "BdDivSyl001"
+        }
+      ],
+      "periods": [
+        {
+          "id": "2020S1"
+        },
+        {
+          "id": "2020S2"
+        },
+        {
+          "id": "2021S1"
+        },
+        {
+          "id": "2021S2"
+        },
+        {
+          "id": "2022S1"
+        },
+        {
+          "id": "2022S2"
+        },
+        {
+          "id": "2023S1"
+        },
+        {
+          "id": "2023S2"
+        },
+        {
+          "id": "2024S1"
+        },
+        {
+          "id": "2024S2"
+        },
+        {
+          "id": "2025S1"
+        }
+      ],
+      "relativePeriods": {}
+    }
+  ],
+  "maps": [
+    {
+      "id": "OhHpaiMap01",
+      "name": "HPAI Division Outbreak Map \u2014 2025 S1",
+      "publicAccess": "rw------",
+      "basemap": "osmLight",
+      "zoom": 6,
+      "latitude": 23.7,
+      "longitude": 90.35,
+      "mapViews": [
+        {
+          "layer": "thematic",
+          "name": "HPAI outbreaks \u2014 2025 S1",
+          "columns": [
+            {
+              "dimension": "dx",
+              "items": [
+                {
+                  "id": "OhHpaiOut01",
+                  "dimensionItemType": "DATA_ELEMENT"
+                }
+              ]
+            }
+          ],
+          "rows": [
+            {
+              "dimension": "ou",
+              "items": [
+                {
+                  "id": "LEVEL-2",
+                  "dimensionItemType": "ORGANISATION_UNIT"
+                },
+                {
+                  "id": "BdOrgUnit01",
+                  "dimensionItemType": "ORGANISATION_UNIT"
+                }
+              ]
+            }
+          ],
+          "filters": [
+            {
+              "dimension": "pe",
+              "items": [
+                {
+                  "id": "2025S1",
+                  "dimensionItemType": "PERIOD"
+                }
+              ]
+            }
+          ],
+          "organisationUnits": [
+            {
+              "id": "BdOrgUnit01"
+            }
+          ],
+          "organisationUnitLevels": [
+            2
+          ],
+          "periods": [
+            {
+              "id": "2025S1"
+            }
+          ],
+          "classes": 5,
+          "method": 2,
+          "colorLow": "#fde68a",
+          "colorHigh": "#7f1d1d",
+          "colorScale": "#fde68a,#f59e0b,#f97316,#dc2626,#7f1d1d",
+          "opacity": 1,
+          "labels": false,
+          "thematicMapType": "CHOROPLETH",
+          "aggregationType": "DEFAULT",
+          "noDataColor": "#d1d5db"
+        }
+      ]
+    }
+  ],
+  "dashboards": [
+    {
+      "id": "OhHpaiDash1",
+      "name": "OneHealth HPAI Surveillance",
+      "description": "Native DHIS2 HPAI outbreak surveillance dashboard for Bangladesh",
+      "publicAccess": "rw------",
+      "dashboardItems": [
+        {
+          "id": "OhHpaiIt001",
+          "i": "OhHpaiIt001",
+          "type": "VISUALIZATION",
+          "x": 0,
+          "y": 0,
+          "w": 30,
+          "h": 8,
+          "width": 30,
+          "height": 8,
+          "visualization": {
+            "id": "OhHpaiKpi01"
+          }
+        },
+        {
+          "id": "OhHpaiIt002",
+          "i": "OhHpaiIt002",
+          "type": "VISUALIZATION",
+          "x": 30,
+          "y": 0,
+          "w": 30,
+          "h": 8,
+          "width": 30,
+          "height": 8,
+          "visualization": {
+            "id": "OhHpaiTot01"
+          }
+        },
+        {
+          "id": "OhHpaiIt003",
+          "i": "OhHpaiIt003",
+          "type": "VISUALIZATION",
+          "x": 0,
+          "y": 8,
+          "w": 30,
+          "h": 14,
+          "width": 30,
+          "height": 14,
+          "visualization": {
+            "id": "OhHpaiTrend"
+          }
+        },
+        {
+          "id": "OhHpaiIt004",
+          "i": "OhHpaiIt004",
+          "type": "VISUALIZATION",
+          "x": 30,
+          "y": 8,
+          "w": 30,
+          "h": 14,
+          "width": 30,
+          "height": 14,
+          "visualization": {
+            "id": "OhHpaiDiv01"
+          }
+        },
+        {
+          "id": "OhHpaiIt005",
+          "i": "OhHpaiIt005",
+          "type": "MAP",
+          "x": 0,
+          "y": 22,
+          "w": 30,
+          "h": 18,
+          "width": 30,
+          "height": 18,
+          "map": {
+            "id": "OhHpaiMap01"
+          }
+        },
+        {
+          "id": "OhHpaiIt006",
+          "i": "OhHpaiIt006",
+          "type": "VISUALIZATION",
+          "x": 30,
+          "y": 22,
+          "w": 30,
+          "h": 18,
+          "width": 30,
+          "height": 18,
+          "visualization": {
+            "id": "OhHpaiStack"
+          }
+        },
+        {
+          "id": "OhHpaiIt007",
+          "i": "OhHpaiIt007",
+          "type": "VISUALIZATION",
+          "x": 0,
+          "y": 40,
+          "w": 60,
+          "h": 14,
+          "width": 60,
+          "height": 14,
+          "visualization": {
+            "id": "OhHpaiTable"
+          }
+        }
+      ]
+    }
+  ]
+}
