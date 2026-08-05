@@ -231,3 +231,10 @@ td button { padding: 0; border: 0; background: transparent; color: #173a30; font
   .notification-centre { display: block; }
   .assignment-grid { grid-template-columns: 1fr; gap: 0; }
 }
+.table-period {
+  display: block;
+  margin-top: 0.2rem;
+  color: #7c8f88;
+  font-size: 0.72rem;
+  font-weight: 600;
+}

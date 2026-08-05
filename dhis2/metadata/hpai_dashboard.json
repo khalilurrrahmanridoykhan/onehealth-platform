@@ -25,43 +25,75 @@
           "dimension": "pe",
           "items": [
             {
-              "id": "2020S1",
+              "id": "2007S1",
               "dimensionItemType": "PERIOD"
             },
             {
-              "id": "2020S2",
+              "id": "2007S2",
               "dimensionItemType": "PERIOD"
             },
             {
-              "id": "2021S1",
+              "id": "2008S1",
               "dimensionItemType": "PERIOD"
             },
             {
-              "id": "2021S2",
+              "id": "2008S2",
               "dimensionItemType": "PERIOD"
             },
             {
-              "id": "2022S1",
+              "id": "2009S1",
               "dimensionItemType": "PERIOD"
             },
             {
-              "id": "2022S2",
+              "id": "2009S2",
               "dimensionItemType": "PERIOD"
             },
             {
-              "id": "2023S1",
+              "id": "2010S1",
               "dimensionItemType": "PERIOD"
             },
             {
-              "id": "2023S2",
+              "id": "2011S1",
               "dimensionItemType": "PERIOD"
             },
             {
-              "id": "2024S1",
+              "id": "2011S2",
               "dimensionItemType": "PERIOD"
             },
             {
-              "id": "2024S2",
+              "id": "2012S1",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2012S2",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2013S1",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2016S1",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2017S1",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2017S2",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2018S1",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2018S2",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2019S1",
               "dimensionItemType": "PERIOD"
             },
             {
@@ -97,34 +129,58 @@
       ],
       "periods": [
         {
-          "id": "2020S1"
+          "id": "2007S1"
         },
         {
-          "id": "2020S2"
+          "id": "2007S2"
         },
         {
-          "id": "2021S1"
+          "id": "2008S1"
         },
         {
-          "id": "2021S2"
+          "id": "2008S2"
         },
         {
-          "id": "2022S1"
+          "id": "2009S1"
         },
         {
-          "id": "2022S2"
+          "id": "2009S2"
         },
         {
-          "id": "2023S1"
+          "id": "2010S1"
         },
         {
-          "id": "2023S2"
+          "id": "2011S1"
         },
         {
-          "id": "2024S1"
+          "id": "2011S2"
         },
         {
-          "id": "2024S2"
+          "id": "2012S1"
+        },
+        {
+          "id": "2012S2"
+        },
+        {
+          "id": "2013S1"
+        },
+        {
+          "id": "2016S1"
+        },
+        {
+          "id": "2017S1"
+        },
+        {
+          "id": "2017S2"
+        },
+        {
+          "id": "2018S1"
+        },
+        {
+          "id": "2018S2"
+        },
+        {
+          "id": "2019S1"
         },
         {
           "id": "2025S1"
@@ -299,7 +355,7 @@
     },
     {
       "id": "OhHpaiTot01",
-      "name": "Reported HPAI Outbreaks \u2014 2020\u20132025",
+      "name": "Total Reported HPAI Outbreaks \u2014 2007\u20132025",
       "type": "SINGLE_VALUE",
       "publicAccess": "rw------",
       "showData": true,
@@ -323,43 +379,75 @@
           "dimension": "pe",
           "items": [
             {
-              "id": "2020S1",
+              "id": "2007S1",
               "dimensionItemType": "PERIOD"
             },
             {
-              "id": "2020S2",
+              "id": "2007S2",
               "dimensionItemType": "PERIOD"
             },
             {
-              "id": "2021S1",
+              "id": "2008S1",
               "dimensionItemType": "PERIOD"
             },
             {
-              "id": "2021S2",
+              "id": "2008S2",
               "dimensionItemType": "PERIOD"
             },
             {
-              "id": "2022S1",
+              "id": "2009S1",
               "dimensionItemType": "PERIOD"
             },
             {
-              "id": "2022S2",
+              "id": "2009S2",
               "dimensionItemType": "PERIOD"
             },
             {
-              "id": "2023S1",
+              "id": "2010S1",
               "dimensionItemType": "PERIOD"
             },
             {
-              "id": "2023S2",
+              "id": "2011S1",
               "dimensionItemType": "PERIOD"
             },
             {
-              "id": "2024S1",
+              "id": "2011S2",
               "dimensionItemType": "PERIOD"
             },
             {
-              "id": "2024S2",
+              "id": "2012S1",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2012S2",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2013S1",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2016S1",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2017S1",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2017S2",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2018S1",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2018S2",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2019S1",
               "dimensionItemType": "PERIOD"
             },
             {
@@ -393,34 +481,58 @@
       ],
       "periods": [
         {
-          "id": "2020S1"
+          "id": "2007S1"
         },
         {
-          "id": "2020S2"
+          "id": "2007S2"
         },
         {
-          "id": "2021S1"
+          "id": "2008S1"
         },
         {
-          "id": "2021S2"
+          "id": "2008S2"
         },
         {
-          "id": "2022S1"
+          "id": "2009S1"
         },
         {
-          "id": "2022S2"
+          "id": "2009S2"
         },
         {
-          "id": "2023S1"
+          "id": "2010S1"
         },
         {
-          "id": "2023S2"
+          "id": "2011S1"
         },
         {
-          "id": "2024S1"
+          "id": "2011S2"
         },
         {
-          "id": "2024S2"
+          "id": "2012S1"
+        },
+        {
+          "id": "2012S2"
+        },
+        {
+          "id": "2013S1"
+        },
+        {
+          "id": "2016S1"
+        },
+        {
+          "id": "2017S1"
+        },
+        {
+          "id": "2017S2"
+        },
+        {
+          "id": "2018S1"
+        },
+        {
+          "id": "2018S2"
+        },
+        {
+          "id": "2019S1"
         },
         {
           "id": "2025S1"
@@ -486,43 +598,75 @@
           "dimension": "pe",
           "items": [
             {
-              "id": "2020S1",
+              "id": "2007S1",
               "dimensionItemType": "PERIOD"
             },
             {
-              "id": "2020S2",
+              "id": "2007S2",
               "dimensionItemType": "PERIOD"
             },
             {
-              "id": "2021S1",
+              "id": "2008S1",
               "dimensionItemType": "PERIOD"
             },
             {
-              "id": "2021S2",
+              "id": "2008S2",
               "dimensionItemType": "PERIOD"
             },
             {
-              "id": "2022S1",
+              "id": "2009S1",
               "dimensionItemType": "PERIOD"
             },
             {
-              "id": "2022S2",
+              "id": "2009S2",
               "dimensionItemType": "PERIOD"
             },
             {
-              "id": "2023S1",
+              "id": "2010S1",
               "dimensionItemType": "PERIOD"
             },
             {
-              "id": "2023S2",
+              "id": "2011S1",
               "dimensionItemType": "PERIOD"
             },
             {
-              "id": "2024S1",
+              "id": "2011S2",
               "dimensionItemType": "PERIOD"
             },
             {
-              "id": "2024S2",
+              "id": "2012S1",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2012S2",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2013S1",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2016S1",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2017S1",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2017S2",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2018S1",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2018S2",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2019S1",
               "dimensionItemType": "PERIOD"
             },
             {
@@ -566,34 +710,58 @@
       ],
       "periods": [
         {
-          "id": "2020S1"
+          "id": "2007S1"
         },
         {
-          "id": "2020S2"
+          "id": "2007S2"
         },
         {
-          "id": "2021S1"
+          "id": "2008S1"
         },
         {
-          "id": "2021S2"
+          "id": "2008S2"
         },
         {
-          "id": "2022S1"
+          "id": "2009S1"
         },
         {
-          "id": "2022S2"
+          "id": "2009S2"
         },
         {
-          "id": "2023S1"
+          "id": "2010S1"
         },
         {
-          "id": "2023S2"
+          "id": "2011S1"
         },
         {
-          "id": "2024S1"
+          "id": "2011S2"
         },
         {
-          "id": "2024S2"
+          "id": "2012S1"
+        },
+        {
+          "id": "2012S2"
+        },
+        {
+          "id": "2013S1"
+        },
+        {
+          "id": "2016S1"
+        },
+        {
+          "id": "2017S1"
+        },
+        {
+          "id": "2017S2"
+        },
+        {
+          "id": "2018S1"
+        },
+        {
+          "id": "2018S2"
+        },
+        {
+          "id": "2019S1"
         },
         {
           "id": "2025S1"
@@ -615,43 +783,75 @@
           "dimension": "pe",
           "items": [
             {
-              "id": "2020S1",
+              "id": "2007S1",
               "dimensionItemType": "PERIOD"
             },
             {
-              "id": "2020S2",
+              "id": "2007S2",
               "dimensionItemType": "PERIOD"
             },
             {
-              "id": "2021S1",
+              "id": "2008S1",
               "dimensionItemType": "PERIOD"
             },
             {
-              "id": "2021S2",
+              "id": "2008S2",
               "dimensionItemType": "PERIOD"
             },
             {
-              "id": "2022S1",
+              "id": "2009S1",
               "dimensionItemType": "PERIOD"
             },
             {
-              "id": "2022S2",
+              "id": "2009S2",
               "dimensionItemType": "PERIOD"
             },
             {
-              "id": "2023S1",
+              "id": "2010S1",
               "dimensionItemType": "PERIOD"
             },
             {
-              "id": "2023S2",
+              "id": "2011S1",
               "dimensionItemType": "PERIOD"
             },
             {
-              "id": "2024S1",
+              "id": "2011S2",
               "dimensionItemType": "PERIOD"
             },
             {
-              "id": "2024S2",
+              "id": "2012S1",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2012S2",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2013S1",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2016S1",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2017S1",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2017S2",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2018S1",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2018S2",
+              "dimensionItemType": "PERIOD"
+            },
+            {
+              "id": "2019S1",
               "dimensionItemType": "PERIOD"
             },
             {
@@ -739,34 +939,58 @@
       ],
       "periods": [
         {
-          "id": "2020S1"
+          "id": "2007S1"
         },
         {
-          "id": "2020S2"
+          "id": "2007S2"
         },
         {
-          "id": "2021S1"
+          "id": "2008S1"
         },
         {
-          "id": "2021S2"
+          "id": "2008S2"
         },
         {
-          "id": "2022S1"
+          "id": "2009S1"
         },
         {
-          "id": "2022S2"
+          "id": "2009S2"
         },
         {
-          "id": "2023S1"
+          "id": "2010S1"
         },
         {
-          "id": "2023S2"
+          "id": "2011S1"
         },
         {
-          "id": "2024S1"
+          "id": "2011S2"
         },
         {
-          "id": "2024S2"
+          "id": "2012S1"
+        },
+        {
+          "id": "2012S2"
+        },
+        {
+          "id": "2013S1"
+        },
+        {
+          "id": "2016S1"
+        },
+        {
+          "id": "2017S1"
+        },
+        {
+          "id": "2017S2"
+        },
+        {
+          "id": "2018S1"
+        },
+        {
+          "id": "2018S2"
+        },
+        {
+          "id": "2019S1"
         },
         {
           "id": "2025S1"
@@ -778,7 +1002,7 @@
   "maps": [
     {
       "id": "OhHpaiMap01",
-      "name": "HPAI Division Outbreak Map \u2014 2025 S1",
+      "name": "HPAI Historical Outbreak Burden Map \u2014 2007\u20132025",
       "publicAccess": "rw------",
       "basemap": "osmLight",
       "zoom": 6,
@@ -787,7 +1011,7 @@
       "mapViews": [
         {
           "layer": "thematic",
-          "name": "HPAI outbreaks \u2014 2025 S1",
+          "name": "Cumulative HPAI outbreak burden \u2014 2007\u20132025",
           "columns": [
             {
               "dimension": "dx",
@@ -819,6 +1043,78 @@
               "dimension": "pe",
               "items": [
                 {
+                  "id": "2007S1",
+                  "dimensionItemType": "PERIOD"
+                },
+                {
+                  "id": "2007S2",
+                  "dimensionItemType": "PERIOD"
+                },
+                {
+                  "id": "2008S1",
+                  "dimensionItemType": "PERIOD"
+                },
+                {
+                  "id": "2008S2",
+                  "dimensionItemType": "PERIOD"
+                },
+                {
+                  "id": "2009S1",
+                  "dimensionItemType": "PERIOD"
+                },
+                {
+                  "id": "2009S2",
+                  "dimensionItemType": "PERIOD"
+                },
+                {
+                  "id": "2010S1",
+                  "dimensionItemType": "PERIOD"
+                },
+                {
+                  "id": "2011S1",
+                  "dimensionItemType": "PERIOD"
+                },
+                {
+                  "id": "2011S2",
+                  "dimensionItemType": "PERIOD"
+                },
+                {
+                  "id": "2012S1",
+                  "dimensionItemType": "PERIOD"
+                },
+                {
+                  "id": "2012S2",
+                  "dimensionItemType": "PERIOD"
+                },
+                {
+                  "id": "2013S1",
+                  "dimensionItemType": "PERIOD"
+                },
+                {
+                  "id": "2016S1",
+                  "dimensionItemType": "PERIOD"
+                },
+                {
+                  "id": "2017S1",
+                  "dimensionItemType": "PERIOD"
+                },
+                {
+                  "id": "2017S2",
+                  "dimensionItemType": "PERIOD"
+                },
+                {
+                  "id": "2018S1",
+                  "dimensionItemType": "PERIOD"
+                },
+                {
+                  "id": "2018S2",
+                  "dimensionItemType": "PERIOD"
+                },
+                {
+                  "id": "2019S1",
+                  "dimensionItemType": "PERIOD"
+                },
+                {
                   "id": "2025S1",
                   "dimensionItemType": "PERIOD"
                 }
@@ -834,6 +1130,60 @@
             2
           ],
           "periods": [
+            {
+              "id": "2007S1"
+            },
+            {
+              "id": "2007S2"
+            },
+            {
+              "id": "2008S1"
+            },
+            {
+              "id": "2008S2"
+            },
+            {
+              "id": "2009S1"
+            },
+            {
+              "id": "2009S2"
+            },
+            {
+              "id": "2010S1"
+            },
+            {
+              "id": "2011S1"
+            },
+            {
+              "id": "2011S2"
+            },
+            {
+              "id": "2012S1"
+            },
+            {
+              "id": "2012S2"
+            },
+            {
+              "id": "2013S1"
+            },
+            {
+              "id": "2016S1"
+            },
+            {
+              "id": "2017S1"
+            },
+            {
+              "id": "2017S2"
+            },
+            {
+              "id": "2018S1"
+            },
+            {
+              "id": "2018S2"
+            },
+            {
+              "id": "2019S1"
+            },
             {
               "id": "2025S1"
             }

@@ -7,6 +7,11 @@ def generate_latest_alert(
     records: list[SurveillanceRecord], baseline_weeks: int = 4
 ) -> AlertResult | None:
     complete = [record for record in records if record.complete_period]
+    # WAHIS HPAI records are a sparse historical event series, not a continuous
+    # reporting feed. A rolling baseline across multi-year reporting gaps would
+    # create a misleading early-warning classification.
+    if complete and complete[0].disease_code == "HPAI":
+        return None
     if len(complete) <= baseline_weeks:
         return None
 

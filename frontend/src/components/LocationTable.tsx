@@ -31,7 +31,7 @@ export function LocationTable({ items, selected, onSelect }: Props) {
                 onClick={() => onSelect(item.location_code)}
               >
                 <td><button type="button" onClick={() => onSelect(item.location_code)}>{item.location_name}</button></td>
-                <td>{number.format(item.latest_cases)}</td>
+                <td>{number.format(item.latest_cases)}<small className="table-period">{item.latest_period}</small></td>
                 <td>{item.expected_cases === null ? '—' : number.format(Math.round(item.expected_cases))}</td>
                 <td>{number.format(item.total_cases)}</td>
                 <td><RiskBadge level={item.risk_level} /></td>
@@ -43,4 +43,3 @@ export function LocationTable({ items, selected, onSelect }: Props) {
     </section>
   )
 }
-

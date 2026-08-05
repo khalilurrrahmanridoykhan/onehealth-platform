@@ -20,4 +20,6 @@ def test_hpai_dashboard_metadata_is_complete_and_references_valid_objects():
         {"id": "LEVEL-2", "dimensionItemType": "ORGANISATION_UNIT"},
         {"id": "BdOrgUnit01", "dimensionItemType": "ORGANISATION_UNIT"},
     ]
-    assert map_view["periods"] == [{"id": "2025S1"}]
+    assert map_view["periods"][0] == {"id": "2007S1"}
+    assert map_view["periods"][-1] == {"id": "2025S1"}
+    assert len(map_view["periods"]) == 19

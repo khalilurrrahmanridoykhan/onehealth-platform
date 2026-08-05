@@ -92,7 +92,7 @@ These examples are described in the official [DHIS2 One Health](https://dhis2.or
 - Produces a normalized surveillance dataset with source provenance
 - Includes national and eight-division dengue surveillance
 - Includes national and quality-controlled division weekly measles suspected-case surveillance
-- Includes national and seven-division HPAI outbreak surveillance across 38 semesters (2007–2025)
+- Includes national and seven-division HPAI reported-outbreak surveillance across 19 source-reported semesters (2007–2025)
 - Lets users switch disease programmes without leaving the customized dashboard
 - Detects partial reporting weeks and excludes them from alert calculations
 - Generates explainable alerts using a four-week historical baseline
@@ -119,7 +119,7 @@ These examples are described in the official [DHIS2 One Health](https://dhis2.or
 | EBS Tracker metadata and payload workflow | Implemented; live validation pending |
 | Measles integration | Implemented nationally and for five divisions with complete weekly source coverage |
 | Native DHIS2 Measles dashboard | Implemented with KPIs, trends, division comparisons, table, and thematic map |
-| HPAI / WAHIS integration | Implemented with 304 national and division semester records |
+| HPAI / WAHIS integration | Implemented with sparse national and division semester records; reporting gaps remain missing, not zero |
 | Native DHIS2 HPAI dashboard | Implemented with outbreak KPIs, trend, comparison, table, and thematic map |
 | AWD/environmental-risk integration | Planned |
 | Operational validation | Not started |
@@ -176,7 +176,7 @@ The importer reads aggregate DGHS daily suspected-case fields, groups them into 
 python scripts/import_hpai.py /path/to/hpai_modeling_dataset.csv
 ```
 
-The importer converts the public WOAH WAHIS division-semester modelling table into `data/processed/hpai_semester.csv`, adds an auditable national sum, and preserves explicit documented zero-outbreak semesters. The source uses the historical seven-division WAHIS geography, where Mymensingh is included within Dhaka; the platform therefore leaves Mymensingh unreported instead of inventing a separate value. The normalized field named `cases` is a common internal measure slot; in the HPAI interface it is correctly presented as **reported outbreaks**.
+The importer converts the public WOAH WAHIS division-semester quantitative export into `data/processed/hpai_semester.csv`, combines poultry/wildlife rows for the same place and semester, maps the Narayanganj Sadar record to Dhaka Division, and adds an auditable national sum. Semesters absent from the WAHIS export remain **missing**, not zero. The source uses the historical seven-division geography, where Mymensingh is included within Dhaka; the platform therefore leaves Mymensingh unreported instead of inventing a separate value. The normalized field named `cases` is a common internal measure slot; in the HPAI interface it is correctly presented as **reported outbreaks**.
 
 ### Reproduce the current output
 

@@ -6,7 +6,12 @@ from pathlib import Path
 
 DIVISIONS = ["BdDivBar001", "BdDivCtg001", "BdDivDha001", "BdDivKhu001",
              "BdDivRaj001", "BdDivRan001", "BdDivSyl001"]
-PERIODS = [f"{year}S{semester}" for year in range(2020, 2025) for semester in (1, 2)] + ["2025S1"]
+PERIODS = [
+    "2007S1", "2007S2", "2008S1", "2008S2", "2009S1", "2009S2",
+    "2010S1", "2011S1", "2011S2", "2012S1", "2012S2", "2013S1",
+    "2016S1", "2017S1", "2017S2", "2018S1", "2018S2", "2019S1",
+    "2025S1",
+]
 LATEST = "2025S1"
 
 
@@ -45,20 +50,20 @@ def build():
         viz("OhHpaiTrend", "HPAI National Outbreak Trend", "LINE", [dx_nat], [pe_all], [ou_nat], "OhHpaiNat01", ["BdOrgUnit01"], PERIODS),
         viz("OhHpaiDiv01", "HPAI Outbreaks by Division — 2025 S1", "COLUMN", [ou_div], [dx_div], [pe_latest], "OhHpaiOut01", DIVISIONS, [LATEST]),
         viz("OhHpaiKpi01", "Latest National Reported HPAI Outbreaks", "SINGLE_VALUE", [dx_nat], [], [pe_latest, ou_nat], "OhHpaiNat01", ["BdOrgUnit01"], [LATEST]),
-        viz("OhHpaiTot01", "Reported HPAI Outbreaks — 2020–2025", "SINGLE_VALUE", [dx_nat], [], [pe_all, ou_nat], "OhHpaiNat01", ["BdOrgUnit01"], PERIODS),
+        viz("OhHpaiTot01", "Total Reported HPAI Outbreaks — 2007–2025", "SINGLE_VALUE", [dx_nat], [], [pe_all, ou_nat], "OhHpaiNat01", ["BdOrgUnit01"], PERIODS),
         viz("OhHpaiStack", "Division HPAI Outbreak Burden", "STACKED_COLUMN", [ou_div], [dx_div, pe_all], [], "OhHpaiOut01", DIVISIONS, PERIODS),
         viz("OhHpaiTable", "HPAI Division-Semester Surveillance Table", "PIVOT_TABLE", [pe_all], [ou_div, dx_div], [], "OhHpaiOut01", DIVISIONS, PERIODS),
     ]
     map_view = {
-        "layer": "thematic", "name": "HPAI outbreaks — 2025 S1", "columns": [dx_div],
-        "rows": [ou_level], "filters": [pe_latest], "organisationUnits": [{"id":"BdOrgUnit01"}],
-        "organisationUnitLevels": [2], "periods": [{"id":LATEST}], "classes": 5,
+        "layer": "thematic", "name": "Cumulative HPAI outbreak burden — 2007–2025", "columns": [dx_div],
+        "rows": [ou_level], "filters": [pe_all], "organisationUnits": [{"id":"BdOrgUnit01"}],
+        "organisationUnitLevels": [2], "periods": [{"id": period} for period in PERIODS], "classes": 5,
         "method": 2, "colorLow": "#fde68a", "colorHigh": "#7f1d1d",
         "colorScale": "#fde68a,#f59e0b,#f97316,#dc2626,#7f1d1d", "opacity": 1,
         "labels": False, "thematicMapType": "CHOROPLETH", "aggregationType": "DEFAULT",
         "noDataColor": "#d1d5db",
     }
-    maps = [{"id":"OhHpaiMap01", "name":"HPAI Division Outbreak Map — 2025 S1",
+    maps = [{"id":"OhHpaiMap01", "name":"HPAI Historical Outbreak Burden Map — 2007–2025",
              "publicAccess":"rw------", "basemap":"osmLight", "zoom":6,
              "latitude":23.7, "longitude":90.35, "mapViews":[map_view]}]
     dashboard_items = [

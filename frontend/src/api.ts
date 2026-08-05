@@ -28,6 +28,17 @@ async function getJson<T>(path: string): Promise<T> {
   return response.json() as Promise<T>
 }
 
+async function getOptionalJson<T>(path: string): Promise<T | undefined> {
+  const token = localStorage.getItem('onehealth_session')
+  const response = await fetch(path, { headers: token ? { Authorization: `Bearer ${token}` } : {} })
+  if (response.status === 404) return undefined
+  if (!response.ok) {
+    const body = await response.json().catch(() => null) as { detail?: string } | null
+    throw new Error(body?.detail ?? `Request failed with HTTP ${response.status}`)
+  }
+  return response.json() as Promise<T>
+}
+
 async function postJson<T>(path: string, payload: unknown): Promise<T> {
   const token = localStorage.getItem('onehealth_session')
   const response = await fetch(path, {
@@ -53,7 +64,7 @@ export const api = {
       `/api/v1/trends/${encodeURIComponent(diseaseCode)}?location_code=${encodeURIComponent(locationCode)}`,
     ),
   alert: (diseaseCode: string, locationCode: string) =>
-    getJson<Alert>(
+    getOptionalJson<Alert>(
       `/api/v1/alerts/${encodeURIComponent(diseaseCode)}/latest?location_code=${encodeURIComponent(locationCode)}`,
     ),
   ebsSchema: () => getJson<{ stages: EBSStage[] }>('/api/v1/ebs/schema'),

@@ -1,3 +1,4 @@
+from dataclasses import replace
 from datetime import date, timedelta
 
 from onehealth.models import SurveillanceRecord
@@ -49,3 +50,10 @@ def test_incomplete_latest_week_is_excluded():
     assert alert.observed_cases == 130
     assert alert.risk_level == "MEDIUM"
 
+
+def test_sparse_hpai_history_does_not_generate_false_rolling_alert():
+    records = [
+        replace(item, disease_code="HPAI", disease_name="Avian Influenza (HPAI)")
+        for item in [record(index, cases) for index, cases in enumerate([1, 2, 1, 3, 1])]
+    ]
+    assert generate_latest_alert(records) is None
