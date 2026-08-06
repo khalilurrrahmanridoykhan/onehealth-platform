@@ -6,12 +6,20 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_DATA_PATH = PROJECT_ROOT / "data" / "processed" / "dengue_weekly.csv"
 DEFAULT_DHIS2_MAPPING_PATH = PROJECT_ROOT / "dhis2" / "mappings" / "dengue.json"
-DEFAULT_ENVIRONMENT_MONTHLY_PATH = (
-    PROJECT_ROOT / "data" / "processed" / "environment" / "district_monthly.csv"
-)
-DEFAULT_ENVIRONMENT_SUMMARY_PATH = (
-    PROJECT_ROOT / "data" / "processed" / "environment" / "district_summary.csv"
-)
+
+
+def _default_environment_path(filename: str) -> Path:
+    # PROJECT_ROOT is wrong when the package is pip-installed (not run from a
+    # source checkout), e.g. in the production container: __file__ resolves
+    # under site-packages, not /app. Fall back to a cwd-relative path in that
+    # case, mirroring services/data_trust.py's _default_registry_path().
+    source_tree_path = PROJECT_ROOT / "data" / "processed" / "environment" / filename
+    container_path = Path.cwd() / "data" / "processed" / "environment" / filename
+    return source_tree_path if source_tree_path.is_file() else container_path
+
+
+DEFAULT_ENVIRONMENT_MONTHLY_PATH = _default_environment_path("district_monthly.csv")
+DEFAULT_ENVIRONMENT_SUMMARY_PATH = _default_environment_path("district_summary.csv")
 
 
 def _env_bool(name: str, default: bool) -> bool:
