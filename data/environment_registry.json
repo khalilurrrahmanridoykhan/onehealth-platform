@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "repository_url": "https://github.com/khalilurrrahmanridoykhan/onehealth-platform",
+  "environment": {
+    "metric": {
+      "label": "District climate observations (NASA POWER reanalysis)",
+      "unit": "district-months"
+    },
+    "evidence_type": "modelled_reanalysis_observation",
+    "freshness_mode": "historical",
+    "expected_update_days": null,
+    "expected_location_codes": [
+      "BD-D-BAGERHAT", "BD-D-BANDARBAN", "BD-D-BARGUNA", "BD-D-BARISHAL", "BD-D-BHOLA",
+      "BD-D-BOGURA", "BD-D-BRAHMANBARIA", "BD-D-CHANDPUR", "BD-D-CHATTOGRAM", "BD-D-CHUADANGA",
+      "BD-D-CUMILLA", "BD-D-COXS_BAZAR", "BD-D-DHAKA", "BD-D-DINAJPUR", "BD-D-FARIDPUR",
+      "BD-D-FENI", "BD-D-GAIBANDHA", "BD-D-GAZIPUR", "BD-D-GOPALGANJ", "BD-D-HABIGANJ",
+      "BD-D-JAMALPUR", "BD-D-JASHORE", "BD-D-JHALOKATI", "BD-D-JHENAIDAH", "BD-D-JOYPURHAT",
+      "BD-D-KHAGRACHHARI", "BD-D-KHULNA", "BD-D-KISHOREGANJ", "BD-D-KURIGRAM", "BD-D-KUSHTIA",
+      "BD-D-LAKSHMIPUR", "BD-D-LALMONIRHAT", "BD-D-MADARIPUR", "BD-D-MAGURA", "BD-D-MANIKGANJ",
+      "BD-D-MOULVIBAZAR", "BD-D-MEHERPUR", "BD-D-MUNSHIGANJ", "BD-D-MYMENSINGH", "BD-D-NAOGAON",
+      "BD-D-NARAIL", "BD-D-NARAYANGANJ", "BD-D-NARSINGDI", "BD-D-NATORE", "BD-D-CHAPAINAWABGANJ",
+      "BD-D-NETROKONA", "BD-D-NILPHAMARI", "BD-D-NOAKHALI", "BD-D-PABNA", "BD-D-PANCHAGARH",
+      "BD-D-PATUAKHALI", "BD-D-PIROJPUR", "BD-D-RAJBARI", "BD-D-RAJSHAHI", "BD-D-RANGAMATI",
+      "BD-D-RANGPUR", "BD-D-SATKHIRA", "BD-D-SHARIATPUR", "BD-D-SHERPUR", "BD-D-SIRAJGANJ",
+      "BD-D-SUNAMGANJ", "BD-D-SYLHET", "BD-D-TANGAIL", "BD-D-THAKURGAON"
+    ],
+    "allowed_data_statuses": ["modelled_reanalysis_daily_aggregate"],
+    "license": "NASA POWER data-use policy (no restriction; acknowledgment requested)",
+    "doi": null,
+    "sources": [
+      { "name": "NASA POWER", "url": "https://power.larc.nasa.gov/" },
+      { "name": "geoBoundaries Bangladesh ADM2 (CC0 1.0)", "url": "https://www.geoboundaries.org/" }
+    ],
+    "capabilities": {
+      "alerts": false,
+      "forecast": false,
+      "automated_refresh": false,
+      "district_data": true,
+      "disease_correlation": false
+    },
+    "limitations": [
+      "NASA POWER values are a single unweighted grid-cell centroid per district, not area- or population-weighted; this is a materially weaker approximation for large or geographically diverse districts such as Bandarban.",
+      "This is a static, one-time data pull as of August 2026 with no automated refresh; the series is capped at 2025-12-31.",
+      "MERRA-2/NASA POWER data prior to 2017 has a documented discontinuity and wrong-sign trend bug in the same underlying data family; this window starts at 2017 specifically to avoid it.",
+      "This module presents climate observations only; it does not compute or claim any statistical correlation with AWD or any other disease.",
+      "The 'Nawabganj' source district is resolved to Chapainawabganj (Rajshahi Division); this resolution is unverified and should be spot-checked."
+    ]
+  }
+}

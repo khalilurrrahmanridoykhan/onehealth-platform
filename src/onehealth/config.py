@@ -7,10 +7,10 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_DATA_PATH = PROJECT_ROOT / "data" / "processed" / "dengue_weekly.csv"
 DEFAULT_DHIS2_MAPPING_PATH = PROJECT_ROOT / "dhis2" / "mappings" / "dengue.json"
 DEFAULT_ENVIRONMENT_MONTHLY_PATH = (
-    PROJECT_ROOT / "data" / "processed" / "environment_district_monthly.csv"
+    PROJECT_ROOT / "data" / "processed" / "environment" / "district_monthly.csv"
 )
 DEFAULT_ENVIRONMENT_SUMMARY_PATH = (
-    PROJECT_ROOT / "data" / "processed" / "environment_district_summary.csv"
+    PROJECT_ROOT / "data" / "processed" / "environment" / "district_summary.csv"
 )
 
 

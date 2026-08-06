@@ -21,9 +21,9 @@ def main() -> None:
     parser.add_argument("--crosswalk", type=Path,
                          default=Path("data/reference/bd_district_crosswalk.csv"))
     parser.add_argument("--monthly-output", type=Path,
-                         default=Path("data/processed/environment_district_monthly.csv"))
+                         default=Path("data/processed/environment/district_monthly.csv"))
     parser.add_argument("--summary-output", type=Path,
-                         default=Path("data/processed/environment_district_summary.csv"))
+                         default=Path("data/processed/environment/district_summary.csv"))
     args = parser.parse_args()
 
     monthly_count = normalize_monthly(args.climate_daily, args.crosswalk, args.monthly_output)
