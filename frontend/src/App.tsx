@@ -6,6 +6,7 @@ import { DataTrustPanel } from './components/DataTrustPanel'
 import { EBSWorkspace } from './components/EBSWorkspace'
 import { EBSOperationsQueue } from './components/EBSOperationsQueue'
 import { EBSSignalRegistry } from './components/EBSSignalRegistry'
+import { EnvironmentPanel } from './components/EnvironmentPanel'
 import { LocationTable } from './components/LocationTable'
 import { NationalEvidencePanel } from './components/NationalEvidencePanel'
 import { RiskMap } from './components/RiskMap'
@@ -71,6 +72,7 @@ export default function App() {
     ['dashboard', 'OV', 'Command overview'], ['surveillance', 'TR', 'Trends & forecast'],
     ['comparison', 'CP', 'Compare locations'], ['geography', 'MP', 'Spatial analysis'],
     ['data-trust', 'DT', 'Evidence & data trust'], ['alerts', 'AL', 'Alert intelligence'],
+    ['environment', 'CL', 'Climate & environment'],
     ['operations-queue', 'OQ', 'Operations queue'], ['ebs', 'WF', 'Response workflow'],
     ['ebs-registry', 'RG', 'Signal registry'],
   ]
@@ -121,6 +123,7 @@ export default function App() {
             </div>
             {locations.length > 1 && <ComparisonWorkbench diseaseCode={selectedDisease} locations={locations} primaryCode={selected} primaryRecords={trend} metricLabel={metricLabel} />}
             <DataTrustPanel diseaseCode={selectedDisease} />
+            <EnvironmentPanel />
             <EBSOperationsQueue />
             <EBSWorkspace locations={locations} />
             <EBSSignalRegistry />

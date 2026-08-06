@@ -56,17 +56,61 @@ const dataTrust = {
   limitations: ['Division data are aggregates and do not identify patients.'],
 }
 
+const environmentTrust = {
+  metric: { label: 'District climate observations', unit: 'district-months' },
+  evidence_type: 'modelled_reanalysis_observation',
+  coverage: {
+    start_date: '2017-01-01', end_date: '2025-12-31', record_count: 6912,
+    location_count: 64, period_types: ['monthly'], complete_periods: 6912, partial_periods: 0,
+  },
+  freshness: {
+    status: 'HISTORICAL', latest_period_end: '2025-12-31', age_days: 218,
+    expected_update_days: null, as_of: '2026-08-06',
+  },
+  provenance: {
+    sources: [{ name: 'NASA POWER', url: 'https://power.larc.nasa.gov/' }],
+    license: 'NASA POWER data-use policy', repository_url: 'https://github.com/example/onehealth', doi: null,
+  },
+  quality: { status: 'PASS', issue_count: 0, checks: [] },
+  capabilities: { alerts: false, forecast: false, automated_refresh: false, district_data: true, disease_correlation: false },
+  limitations: ['NASA POWER values are a single unweighted centroid per district.'],
+}
+
 beforeEach(() => {
   vi.stubGlobal('fetch', vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
     const url = String(input)
     let body: unknown
-    if (url.includes('.geojson')) body = {
+    if (url.includes('bangladesh_districts.geojson')) body = {
+      type: 'FeatureCollection',
+      features: [{
+        type: 'Feature',
+        properties: { shapeISO: '', shapeName: 'Dhaka', location_code: 'BD-D-DHAKA', district_name: 'Dhaka', division_code: 'BD-DHA', division_name: 'Dhaka' },
+        geometry: { type: 'Polygon', coordinates: [[[90, 23], [91, 23], [91, 24], [90, 24], [90, 23]]] },
+      }],
+    }
+    else if (url.includes('bangladesh_divisions.geojson')) body = {
       type: 'FeatureCollection',
       features: [{
         type: 'Feature', properties: { shapeISO: 'BD-C', shapeName: 'Dhaka' },
         geometry: { type: 'Polygon', coordinates: [[[90, 23], [91, 23], [91, 24], [90, 24], [90, 23]]] },
       }],
     }
+    else if (url.includes('/environment/data-trust')) body = environmentTrust
+    else if (url.includes('/environment/districts') && url.includes('/monthly')) body = [
+      {
+        location_code: 'BD-D-DHAKA', location_name: 'Dhaka', division_code: 'BD-DHA', division_name: 'Dhaka',
+        period_start: '2020-06-01', period_end: '2020-06-30', period_label: '2020-06',
+        mean_temp_c: 30, mean_max_temp_c: 35, total_precip_mm: 200, extreme_heat_days: 2,
+        days_observed: 30, complete_period: true,
+      },
+    ]
+    else if (url.includes('/environment/districts')) body = [
+      {
+        location_code: 'BD-D-DHAKA', location_name: 'Dhaka', division_code: 'BD-DHA', division_name: 'Dhaka',
+        mean_temp_c: 27, mean_annual_precip_mm: 2000, mean_annual_extreme_heat_days: 20,
+        extreme_heat_threshold_c: 35, period_start: '2017-01-01', period_end: '2025-12-31',
+      },
+    ]
     else if (url.includes('/ebs/schema')) body = { stages: [
       { code: 'detection', uid: 'OhEbsDet001', fields: ['description', 'signal_type'], required_fields: ['description', 'signal_type'], repeatable: false },
       { code: 'verification', uid: 'OhEbsVer001', fields: ['verification_status'], required_fields: ['verification_status'], repeatable: false },
