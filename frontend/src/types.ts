@@ -188,6 +188,35 @@ export interface EBSNotifications {
   generated_at: string
 }
 
+export interface EnvironmentDistrict {
+  location_code: string
+  location_name: string
+  division_code: string
+  division_name: string
+  mean_temp_c: number
+  mean_annual_precip_mm: number
+  mean_annual_extreme_heat_days: number
+  extreme_heat_threshold_c: number
+  period_start: string
+  period_end: string
+}
+
+export interface EnvironmentMonthlyRecord {
+  location_code: string
+  location_name: string
+  division_code: string
+  division_name: string
+  period_start: string
+  period_end: string
+  period_label: string
+  mean_temp_c: number
+  mean_max_temp_c: number
+  total_precip_mm: number
+  extreme_heat_days: number
+  days_observed: number
+  complete_period: boolean
+}
+
 export interface EBSAssignmentDraft {
   responsible_officer: string
   due_date: string

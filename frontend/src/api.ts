@@ -13,6 +13,8 @@ import type {
   EBSStageDraft,
   EBSStagePreview,
   Disease,
+  EnvironmentDistrict,
+  EnvironmentMonthlyRecord,
   Location,
   OverviewItem,
   SurveillanceRecord,
@@ -95,4 +97,11 @@ export const api = {
     getJson<{ signals: EBSSavedSignal[] }>(`/api/v1/ebs/signals?q=${encodeURIComponent(query)}`),
   savedSignal: (trackedEntityUid: string) =>
     getJson<EBSSignalDetail>(`/api/v1/ebs/signals/${encodeURIComponent(trackedEntityUid)}`),
+  environmentDistricts: () => getJson<EnvironmentDistrict[]>('/api/v1/environment/districts'),
+  environmentDistrict: (locationCode: string) =>
+    getJson<EnvironmentDistrict>(`/api/v1/environment/districts/${encodeURIComponent(locationCode)}`),
+  environmentMonthly: (locationCode: string, limit = 60) =>
+    getJson<EnvironmentMonthlyRecord[]>(
+      `/api/v1/environment/districts/${encodeURIComponent(locationCode)}/monthly?limit=${limit}`,
+    ),
 }
