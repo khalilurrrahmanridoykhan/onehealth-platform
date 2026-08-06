@@ -22,10 +22,10 @@ The target platform combines a customized public-health dashboard with DHIS2 as 
 ```mermaid
 flowchart TD
     A["<b>Research datasets and surveillance sources</b><br/>DGHS reports · CSV/PDF extracts · DHIS2 aggregate data<br/>Community and EBS signal reports"]
-    B["<b>Validation and ingestion</b><br/>Python 3.11 · reproducible import scripts<br/>Schema, completeness, provenance and quality checks"]
+    B["<b>Validation and guarded ingestion</b><br/>Python 3.11 · reproducible import scripts<br/>Aggregate approval gate · protected EBS actions"]
     C["<b>DHIS2 health-data backend</b><br/>DHIS2 Core 2.42 · Web API · Aggregate Analytics · Tracker<br/>PostgreSQL 16 + PostGIS · metadata · users · audit history"]
-    D["<b>Integration and prediction services</b><br/>FastAPI · Uvicorn · HTTPX · DHIS2 API client<br/>Weekly baselines · risk scoring · explainable alert rules"]
-    E["<b>Customized dashboard, alerts, and actions</b><br/>React 19 · TypeScript · Vite<br/>Recharts · D3 Geo · EBS workflows · situation reports"]
+    D["<b>Integration, trust, and prediction services</b><br/>FastAPI · snapshot cache · evidence registry<br/>Coverage · freshness · provenance · quality · alerts"]
+    E["<b>Customized dashboard, alerts, and actions</b><br/>React 19 · TypeScript · Vite<br/>Data Trust panel · maps · EBS workflows · situation reports"]
     F["<b>Secure deployment</b><br/>Docker Compose · Nginx · Caddy<br/>HTTPS · role-based access · protected DHIS2 writes"]
 
     A -->|raw observations and event signals| B
@@ -50,7 +50,7 @@ flowchart TD
     class F infrastructure;
 ```
 
-The primary path moves validated surveillance data into DHIS2, uses independent services for analysis and decision support, and presents the results through the customized application. Operational updates flow back to DHIS2 Tracker so that assignments, response events, closure, permissions, and audit history remain in the health-data system of record.
+The primary path can move validated surveillance data into DHIS2 only through an explicit staged approval and synchronization command. Independent services read normalized CSV or configured DHIS2 data, cache a bounded snapshot, derive trust and decision-support reports, and present the results through the customized application. Operational updates can flow back to DHIS2 Tracker through separately protected actions so that assignments, response events, closure, permissions, and audit history remain in the health-data system of record. Nothing in the Data Trust layer schedules or performs automatic DHIS2 writes.
 
 The DHIS2 integration foundation, customized frontend, and test-instance deployment are implemented. Formal operational validation remains on the roadmap.
 
@@ -90,6 +90,11 @@ These examples are described in the official [DHIS2 One Health](https://dhis2.or
 - Validates an existing daily dengue CSV export
 - Aggregates observations into ISO epidemiological weeks
 - Produces a normalized surveillance dataset with source provenance
+- Declares the evidence semantics, supported uses, and limitations of all eight programmes in a versioned evidence registry
+- Derives programme-specific coverage, freshness, provenance, and quality reports from normalized records
+- Exposes public Data Trust catalog, detail, component, and cache-status endpoints
+- Uses a configurable process-local snapshot cache with explicit stale-on-error reporting and admin-only invalidation
+- Requires a quality-passing, checksum-bound, manually approved staging package before aggregate-data DHIS2 validation or commit
 - Includes national and eight-division dengue surveillance
 - Includes national and quality-controlled division weekly measles suspected-case surveillance
 - Includes national and seven-division HPAI reported-outbreak surveillance across 19 source-reported semesters (2007–2025)
@@ -102,6 +107,7 @@ These examples are described in the official [DHIS2 One Health](https://dhis2.or
 - Displays an interactive Bangladesh division risk map
 - Includes native DHIS2 Dengue, Measles, HPAI, Nipah, Japanese encephalitis, AWD, human rabies, and malaria analytical dashboards
 - Previews EBS signal enrollment payloads while DHIS2 writes remain disabled by default
+- Renders programme evidence, freshness, quality, supported uses, and limitations in the customized dashboard
 - Includes automated tests and continuous integration
 
 ## Project status
@@ -112,11 +118,17 @@ These examples are described in the official [DHIS2 One Health](https://dhis2.or
 | Weekly surveillance data model | Implemented |
 | Explainable baseline alerts | Implemented |
 | FastAPI service | Implemented |
+| Eight-programme evidence registry and Data Trust reports | Implemented for Dengue, Measles, HPAI, Nipah, JE, AWD, human rabies, and malaria |
+| Public Data Trust read API | Implemented for catalog, programme detail, coverage, freshness, provenance, quality, and cache status |
+| Snapshot cache | Implemented as a process-local TTL cache with bounded stale-on-error delivery and admin-only invalidation |
+| Data Trust dashboard panel | Implemented with evidence semantics, coverage, freshness, provenance, quality checks, capabilities, and limitations |
+| Manual ingestion approval gate | Implemented; aggregate-data DHIS2 dry-run and commit require a verified, approved staging package |
+| Automatic DHIS2 aggregate writes | Deliberately absent; writes require an explicit approved `--commit` invocation |
 | DHIS2 API client and mapping foundation | Implemented |
 | DHIS2 metadata and data-value dry-run synchronization | Implemented |
 | Division-level dengue surveillance | Implemented |
 | Live DHIS2 instance validation | Implemented on the project test instance |
-| Customized React surveillance dashboard | Implemented with division map and EBS preview workspace |
+| Customized React surveillance dashboard | Implemented with division map, Data Trust panel, and EBS preview workspace |
 | EBS Tracker metadata and payload workflow | Implemented; live validation pending |
 | Measles integration | Implemented nationally and for five divisions with complete weekly source coverage |
 | Native DHIS2 Measles dashboard | Implemented with KPIs, trends, division comparisons, table, and thematic map |
@@ -243,6 +255,31 @@ Install the project, regenerate the normalized dengue dataset from the committed
 make reproduce
 ```
 
+### Review and approve data before DHIS2
+
+The aggregate synchronization command's DHIS2 validation and commit modes do not accept an arbitrary CSV. Stage the normalized file, inspect the generated quality report, approve the exact SHA-256 with a reviewer-supplied name, and verify the package:
+
+```bash
+PYTHONPATH=src python scripts/manage_ingestion.py stage \
+  data/processed/dengue_weekly.csv
+
+PYTHONPATH=src python scripts/manage_ingestion.py approve \
+  data/staging/<package-id> \
+  --reviewer "Data Steward Name" \
+  --checksum <64-character-sha256> \
+  --note "Reviewed source and reporting coverage"
+
+PYTHONPATH=src python scripts/manage_ingestion.py verify \
+  data/staging/<package-id>
+
+PYTHONPATH=src python scripts/sync_dhis2.py \
+  --staged-package data/staging/<package-id> \
+  --mapping dhis2/mappings/dengue.json \
+  --dry-run
+```
+
+Only an authorized operator should replace `--dry-run` with `--commit`. The command rechecks the dataset, quality-report, and approval-receipt checksums before constructing the DHIS2 client; any post-approval change blocks synchronization. Raw `--data` input is accepted only with `--preview`, which does not contact DHIS2. See the [ingestion approval guide](docs/INGESTION_GATE.md) for the package contract and safeguards.
+
 ### Start the API
 
 ```bash
@@ -254,6 +291,15 @@ uvicorn onehealth.api:app --reload
 - OpenAPI schema: <http://127.0.0.1:8000/openapi.json>
 
 The default backend is the committed CSV demonstration. To read from a configured DHIS2 instance, follow the [DHIS2 integration guide](docs/DHIS2_INTEGRATION.md) and set `ONEHEALTH_BACKEND=dhis2`.
+
+The API reuses a process-local surveillance snapshot for both analytical and Data Trust requests. Configure its fresh TTL and bounded stale-on-error window in seconds:
+
+```bash
+export ONEHEALTH_CACHE_TTL_SECONDS=300
+export ONEHEALTH_CACHE_STALE_IF_ERROR_SECONDS=86400
+```
+
+After the TTL expires, the next request attempts a refresh. If that read fails and the previous snapshot remains inside the stale-on-error window, the API serves it with `X-OneHealth-Cache: STALE`; trust responses also include `X-OneHealth-Data-Loaded-At`. Cache status is public, but invalidation requires an Admin bearer token and affects only the current API process. See the [Data Trust and Operations guide](docs/DATA_TRUST.md) for the eight-programme registry, endpoint contract, cache states, and safety boundaries.
 
 The six-stage Event-Based Surveillance program is documented in the [EBS Tracker guide](docs/EBS_TRACKER.md).
 
@@ -277,6 +323,7 @@ The current dashboard includes:
 - Explainable risk status and recommended actions
 - National and division comparison table
 - Interactive division risk map linked to location selection
+- Programme-specific Data Trust panel for evidence type, coverage, freshness, provenance, quality checks, supported uses, and limitations
 - Six-stage EBS workflow with safe detection and follow-up event previews
 - Protected DHIS2 signal registry with search, detail, and event history
 - Operational alert queue with officer assignment written to DHIS2 Tracker
@@ -293,6 +340,14 @@ The current dashboard includes:
 |---|---|---|
 | `GET` | `/health` | Service health and version |
 | `GET` | `/api/v1/diseases` | Available diseases |
+| `GET` | `/api/v1/data-trust` | Data Trust reports for all eight declared programmes |
+| `GET` | `/api/v1/data-trust/{code}` | Complete Data Trust report for one programme |
+| `GET` | `/api/v1/data-trust/{code}/coverage` | Record, date, period, and geographic coverage |
+| `GET` | `/api/v1/data-trust/{code}/freshness` | Latest-period age and current, stale, historical, or unknown status |
+| `GET` | `/api/v1/data-trust/{code}/provenance` | Record sources and declared licence, DOI, and repository |
+| `GET` | `/api/v1/data-trust/{code}/quality` | Deterministic quality checks and aggregate status |
+| `GET` | `/api/v1/data-trust/cache/status` | Non-secret snapshot health and degraded-delivery state |
+| `POST` | `/api/v1/data-trust/cache/invalidate` | Admin-only process-local snapshot invalidation |
 | `GET` | `/api/v1/locations?disease_code=DENGUE` | Available national and division locations |
 | `GET` | `/api/v1/trends/DENGUE` | Complete weekly dengue records |
 | `GET` | `/api/v1/trends/MEASLES?location_code=BD` | Complete national weekly measles records |
@@ -345,8 +400,10 @@ CI runs the test suite on supported Python versions for every push and pull requ
 ```text
 onehealth-platform/
 ├── .github/                  Community templates and CI
+├── data/evidence_registry.json  Eight-programme evidence declarations
 ├── data/processed/           Normalized demonstration output
 ├── data/raw/                 Public aggregate source snapshot
+├── data/staging/             Ignored runtime approval packages
 ├── docs/                     Architecture and data documentation
 ├── frontend/                 Customized React/TypeScript dashboard
 ├── scripts/                  Command-line ingestion tools
@@ -380,7 +437,7 @@ The committed measles series is also public, aggregate DGHS reporting and contai
 - Quality rule: division rows exceeding the corresponding national daily value are rejected as parser contamination
 - Completeness rule: only weeks containing all seven daily reports are synchronized to DHIS2 and used in trends and alerts
 
-See the [data dictionary](docs/DATA_DICTIONARY.md) for variables, types, units, allowed values, and missing-value rules. See the [ethics statement](docs/ETHICS.md) for the current review basis and requirements for future operational data.
+See the [Data Trust and Operations guide](docs/DATA_TRUST.md) for the evidence registry, derived trust reports, cache behavior, and guarded ingestion workflow. See the [data dictionary](docs/DATA_DICTIONARY.md) for variables, types, units, allowed values, and missing-value rules, and the [ethics statement](docs/ETHICS.md) for the current review basis and requirements for future operational data.
 
 Do not commit credentials, protected health information, or identifiable patient data. See [SECURITY.md](SECURITY.md) for responsible reporting.
 

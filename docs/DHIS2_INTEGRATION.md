@@ -98,19 +98,35 @@ python scripts/import_dhis2_metadata.py dhis2/metadata/dengue_dashboard.json --c
 
 ## Synchronize dengue data
 
-Validate all complete weeks without committing:
+Stage the normalized dataset, review its quality report, and explicitly approve
+the printed SHA-256 before contacting DHIS2. The complete procedure and package
+contract are documented in [the ingestion approval guide](INGESTION_GATE.md).
 
 ```bash
-python scripts/sync_dhis2.py --dry-run
+PYTHONPATH=src python scripts/manage_ingestion.py stage data/processed/dengue_weekly.csv
+PYTHONPATH=src python scripts/manage_ingestion.py approve data/staging/<package-id> \
+  --reviewer "Data Steward Name" --checksum <64-character-sha256>
+```
+
+Validate all approved, complete weeks without committing:
+
+```bash
+python scripts/sync_dhis2.py --staged-package data/staging/<package-id> --dry-run
 ```
 
 After reviewing the generated report and DHIS2 response:
 
 ```bash
-python scripts/sync_dhis2.py --commit
+python scripts/sync_dhis2.py --staged-package data/staging/<package-id> --commit
 ```
 
-The client uses `CREATE_AND_UPDATE`, allowing a corrected source value to update an existing data value. Duplicate disease/location/period records within one local input are rejected before network submission. Partial national weeks are excluded. The current division input consists of source-published weekly aggregates and is treated as complete.
+The sync command recomputes the dataset, quality-report, and approval-receipt
+checksums before constructing the DHIS2 client. Modified or unapproved packages
+are blocked. The client uses `CREATE_AND_UPDATE`, allowing a corrected source
+value to update an existing data value. Duplicate disease/location/period records
+within one local input are rejected before network submission. Partial national
+weeks are excluded. The current division input consists of source-published
+weekly aggregates and is treated as complete.
 
 ## Import and synchronize measles data
 
@@ -124,8 +140,13 @@ python scripts/import_dhis2_metadata.py dhis2/metadata/measles_aggregate.json --
 Then validate and synchronize the complete national weeks:
 
 ```bash
-python scripts/sync_dhis2.py --data data/processed/measles_weekly.csv --mapping dhis2/mappings/measles.json --dry-run
-python scripts/sync_dhis2.py --data data/processed/measles_weekly.csv --mapping dhis2/mappings/measles.json --commit
+PYTHONPATH=src python scripts/manage_ingestion.py stage data/processed/measles_weekly.csv
+PYTHONPATH=src python scripts/manage_ingestion.py approve data/staging/<package-id> \
+  --reviewer "Data Steward Name" --checksum <64-character-sha256>
+python scripts/sync_dhis2.py --staged-package data/staging/<package-id> \
+  --mapping dhis2/mappings/measles.json --dry-run
+python scripts/sync_dhis2.py --staged-package data/staging/<package-id> \
+  --mapping dhis2/mappings/measles.json --commit
 ```
 
 The Measles mapping contains Bangladesh and all eight divisions, but only source-available, seven-day-complete division weeks are synchronized. National and division observations use separate data elements to prevent double-counting during organisation-unit rollups. Missing divisions are not estimated.

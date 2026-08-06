@@ -24,7 +24,8 @@ def _row(year: int, code: str, name: str, level: str, cases: int) -> dict[str, s
         "location_code": code, "location_name": name, "location_level": level,
         "cases": cases, "deaths": "", "population": "", "incidence_per_100k": "",
         "data_status": "partial_year_through_july" if year == 2016 else "single_source_literature",
-        "source_name": SOURCE_NAME, "source_url": SOURCE_URL, "complete_period": "True",
+        "source_name": SOURCE_NAME, "source_url": SOURCE_URL,
+        "complete_period": "False" if year == 2016 else "True",
     }
 
 

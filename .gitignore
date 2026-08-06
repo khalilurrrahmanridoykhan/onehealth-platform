@@ -6,6 +6,7 @@ __pycache__/
 .DS_Store
 .env
 data/sync/
+data/staging/
 node_modules/
 frontend/dist/
 frontend/coverage/

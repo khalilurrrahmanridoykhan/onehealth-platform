@@ -1,5 +1,8 @@
 {
   "diseaseCode":"MALARIA", "diseaseName":"Malaria", "periodType":"Yearly",
+  "dataStatus":"who_reported_confirmed_cases",
+  "sourceName":"WHO Global Health Observatory — confirmed malaria cases",
+  "sourceUrl":"https://ghoapi.azureedge.net/api/MALARIA_CONF_CASES",
   "dataSetUid":"OhMalAnn001", "casesDataElementUid":"OhMalNatC01", "nationalCasesDataElementUid":"OhMalNatC01",
   "locations":{"BD":{"uid":"BdOrgUnit01","name":"Bangladesh","level":"national"}}
 }

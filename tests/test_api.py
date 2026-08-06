@@ -11,6 +11,61 @@ from onehealth.api import app
 client = TestClient(app)
 
 
+def test_data_trust_endpoints_expose_evidence_and_component_views(monkeypatch):
+    monkeypatch.setenv("ONEHEALTH_BACKEND", "csv")
+
+    catalog = client.get("/api/v1/data-trust")
+    detail = client.get("/api/v1/data-trust/DENGUE")
+    coverage = client.get("/api/v1/data-trust/DENGUE/coverage")
+    freshness = client.get("/api/v1/data-trust/DENGUE/freshness")
+    provenance = client.get("/api/v1/data-trust/DENGUE/provenance")
+    quality = client.get("/api/v1/data-trust/DENGUE/quality")
+
+    assert catalog.status_code == 200
+    assert {item["disease_code"] for item in catalog.json()} == {
+        "DENGUE", "MEASLES", "HPAI", "NIPAH", "JE", "AWD", "RABIES", "MALARIA"
+    }
+    assert detail.status_code == 200
+    assert detail.json()["disease_code"] == "DENGUE"
+    assert detail.headers["X-OneHealth-Cache"] in {"HIT", "MISS", "STALE"}
+    assert detail.headers["X-OneHealth-Data-Loaded-At"]
+    assert coverage.json() == detail.json()["coverage"]
+    assert freshness.json() == detail.json()["freshness"]
+    assert provenance.json() == detail.json()["provenance"]
+    assert quality.json() == detail.json()["quality"]
+
+
+def test_data_trust_rejects_an_unknown_programme(monkeypatch):
+    monkeypatch.setenv("ONEHEALTH_BACKEND", "csv")
+
+    response = client.get("/api/v1/data-trust/NOT_REAL")
+
+    assert response.status_code == 404
+    assert "Unknown disease code" in response.json()["detail"]
+
+
+def test_snapshot_cache_status_and_admin_invalidation(monkeypatch):
+    monkeypatch.setenv("ONEHEALTH_BACKEND", "csv")
+    monkeypatch.setenv("ONEHEALTH_AUTH_SECRET", "a-secure-test-secret-with-32-characters")
+    client.get("/api/v1/data-trust/DENGUE")
+
+    status = client.get("/api/v1/data-trust/cache/status")
+    unauthenticated = client.post("/api/v1/data-trust/cache/invalidate")
+    headers = {"Authorization": f"Bearer {issue_token(User('admin', 'admin'))}"}
+    invalidated = client.post("/api/v1/data-trust/cache/invalidate", headers=headers)
+    empty = client.get("/api/v1/data-trust/cache/status")
+
+    assert status.status_code == 200
+    assert status.json()["backend"] == "csv"
+    assert status.json()["cache_state"] in {"HIT", "MISS", "STALE"}
+    assert "last_error" not in status.json()
+    assert unauthenticated.status_code == 401
+    assert invalidated.status_code == 200
+    assert invalidated.json()["status"] == "invalidated"
+    assert invalidated.json()["entries_cleared"] >= 1
+    assert empty.json()["cache_state"] == "EMPTY"
+
+
 def test_locations_include_national_and_eight_divisions(monkeypatch):
     monkeypatch.setenv("ONEHEALTH_BACKEND", "csv")
     response = client.get("/api/v1/locations?disease_code=DENGUE")
@@ -58,6 +113,20 @@ def test_overview_returns_national_then_eight_divisions(monkeypatch):
     assert overview[0]["location_code"] == "BD"
     assert overview[0]["location_level"] == "national"
     assert {item["risk_level"] for item in overview} <= {"LOW", "MEDIUM", "HIGH"}
+
+
+def test_overview_can_include_an_explicit_partial_historical_period(monkeypatch):
+    root = api_module.DEFAULT_DATA_PATH.parents[1]
+    monkeypatch.setenv("ONEHEALTH_BACKEND", "csv")
+    monkeypatch.setenv("ONEHEALTH_DATA_PATHS", str(root / "processed/je_annual.csv"))
+
+    complete = client.get("/api/v1/overview/JE")
+    with_partial = client.get("/api/v1/overview/JE?complete_only=false")
+
+    assert complete.status_code == 200
+    assert complete.json()[0]["latest_period"] == "2015"
+    assert with_partial.status_code == 200
+    assert with_partial.json()[0]["latest_period"] == "2016"
 
 
 def test_csv_backend_supports_multiple_diseases(monkeypatch):

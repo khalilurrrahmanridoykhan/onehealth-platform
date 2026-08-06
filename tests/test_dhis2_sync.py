@@ -139,3 +139,46 @@ def test_dhis2_values_become_surveillance_records():
     assert records[0].period_label == "2026-W02"
     assert records[0].cases == 70
     assert records[0].source_name == "DHIS2"
+
+
+def test_mapping_preserves_declared_evidence_provenance_on_dhis2_reads():
+    mapping = replace(
+        MAPPING,
+        data_status="historical_literature_compilation",
+        source_name="Published surveillance study",
+        source_url="https://doi.org/10.0000/example",
+    )
+    response = {"dataValues": [{
+        "dataElement": "OhDngCase01", "period": "2026W2",
+        "orgUnit": "BdOrgUnit01", "value": "70",
+    }]}
+
+    restored = records_from_dhis2(response, mapping)[0]
+
+    assert restored.data_status == "historical_literature_compilation"
+    assert restored.source_name == "Published surveillance study"
+    assert restored.source_url == "https://doi.org/10.0000/example"
+
+
+def test_mapping_can_retain_and_restore_a_declared_partial_historical_period():
+    mapping = replace(
+        MAPPING,
+        period_type="Yearly",
+        incomplete_periods=("2016",),
+        include_incomplete_periods=True,
+        period_end_overrides=(("2016", "2016-07-31"),),
+    )
+    partial = replace(
+        record(), period_start=date(2016, 1, 1), period_end=date(2016, 7, 31),
+        period_type="annual", period_label="2016", complete_period=False,
+    )
+
+    payload = records_to_data_value_sets([partial], mapping)[0]
+    restored = records_from_dhis2({"dataValues": [{
+        "dataElement": "OhDngCase01", "period": "2016",
+        "orgUnit": "BdOrgUnit01", "value": "70",
+    }]}, mapping)[0]
+
+    assert payload["period"] == "2016"
+    assert restored.period_end == date(2016, 7, 31)
+    assert restored.complete_period is False

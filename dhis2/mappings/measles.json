@@ -1,6 +1,9 @@
 {
   "diseaseCode": "MEASLES",
   "diseaseName": "Measles",
+  "dataStatus": "observed",
+  "sourceName": "DGHS Bangladesh measles press releases",
+  "sourceUrl": "https://dghs.gov.bd/pages/press-releases/",
   "dataSetUid": "OhMslWeek01",
   "casesDataElementUid": "OhMslCase01",
   "nationalCasesDataElementUid": "OhMslNat001",

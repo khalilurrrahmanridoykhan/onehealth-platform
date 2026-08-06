@@ -30,6 +30,7 @@ services:
     restart: unless-stopped
     environment:
       ONEHEALTH_DATA_PATH: /app/data/processed/dengue_weekly.csv
+      ONEHEALTH_EVIDENCE_REGISTRY_PATH: /app/data/evidence_registry.json
       DHIS2_MAPPING_PATH: /app/dhis2/mappings/dengue.json
     env_file:
       - path: .env.production

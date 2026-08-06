@@ -1,5 +1,8 @@
 {
   "diseaseCode":"NIPAH", "diseaseName":"Nipah Virus", "periodType":"Yearly",
+  "dataStatus":"historical_literature_compilation",
+  "sourceName":"Satter et al. (2023) and Bhowmik et al. (2024) literature compilation",
+  "sourceUrl":"https://doi.org/10.1371/journal.pntd.0011617",
   "dataSetUid":"OhNipAnn001", "casesDataElementUid":"OhNipDivC01",
   "nationalCasesDataElementUid":"OhNipNatC01", "nationalDeathsDataElementUid":"OhNipNatD01",
   "locations": {

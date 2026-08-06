@@ -1,6 +1,9 @@
 {
   "diseaseCode": "HPAI",
   "diseaseName": "Avian Influenza (HPAI)",
+  "dataStatus": "observed",
+  "sourceName": "WOAH WAHIS quantitative animal-disease data",
+  "sourceUrl": "https://wahis.woah.org/#/dashboards/qd-dashboard",
   "periodType": "SixMonthly",
   "dataSetUid": "OhHpaiSem01",
   "casesDataElementUid": "OhHpaiOut01",

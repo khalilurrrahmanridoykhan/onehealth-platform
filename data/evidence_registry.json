@@ -1,0 +1,292 @@
+{
+  "schema_version": 1,
+  "repository_url": "https://github.com/khalilurrrahmanridoykhan/onehealth-platform",
+  "diseases": [
+    {
+      "disease_code": "DENGUE",
+      "disease_name": "Dengue",
+      "metric": {
+        "label": "Admitted dengue cases",
+        "unit": "cases"
+      },
+      "evidence_type": "observed_surveillance",
+      "freshness_mode": "operational",
+      "expected_update_days": 7,
+      "expected_location_codes": [
+        "BD",
+        "BD-BAR",
+        "BD-CTG",
+        "BD-DHA",
+        "BD-KHU",
+        "BD-MYM",
+        "BD-RAJ",
+        "BD-RAN",
+        "BD-SYL"
+      ],
+      "allowed_data_statuses": [
+        "observed"
+      ],
+      "license": null,
+      "doi": null,
+      "capabilities": {
+        "alerts": true,
+        "forecast": false,
+        "automated_refresh": false,
+        "district_data": false
+      },
+      "limitations": [
+        "The committed snapshot ends in 2026-W22 and is not a live DGHS feed.",
+        "Division weekly values are supplied aggregates and do not prove facility-level reporting completeness.",
+        "No district-level observations or population denominators are available."
+      ]
+    },
+    {
+      "disease_code": "MEASLES",
+      "disease_name": "Measles",
+      "metric": {
+        "label": "Suspected measles cases",
+        "unit": "cases"
+      },
+      "evidence_type": "observed_surveillance",
+      "freshness_mode": "operational",
+      "expected_update_days": 7,
+      "expected_location_codes": [
+        "BD",
+        "BD-BAR",
+        "BD-CTG",
+        "BD-DHA",
+        "BD-KHU",
+        "BD-RAJ",
+        "BD-RAN",
+        "BD-SYL"
+      ],
+      "allowed_data_statuses": [
+        "observed"
+      ],
+      "license": null,
+      "doi": null,
+      "capabilities": {
+        "alerts": true,
+        "forecast": false,
+        "automated_refresh": false,
+        "district_data": false
+      },
+      "limitations": [
+        "The series contains suspected cases, not laboratory-confirmed measles cases.",
+        "Only five divisions have complete weekly source coverage in the current snapshot; unavailable values are not estimated.",
+        "Mymensingh Division and district-level observations are unavailable."
+      ]
+    },
+    {
+      "disease_code": "HPAI",
+      "disease_name": "Avian Influenza (HPAI)",
+      "metric": {
+        "label": "Reported HPAI outbreaks",
+        "unit": "outbreaks"
+      },
+      "evidence_type": "observed_outbreak_reports",
+      "freshness_mode": "operational",
+      "expected_update_days": 183,
+      "expected_location_codes": [
+        "BD",
+        "BD-BAR",
+        "BD-CTG",
+        "BD-DHA",
+        "BD-KHU",
+        "BD-RAJ",
+        "BD-RAN",
+        "BD-SYL"
+      ],
+      "allowed_data_statuses": [
+        "observed"
+      ],
+      "license": null,
+      "doi": null,
+      "capabilities": {
+        "alerts": false,
+        "forecast": false,
+        "automated_refresh": false,
+        "district_data": false
+      },
+      "limitations": [
+        "The WAHIS export is a sparse reported-outbreak series; absent semesters are missing, not zero.",
+        "The source uses historical seven-division geography, so Mymensingh is not separately reported.",
+        "The normalized cases field represents outbreaks, not infected people or animals."
+      ]
+    },
+    {
+      "disease_code": "NIPAH",
+      "disease_name": "Nipah Virus",
+      "metric": {
+        "label": "Reported Nipah cases",
+        "unit": "cases"
+      },
+      "evidence_type": "historical_literature_compilation",
+      "freshness_mode": "historical",
+      "expected_update_days": null,
+      "expected_location_codes": [
+        "BD",
+        "BD-BAR",
+        "BD-CTG",
+        "BD-DHA",
+        "BD-KHU",
+        "BD-MYM",
+        "BD-RAJ",
+        "BD-RAN"
+      ],
+      "allowed_data_statuses": [
+        "cross_validated_literature",
+        "single_source_literature",
+        "cumulative_literature_2001_2021",
+        "historical_literature_compilation"
+      ],
+      "license": null,
+      "doi": "10.1371/journal.pntd.0011617",
+      "capabilities": {
+        "alerts": false,
+        "forecast": false,
+        "automated_refresh": false,
+        "district_data": false
+      },
+      "limitations": [
+        "This is a retrospective literature compilation, not a live surveillance feed.",
+        "National annual values and division values do not share the same temporal meaning.",
+        "Division values are cumulative affected-district totals for 2001-2021 and must not be interpreted as annual incidence."
+      ]
+    },
+    {
+      "disease_code": "JE",
+      "disease_name": "Japanese Encephalitis",
+      "metric": {
+        "label": "Laboratory-confirmed sentinel cases",
+        "unit": "cases"
+      },
+      "evidence_type": "historical_sentinel_surveillance",
+      "freshness_mode": "historical",
+      "expected_update_days": null,
+      "expected_location_codes": [
+        "BD",
+        "BD-CTG",
+        "BD-KHU",
+        "BD-RAJ",
+        "BD-RAN"
+      ],
+      "allowed_data_statuses": [
+        "single_source_literature",
+        "partial_year_through_july",
+        "historical_sentinel_surveillance"
+      ],
+      "license": null,
+      "doi": "10.1016/j.ijid.2020.07.026",
+      "capabilities": {
+        "alerts": false,
+        "forecast": false,
+        "automated_refresh": false,
+        "district_data": false
+      },
+      "limitations": [
+        "Counts come from four hospital sentinel sites and are not population-wide division incidence.",
+        "The 2016 reporting period ends in July and is explicitly partial.",
+        "No mortality series, district coverage, operational alert, or forecast is supported."
+      ]
+    },
+    {
+      "disease_code": "AWD",
+      "disease_name": "Acute Watery Diarrhoea",
+      "metric": {
+        "label": "Estimated acute watery diarrhoea cases",
+        "unit": "cases"
+      },
+      "evidence_type": "literature_derived_ecological_estimate",
+      "freshness_mode": "historical",
+      "expected_update_days": null,
+      "expected_location_codes": [
+        "BD",
+        "BD-BAR",
+        "BD-CTG",
+        "BD-DHA",
+        "BD-KHU",
+        "BD-MYM",
+        "BD-RAJ",
+        "BD-RAN",
+        "BD-SYL"
+      ],
+      "allowed_data_statuses": [
+        "literature_derived_ecological_estimate"
+      ],
+      "license": null,
+      "doi": null,
+      "capabilities": {
+        "alerts": false,
+        "forecast": false,
+        "automated_refresh": false,
+        "district_data": false
+      },
+      "limitations": [
+        "Values are literature-derived ecological estimates, not authenticated EWARS or facility observations.",
+        "Division estimates use proxy weights and must not be presented as directly reported counts.",
+        "The series is unsuitable for operational outbreak alerts or forecasts."
+      ]
+    },
+    {
+      "disease_code": "RABIES",
+      "disease_name": "Human Rabies",
+      "metric": {
+        "label": "Reported human rabies deaths",
+        "unit": "deaths"
+      },
+      "evidence_type": "official_reported_mortality",
+      "freshness_mode": "operational",
+      "expected_update_days": 365,
+      "expected_location_codes": [
+        "BD"
+      ],
+      "allowed_data_statuses": [
+        "who_reported_national_deaths"
+      ],
+      "license": null,
+      "doi": null,
+      "capabilities": {
+        "alerts": false,
+        "forecast": false,
+        "automated_refresh": false,
+        "district_data": false
+      },
+      "limitations": [
+        "The normalized cases slot contains reported deaths for this programme.",
+        "Only annual national WHO GHO values are available; no division or district data are present.",
+        "The retrospective annual series does not support outbreak alerts or forecasts."
+      ]
+    },
+    {
+      "disease_code": "MALARIA",
+      "disease_name": "Malaria",
+      "metric": {
+        "label": "Confirmed malaria cases",
+        "unit": "cases"
+      },
+      "evidence_type": "official_reported_confirmed_cases",
+      "freshness_mode": "operational",
+      "expected_update_days": 365,
+      "expected_location_codes": [
+        "BD"
+      ],
+      "allowed_data_statuses": [
+        "who_reported_confirmed_cases"
+      ],
+      "license": null,
+      "doi": null,
+      "capabilities": {
+        "alerts": false,
+        "forecast": false,
+        "automated_refresh": false,
+        "district_data": false
+      },
+      "limitations": [
+        "Only annual national WHO GHO values are available; no division or district data are present.",
+        "The series records confirmed cases and must not be combined with the separate synthetic malaria training dataset.",
+        "The retrospective annual series does not support outbreak alerts or forecasts."
+      ]
+    }
+  ]
+}

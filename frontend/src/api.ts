@@ -58,10 +58,10 @@ export const api = {
   me: () => getJson<{ username: string; role: string }>('/api/v1/auth/me'),
   diseases: () => getJson<Disease[]>('/api/v1/diseases'),
   locations: (diseaseCode: string) => getJson<Location[]>(`/api/v1/locations?disease_code=${encodeURIComponent(diseaseCode)}`),
-  overview: (diseaseCode: string) => getJson<OverviewItem[]>(`/api/v1/overview/${encodeURIComponent(diseaseCode)}`),
+  overview: (diseaseCode: string) => getJson<OverviewItem[]>(`/api/v1/overview/${encodeURIComponent(diseaseCode)}${diseaseCode === 'JE' ? '?complete_only=false' : ''}`),
   trend: (diseaseCode: string, locationCode: string) =>
     getJson<SurveillanceRecord[]>(
-      `/api/v1/trends/${encodeURIComponent(diseaseCode)}?location_code=${encodeURIComponent(locationCode)}`,
+      `/api/v1/trends/${encodeURIComponent(diseaseCode)}?location_code=${encodeURIComponent(locationCode)}${diseaseCode === 'JE' ? '&complete_only=false' : ''}`,
     ),
   alert: (diseaseCode: string, locationCode: string) =>
     getOptionalJson<Alert>(

@@ -27,7 +27,7 @@ def records_to_data_value_sets(
     for record in records:
         if record.disease_code != mapping.disease_code:
             continue
-        if not record.complete_period:
+        if not record.complete_period and not mapping.include_incomplete_periods:
             continue
 
         key = (record.disease_code, record.location_code, record.period_label)
@@ -112,6 +112,8 @@ def records_from_dhis2(
         location_code = value["location_code"]
         location = value["location"]
         start, end, label = dhis2_period_bounds(period, mapping.period_type)
+        if overridden_end := mapping.period_end_override(period, label):
+            end = date.fromisoformat(overridden_end)
         records.append(
             SurveillanceRecord(
                 disease_code=mapping.disease_code,
@@ -127,10 +129,13 @@ def records_from_dhis2(
                 deaths=value.get("deaths"),
                 population=None,
                 incidence_per_100k=None,
-                data_status="observed",
-                source_name="DHIS2",
-                source_url="",
-                complete_period=True,
+                data_status=mapping.data_status,
+                source_name=mapping.source_name,
+                source_url=mapping.source_url,
+                complete_period=(
+                    period not in mapping.incomplete_periods
+                    and label not in mapping.incomplete_periods
+                ),
             )
         )
     return sorted(records, key=lambda record: record.period_start)

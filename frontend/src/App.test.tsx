@@ -31,6 +31,31 @@ const alert = {
   recommended_actions: ['Continue routine weekly surveillance.'],
 }
 
+const dataTrust = {
+  disease_code: 'DENGUE', disease_name: 'Dengue',
+  metric: { label: 'Reported dengue cases', unit: 'cases' },
+  evidence_type: 'observed_surveillance',
+  coverage: {
+    start_date: '2026-01-05', end_date: '2026-05-31', record_count: 199,
+    location_count: 9, location_levels: ['national', 'division'], period_types: ['weekly'],
+    complete_periods: 198, partial_periods: 1,
+  },
+  freshness: {
+    status: 'STALE', latest_period_end: '2026-05-31', age_days: 67,
+    expected_update_days: 7, as_of: '2026-08-06',
+  },
+  provenance: {
+    sources: [{ name: 'DGHS dengue reports', url: 'https://example.test/dengue' }],
+    license: null, repository_url: 'https://github.com/example/onehealth', doi: null,
+  },
+  quality: {
+    status: 'WARNING', issue_count: 1,
+    checks: [{ code: 'period_completeness', status: 'WARNING', message: 'One partial period is retained.' }],
+  },
+  capabilities: { alerts: true, forecast: true, automated_refresh: false, district_data: false },
+  limitations: ['Division data are aggregates and do not identify patients.'],
+}
+
 beforeEach(() => {
   vi.stubGlobal('fetch', vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
     const url = String(input)
@@ -79,6 +104,7 @@ beforeEach(() => {
       tracked_entity_uid: 'Abcdef12345', org_unit_uid: 'BdDivDha001', signal_id: 'EBS-2026-0001',
       title: 'Unusual fever cluster', source: 'Community worker', created_at: '2026-08-01T10:00:00.000', updated_at: '2026-08-02T10:00:00.000',
     }] }
+    else if (url.includes('/data-trust/')) body = dataTrust
     else if (url.includes('/diseases')) body = [{ code: 'DENGUE', name: 'Dengue' }, { code: 'MEASLES', name: 'Measles' }]
     else if (url.includes('/locations')) body = locations
     else if (url.includes('/overview')) body = overview
@@ -106,6 +132,7 @@ test('renders surveillance metrics and alert guidance', async () => {
   expect(screen.getByRole('button', { name: 'Zoom in' })).toBeInTheDocument()
   expect(screen.getByRole('button', { name: 'Toggle division labels' })).toBeInTheDocument()
   expect(screen.getByRole('heading', { name: 'Signal workflow' })).toBeInTheDocument()
+  await waitFor(() => expect(screen.getByRole('heading', { name: 'Evidence, freshness and provenance' })).toBeInTheDocument())
 })
 
 test('builds an EBS Tracker signal preview without committing', async () => {

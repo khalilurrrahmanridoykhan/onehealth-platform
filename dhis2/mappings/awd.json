@@ -1,5 +1,8 @@
 {
   "diseaseCode":"AWD", "diseaseName":"Acute Watery Diarrhoea", "periodType":"Yearly",
+  "dataStatus":"literature_derived_ecological_estimate",
+  "sourceName":"Kabir et al. (2025) and Ali et al. (2023) literature-derived estimates",
+  "sourceUrl":"https://pmc.ncbi.nlm.nih.gov/articles/PMC11922245/",
   "dataSetUid":"OhAwdAnn001", "casesDataElementUid":"OhAwdDivC01",
   "nationalCasesDataElementUid":"OhAwdNatC01",
   "locations": {

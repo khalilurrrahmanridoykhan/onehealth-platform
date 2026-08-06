@@ -1,5 +1,8 @@
 {
   "diseaseCode":"RABIES", "diseaseName":"Human Rabies", "periodType":"Yearly",
+  "dataStatus":"who_reported_national_deaths",
+  "sourceName":"WHO Global Health Observatory (NTD_RAB2)",
+  "sourceUrl":"https://www.who.int/data/gho",
   "dataSetUid":"OhRabAnn001", "casesDataElementUid":"OhRabNatD01",
   "nationalCasesDataElementUid":"OhRabNatD01",
   "locations":{"BD":{"uid":"BdOrgUnit01","name":"Bangladesh","level":"national"}}

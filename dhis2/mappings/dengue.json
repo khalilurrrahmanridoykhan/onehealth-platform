@@ -1,6 +1,9 @@
 {
   "diseaseCode": "DENGUE",
   "diseaseName": "Dengue",
+  "dataStatus": "observed",
+  "sourceName": "DGHS HEOC Dengue Dynamic Dashboard",
+  "sourceUrl": "https://dashboard.dghs.gov.bd/pages/heoc_dengue_v1.php",
   "dataSetUid": "OhDngWeek01",
   "casesDataElementUid": "OhDngCase01",
   "nationalCasesDataElementUid": "OhDngNat001",

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { api } from './api'
 import { AlertPanel } from './components/AlertPanel'
 import { ComparisonWorkbench } from './components/ComparisonWorkbench'
+import { DataTrustPanel } from './components/DataTrustPanel'
 import { EBSWorkspace } from './components/EBSWorkspace'
 import { EBSOperationsQueue } from './components/EBSOperationsQueue'
 import { EBSSignalRegistry } from './components/EBSSignalRegistry'
@@ -69,7 +70,8 @@ export default function App() {
   const navigation = [
     ['dashboard', 'OV', 'Command overview'], ['surveillance', 'TR', 'Trends & forecast'],
     ['comparison', 'CP', 'Compare locations'], ['geography', 'MP', 'Spatial analysis'],
-    ['alerts', 'AL', 'Alert intelligence'], ['operations-queue', 'OQ', 'Operations queue'], ['ebs', 'WF', 'Response workflow'],
+    ['data-trust', 'DT', 'Evidence & data trust'], ['alerts', 'AL', 'Alert intelligence'],
+    ['operations-queue', 'OQ', 'Operations queue'], ['ebs', 'WF', 'Response workflow'],
     ['ebs-registry', 'RG', 'Signal registry'],
   ]
 
@@ -118,6 +120,7 @@ export default function App() {
               <div id="alerts"><AlertPanel alert={alert} /></div>
             </div>
             {locations.length > 1 && <ComparisonWorkbench diseaseCode={selectedDisease} locations={locations} primaryCode={selected} primaryRecords={trend} metricLabel={metricLabel} />}
+            <DataTrustPanel diseaseCode={selectedDisease} />
             <EBSOperationsQueue />
             <EBSWorkspace locations={locations} />
             <EBSSignalRegistry />

@@ -28,11 +28,17 @@ from onehealth.dhis2.ebs import (
 )
 from onehealth.dhis2.sync import records_from_dhis2
 from onehealth.services.alerts import generate_latest_alert
+from onehealth.services.data_trust import (
+    UnknownDiseaseError,
+    build_data_trust_catalog,
+    build_data_trust_detail,
+)
 from onehealth.services.operations import (
     build_notifications,
     build_operation_item,
     operation_summary,
 )
+from onehealth.services.snapshot_cache import SnapshotCache, SnapshotResult
 from onehealth.services.surveillance import load_surveillance_records
 
 
@@ -55,6 +61,10 @@ def viewer(credentials: HTTPAuthorizationCredentials | None = Depends(bearer)) -
 
 def responder(credentials: HTTPAuthorizationCredentials | None = Depends(bearer)) -> User:
     return require_role(credentials, "responder")
+
+
+def admin(credentials: HTTPAuthorizationCredentials | None = Depends(bearer)) -> User:
+    return require_role(credentials, "admin")
 
 
 @app.post("/api/v1/auth/login")
@@ -120,7 +130,39 @@ def _configured_paths(name: str, fallback: Path) -> list[Path]:
     )
 
 
-def _records():
+_record_snapshots: SnapshotCache[tuple] = SnapshotCache()
+
+
+def _cache_seconds(name: str, default: float) -> float:
+    try:
+        value = float(os.environ.get(name, str(default)))
+    except ValueError as exc:
+        raise HTTPException(status_code=503, detail=f"{name} must be numeric") from exc
+    if value < 0:
+        raise HTTPException(status_code=503, detail=f"{name} cannot be negative")
+    return value
+
+
+def _record_cache_key() -> tuple:
+    backend = os.environ.get("ONEHEALTH_BACKEND", "csv").strip().lower()
+    if backend == "csv":
+        paths = _configured_paths("ONEHEALTH_DATA_PATHS", _data_path())
+        return (backend, *(str(path.resolve()) for path in paths))
+    if backend == "dhis2":
+        mapping_paths = os.environ.get(
+            "DHIS2_MAPPING_PATHS", os.environ.get("DHIS2_MAPPING_PATH", "")
+        )
+        return (
+            backend,
+            os.environ.get("DHIS2_BASE_URL", "").strip(),
+            mapping_paths,
+            os.environ.get("DHIS2_START_DATE", "2020-01-01"),
+            os.environ.get("DHIS2_END_DATE", date.today().isoformat()),
+        )
+    return (backend,)
+
+
+def _load_records_uncached() -> tuple:
     backend = os.environ.get("ONEHEALTH_BACKEND", "csv").strip().lower()
     if backend == "dhis2":
         try:
@@ -166,7 +208,38 @@ def _records():
             status_code=503,
             detail="No surveillance data returned by the configured backend.",
         )
-    return records
+    return tuple(records)
+
+
+def _records_snapshot() -> SnapshotResult[tuple]:
+    return _record_snapshots.get_or_load(
+        _record_cache_key(),
+        _load_records_uncached,
+        ttl_seconds=_cache_seconds("ONEHEALTH_CACHE_TTL_SECONDS", 300),
+        stale_if_error_seconds=_cache_seconds(
+            "ONEHEALTH_CACHE_STALE_IF_ERROR_SECONDS", 86_400
+        ),
+    )
+
+
+def _records():
+    return _records_snapshot().value
+
+
+def _expose_snapshot_headers(response: Response, snapshot: SnapshotResult[tuple]) -> None:
+    """Expose non-secret delivery state without changing the trust-report contract."""
+
+    response.headers["X-OneHealth-Cache"] = snapshot.metadata.cache_state
+    response.headers["X-OneHealth-Data-Loaded-At"] = snapshot.metadata.loaded_at
+
+
+def _data_trust_detail(disease_code: str, response: Response) -> dict:
+    snapshot = _records_snapshot()
+    _expose_snapshot_headers(response, snapshot)
+    try:
+        return build_data_trust_detail(snapshot.value, disease_code)
+    except UnknownDiseaseError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
 
 
 @app.get("/health")
@@ -181,6 +254,76 @@ def diseases() -> list[dict[str, str]]:
         {"code": code, "name": name}
         for code, name in sorted(unique)
     ]
+
+
+@app.get("/api/v1/data-trust")
+def data_trust_catalog(response: Response) -> list[dict]:
+    """Return evidence, coverage, freshness, and quality for every programme."""
+
+    snapshot = _records_snapshot()
+    _expose_snapshot_headers(response, snapshot)
+    return build_data_trust_catalog(snapshot.value)
+
+
+@app.get("/api/v1/data-trust/cache/status")
+def data_trust_cache_status() -> dict:
+    """Report snapshot delivery health without exposing backend credentials/errors."""
+
+    metadata = _record_snapshots.metadata(_record_cache_key())
+    if metadata is None:
+        return {
+            "backend": os.environ.get("ONEHEALTH_BACKEND", "csv").strip().lower(),
+            "cache_state": "EMPTY",
+            "loaded_at": None,
+            "age_seconds": None,
+            "ttl_seconds": _cache_seconds("ONEHEALTH_CACHE_TTL_SECONDS", 300),
+            "stale_if_error_seconds": _cache_seconds(
+                "ONEHEALTH_CACHE_STALE_IF_ERROR_SECONDS", 86_400
+            ),
+            "degraded": False,
+        }
+    return {
+        "backend": os.environ.get("ONEHEALTH_BACKEND", "csv").strip().lower(),
+        "cache_state": metadata.cache_state,
+        "loaded_at": metadata.loaded_at,
+        "age_seconds": metadata.age_seconds,
+        "ttl_seconds": metadata.ttl_seconds,
+        "stale_if_error_seconds": metadata.stale_if_error_seconds,
+        "degraded": metadata.cache_state == "STALE",
+    }
+
+
+@app.post("/api/v1/data-trust/cache/invalidate")
+def invalidate_data_trust_cache(_user: User = Depends(admin)) -> dict:
+    """Clear process-local snapshots so the next request refreshes DHIS2 data."""
+
+    cleared = _record_snapshots.clear()
+    return {"status": "invalidated", "entries_cleared": cleared}
+
+
+@app.get("/api/v1/data-trust/{disease_code}")
+def data_trust_detail(disease_code: str, response: Response) -> dict:
+    return _data_trust_detail(disease_code, response)
+
+
+@app.get("/api/v1/data-trust/{disease_code}/coverage")
+def data_trust_coverage(disease_code: str, response: Response) -> dict:
+    return _data_trust_detail(disease_code, response)["coverage"]
+
+
+@app.get("/api/v1/data-trust/{disease_code}/freshness")
+def data_trust_freshness(disease_code: str, response: Response) -> dict:
+    return _data_trust_detail(disease_code, response)["freshness"]
+
+
+@app.get("/api/v1/data-trust/{disease_code}/provenance")
+def data_trust_provenance(disease_code: str, response: Response) -> dict:
+    return _data_trust_detail(disease_code, response)["provenance"]
+
+
+@app.get("/api/v1/data-trust/{disease_code}/quality")
+def data_trust_quality(disease_code: str, response: Response) -> dict:
+    return _data_trust_detail(disease_code, response)["quality"]
 
 
 @app.get("/api/v1/locations")
@@ -262,11 +405,12 @@ def summary(disease_code: str, location_code: str = "BD") -> dict:
 
 
 @app.get("/api/v1/overview/{disease_code}")
-def overview(disease_code: str) -> list[dict]:
+def overview(disease_code: str, complete_only: bool = True) -> list[dict]:
     disease_records = [
         record
         for record in _records()
-        if record.disease_code == disease_code.upper() and record.complete_period
+        if record.disease_code == disease_code.upper()
+        and (record.complete_period or not complete_only)
     ]
     if not disease_records:
         raise HTTPException(status_code=404, detail="Disease overview not found")

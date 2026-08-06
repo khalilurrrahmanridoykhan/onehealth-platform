@@ -1,5 +1,11 @@
 {
   "diseaseCode":"JE", "diseaseName":"Japanese Encephalitis", "periodType":"Yearly",
+  "dataStatus":"historical_sentinel_surveillance",
+  "sourceName":"Paul et al. (2020) hospital-based sentinel surveillance",
+  "sourceUrl":"https://doi.org/10.1016/j.ijid.2020.07.026",
+  "incompletePeriods":["2016"],
+  "includeIncompletePeriods":true,
+  "periodEndOverrides":{"2016":"2016-07-31"},
   "dataSetUid":"OhJeAnn0001", "casesDataElementUid":"OhJeDivC001",
   "nationalCasesDataElementUid":"OhJeNatC001",
   "locations": {
