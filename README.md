@@ -109,6 +109,7 @@ These examples are described in the official [DHIS2 One Health](https://dhis2.or
 - Previews EBS signal enrollment payloads while DHIS2 writes remain disabled by default
 - Renders programme evidence, freshness, quality, supported uses, and limitations in the customized dashboard
 - Includes automated tests and continuous integration
+- Adds a read-only district-level climate overlay (temperature, precipitation, extreme-heat days) sourced from NASA POWER via the companion climate-disease-synthesis project, with its own evidence report kept separate from the eight-programme disease registry
 
 ## Project status
 
@@ -144,7 +145,8 @@ These examples are described in the official [DHIS2 One Health](https://dhis2.or
 | Native DHIS2 malaria dashboard | Implemented with confirmed-case KPIs, full and recent trends, and annual table; the synthetic training dataset is not presented as observed data |
 | Nipah literature integration | Implemented with national annual cases/deaths and division cumulative burden |
 | Native DHIS2 Nipah dashboard | Implemented with cases/deaths KPIs, historical trend, hotspot comparison, table, and map |
-| AWD/environmental-risk integration | Planned |
+| District-level environment (climate) data overlay | Implemented for 64 districts, monthly aggregates 2017–2025; visualization only, no disease-correlation statistics |
+| AWD–environment statistical correlation analysis | Planned; deferred until after the read-only overlay ships |
 | Operational validation | Not started |
 
 See the [roadmap](#roadmap) and [architecture documentation](docs/ARCHITECTURE.md) for the intended progression.
@@ -247,6 +249,21 @@ python scripts/import_nipah.py /path/to/nipah_national_annual.csv \
 
 The Nipah integration is explicitly a **historical literature compilation**, not a live surveillance feed. National annual cases and deaths for 2001–2024 are stored separately in DHIS2; division values are cumulative affected-district totals for 2001–2021 and are stored at period 2021 for analytical mapping. The custom application disables rolling alerts and predictions for this programme because applying a real-time warning model to retrospective annual literature data would be misleading. Cite Satter et al. (2023), [PLOS Neglected Tropical Diseases](https://doi.org/10.1371/journal.pntd.0011617), and Bhowmik et al. (2024), *Science in One Health*, when reusing the underlying values.
 
+### Import environment (climate) data
+
+Manual, local step — not part of `make reproduce` or CI, since it reads from the sibling `bangladesh-climate-disease-synthesis` repository:
+
+```bash
+python scripts/import_environment.py \
+  --climate-daily ../bangladesh-climate-disease-synthesis/data/processed/climate_daily_by_district_2017_2025.csv \
+  --climate-summary ../bangladesh-climate-disease-synthesis/data/processed/district_climate_summary.csv
+
+python scripts/build_environment_map.py \
+  --source-geojson ../bangladesh-climate-disease-synthesis/data/external/bgd_adm2_geoboundaries.geojson
+```
+
+This is a read-only overlay, not disease surveillance data — it never goes through the ingestion gate or DHIS2. See [`docs/ENVIRONMENT.md`](docs/ENVIRONMENT.md) for the district identifier scheme, data-quality caveats, and API details.
+
 ### Reproduce the current output
 
 Install the project, regenerate the normalized dengue dataset from the committed aggregate source snapshot, and run all tests with one command:
@@ -324,6 +341,7 @@ The current dashboard includes:
 - National and division comparison table
 - Interactive division risk map linked to location selection
 - Programme-specific Data Trust panel for evidence type, coverage, freshness, provenance, quality checks, supported uses, and limitations
+- Read-only district climate overlay (temperature, precipitation, extreme-heat days) with its own evidence panel
 - Six-stage EBS workflow with safe detection and follow-up event previews
 - Protected DHIS2 signal registry with search, detail, and event history
 - Operational alert queue with officer assignment written to DHIS2 Tracker
@@ -362,6 +380,10 @@ The current dashboard includes:
 | `GET` | `/api/v1/alerts/DENGUE/latest` | Latest explainable dengue alert |
 | `GET` | `/api/v1/alerts/DENGUE/latest?location_code=BD-DHA` | Latest Dhaka Division alert |
 | `GET` | `/api/v1/summary/DENGUE?location_code=BD-DHA` | Summary metrics for a location |
+| `GET` | `/api/v1/environment/districts` | Climate summary for all 64 districts |
+| `GET` | `/api/v1/environment/districts/{location_code}` | Climate summary for one district |
+| `GET` | `/api/v1/environment/districts/{location_code}/monthly` | Monthly temperature and precipitation for one district |
+| `GET` | `/api/v1/environment/data-trust` | Environment dataset coverage, freshness, provenance, and quality report |
 | `GET` | `/api/v1/ebs/schema` | EBS program-stage schema for the custom UI |
 | `GET` | `/api/v1/ebs/status` | Non-secret DHIS2 registry readiness and safety status |
 | `GET` | `/api/v1/ebs/signals` | Search saved Tracker signals when protected reads are enabled |
@@ -450,7 +472,7 @@ Do not commit credentials, protected health information, or identifiable patient
 5. Validate DHIS2 metadata, reads, previews, and guarded writes on the test instance.
 6. Add external identity-provider integration for production environments.
 7. Extend Measles coverage to the remaining divisions and districts when complete authoritative series are available.
-8. Integrate AWD, rainfall, and flood-risk indicators.
+8. Analyze AWD–environment statistical correlation on top of the read-only district climate overlay (temperature, precipitation, extreme-heat days), now implemented.
 9. Validate alert methods with public-health experts before operational use.
 
 ## Contributing
