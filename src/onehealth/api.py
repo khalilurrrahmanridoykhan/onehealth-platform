@@ -13,7 +13,13 @@ from pydantic import BaseModel, Field
 
 from onehealth import __version__
 from onehealth.auth import User, authenticate, issue_token, require_role
-from onehealth.config import DEFAULT_DATA_PATH, DEFAULT_DHIS2_MAPPING_PATH, DHIS2Settings
+from onehealth.config import (
+    DEFAULT_DATA_PATH,
+    DEFAULT_DHIS2_MAPPING_PATH,
+    DEFAULT_ENVIRONMENT_MONTHLY_PATH,
+    DEFAULT_ENVIRONMENT_SUMMARY_PATH,
+    DHIS2Settings,
+)
 from onehealth.dhis2 import DHIS2APIError, DHIS2Client, DHIS2Mapping
 from onehealth.dhis2.ebs import (
     EBS_ATTRIBUTES,
@@ -32,6 +38,11 @@ from onehealth.services.data_trust import (
     UnknownDiseaseError,
     build_data_trust_catalog,
     build_data_trust_detail,
+)
+from onehealth.services.environment import load_environment_monthly, load_environment_summary
+from onehealth.services.environment_trust import (
+    build_environment_trust_report,
+    load_environment_registry,
 )
 from onehealth.services.operations import (
     build_notifications,
@@ -226,6 +237,51 @@ def _records():
     return _records_snapshot().value
 
 
+def _environment_monthly_path() -> Path:
+    return Path(
+        os.environ.get("ONEHEALTH_ENVIRONMENT_MONTHLY_PATH", DEFAULT_ENVIRONMENT_MONTHLY_PATH)
+    )
+
+
+def _environment_summary_path() -> Path:
+    return Path(
+        os.environ.get("ONEHEALTH_ENVIRONMENT_SUMMARY_PATH", DEFAULT_ENVIRONMENT_SUMMARY_PATH)
+    )
+
+
+# Deliberately a second, independent SnapshotCache instance: environment data
+# never goes through the DHIS2 backend switch that governs disease records
+# (see _record_cache_key/_load_records_uncached above), so its cache key and
+# loader must not be entangled with that logic.
+_environment_snapshots: SnapshotCache[tuple] = SnapshotCache()
+
+
+def _environment_cache_key() -> tuple:
+    return (str(_environment_monthly_path().resolve()), str(_environment_summary_path().resolve()))
+
+
+def _load_environment_uncached() -> tuple:
+    monthly = load_environment_monthly(_environment_monthly_path())
+    summary = load_environment_summary(_environment_summary_path())
+    if not monthly or not summary:
+        raise HTTPException(
+            status_code=503,
+            detail="No environment data returned by the configured backend.",
+        )
+    return (tuple(monthly), tuple(summary))
+
+
+def _environment_snapshot() -> SnapshotResult[tuple]:
+    return _environment_snapshots.get_or_load(
+        _environment_cache_key(),
+        _load_environment_uncached,
+        ttl_seconds=_cache_seconds("ONEHEALTH_CACHE_TTL_SECONDS", 300),
+        stale_if_error_seconds=_cache_seconds(
+            "ONEHEALTH_CACHE_STALE_IF_ERROR_SECONDS", 86_400
+        ),
+    )
+
+
 def _expose_snapshot_headers(response: Response, snapshot: SnapshotResult[tuple]) -> None:
     """Expose non-secret delivery state without changing the trust-report contract."""
 
@@ -324,6 +380,56 @@ def data_trust_provenance(disease_code: str, response: Response) -> dict:
 @app.get("/api/v1/data-trust/{disease_code}/quality")
 def data_trust_quality(disease_code: str, response: Response) -> dict:
     return _data_trust_detail(disease_code, response)["quality"]
+
+
+@app.get("/api/v1/environment/districts")
+def environment_districts(response: Response) -> list[dict]:
+    """Return the per-district climate summary for all 64 districts."""
+
+    snapshot = _environment_snapshot()
+    _expose_snapshot_headers(response, snapshot)
+    _monthly, summary = snapshot.value
+    return [asdict(row) for row in summary]
+
+
+@app.get("/api/v1/environment/districts/{location_code}")
+def environment_district(location_code: str, response: Response) -> dict:
+    snapshot = _environment_snapshot()
+    _expose_snapshot_headers(response, snapshot)
+    _monthly, summary = snapshot.value
+    normalized_code = location_code.strip().upper()
+    for row in summary:
+        if row.location_code == normalized_code:
+            return asdict(row)
+    raise HTTPException(status_code=404, detail=f"Unknown district location code: {location_code}")
+
+
+@app.get("/api/v1/environment/districts/{location_code}/monthly")
+def environment_district_monthly(
+    location_code: str,
+    response: Response,
+    limit: int = Query(default=60, ge=1, le=120),
+) -> list[dict]:
+    snapshot = _environment_snapshot()
+    _expose_snapshot_headers(response, snapshot)
+    monthly, _summary = snapshot.value
+    normalized_code = location_code.strip().upper()
+    selected = [row for row in monthly if row.location_code == normalized_code]
+    if not selected:
+        raise HTTPException(status_code=404, detail=f"Unknown district location code: {location_code}")
+    selected.sort(key=lambda row: row.period_start)
+    return [asdict(row) for row in selected[-limit:]]
+
+
+@app.get("/api/v1/environment/data-trust")
+def environment_data_trust(response: Response) -> dict:
+    """Return evidence, coverage, freshness, and quality for the environment dataset."""
+
+    snapshot = _environment_snapshot()
+    _expose_snapshot_headers(response, snapshot)
+    monthly, summary = snapshot.value
+    registry = load_environment_registry()
+    return build_environment_trust_report(monthly, summary, registry)
 
 
 @app.get("/api/v1/locations")
