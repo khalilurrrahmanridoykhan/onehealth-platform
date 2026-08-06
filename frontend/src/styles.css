@@ -125,6 +125,8 @@ h1 { margin: 0; color: #102e26; font-size: clamp(30px, 4vw, 46px); line-height: 
 .map-footer { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin: 0 18px 18px; padding: 12px 14px; border: 1px solid #e0ebe7; border-radius: 11px; background: white; }.map-selection { text-align: right; }.map-selection span, .map-selection strong, .map-selection small { display: block; }.map-selection span { color: #81928c; font-size: 9px; text-transform: uppercase; }.map-selection strong { margin-top: 3px; font-size: 12px; }.map-selection small { margin-top: 2px; color: #71847d; font-size: 9px; }
 .table-panel .panel-heading { padding-bottom: 15px; }
 .table-scroll { overflow-x: auto; }
+.environment-table-panel .table-scroll { max-height: 760px; overflow-y: auto; }
+.environment-table-panel th { position: sticky; top: 0; z-index: 1; }
 table { width: 100%; border-collapse: collapse; }
 th { padding: 11px 18px; background: #f5f9f7; color: #71847d; font-size: 11px; text-align: left; text-transform: uppercase; letter-spacing: .06em; }
 td { padding: 13px 18px; border-top: 1px solid #edf2f0; color: #435c53; font-size: 13px; }

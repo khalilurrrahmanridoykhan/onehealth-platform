@@ -35,7 +35,7 @@ export function EnvironmentDistrictTable({ items, selected, onSelect }: Props) {
   ]
 
   return (
-    <section className="panel table-panel">
+    <section className="panel table-panel environment-table-panel">
       <div className="panel-heading">
         <div>
           <p className="eyebrow">Geographic comparison</p>
