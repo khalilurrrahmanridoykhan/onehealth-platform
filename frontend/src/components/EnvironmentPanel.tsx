@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { api } from '../api'
 import type { EnvironmentDistrict, EnvironmentMonthlyRecord } from '../types'
+import { CorrelationPanel } from './CorrelationPanel'
 import { EnvironmentDistrictTable } from './EnvironmentDistrictTable'
 import { EnvironmentMap } from './EnvironmentMap'
 import { EnvironmentTrendChart } from './EnvironmentTrendChart'
@@ -36,7 +37,7 @@ export function EnvironmentPanel() {
         <div>
           <p className="eyebrow">One Health</p>
           <h2>Climate &amp; environment overlay</h2>
-          <p className="data-trust-intro">District-level temperature, rainfall and extreme-heat observations — visualization only, not a disease-correlation claim.</p>
+          <p className="data-trust-intro">District-level temperature, rainfall and extreme-heat observations, plus an exploratory AWD-climate correlation analysis below — data visualization and exploratory statistics, not operational forecasting.</p>
         </div>
       </div>
       {error && <div className="error-banner" role="alert">Could not load environment data: {error}</div>}
@@ -50,6 +51,7 @@ export function EnvironmentPanel() {
             <EnvironmentTrendChart records={monthly} districtName={selectedDistrict?.location_name ?? 'Selected district'} />
           </div>
           <EnvironmentTrustPanel />
+          <CorrelationPanel />
         </>
       )}
     </section>

@@ -213,7 +213,7 @@ td button { padding: 0; border: 0; background: transparent; color: #173a30; font
 .trust-status-pass, .trust-status-current, .trust-check-pass { color: #087451; background: #d9f7e9; }
 .trust-status-warning, .trust-status-stale, .trust-check-warning { color: #976006; background: #fff0bd; }
 .trust-status-fail, .trust-check-fail { color: #b52922; background: #ffe0dd; }
-.trust-status-historical { color: #315f82; background: #e3f0fa; }
+.trust-status-historical, .trust-check-info { color: #315f82; background: #e3f0fa; }
 .trust-status-unknown { color: #596c65; background: #eaf0ed; }
 .data-trust-summary { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); margin: 0; border-bottom: 1px solid #e4eeea; background: #fbfdfc; }
 .data-trust-summary > div { min-width: 0; padding: 17px 24px; border-right: 1px solid #e4eeea; }

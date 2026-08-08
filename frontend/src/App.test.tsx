@@ -76,6 +76,28 @@ const environmentTrust = {
   limitations: ['NASA POWER values are a single unweighted centroid per district.'],
 }
 
+const awdCorrelation = {
+  method: {
+    unit_of_analysis: 'division-year (n=64: 8 divisions x 8 overlapping years)',
+    aggregation: 'District-month climate aggregated to district-year, then averaged across a division\'s districts.',
+    significance_test: 'Two-sided permutation test, 5000 permutations, seed=20260807.',
+    pooled_vs_within_division: 'Pooled correlates raw division-year values. Within-division controls for fixed cross-division differences.',
+  },
+  sample_size: 64,
+  years: ['2017', '2018', '2019', '2020', '2021', '2022', '2023', '2024'],
+  divisions: ['BD-BAR', 'BD-CTG', 'BD-DHA', 'BD-KHU', 'BD-MYM', 'BD-RAJ', 'BD-RAN', 'BD-SYL'],
+  variables: {
+    mean_temp_c: {
+      label: 'Mean temperature', unit: '°C',
+      pooled: { pearson_r: 0.14, pearson_p: 0.26, spearman_rho: 0.14, spearman_p: 0.25 },
+      within_division: { pearson_r: 0.34, pearson_p: 0.005 },
+    },
+  },
+  interpretation_guidance: 'Rough convention only: |r| < 0.3 weak, 0.3-0.5 moderate, > 0.5 strong.',
+  limitations: ['This is an ecological-level correlation, not an individual-level analysis.'],
+  disclaimer: 'Exploratory ecological-level correlation analysis. Does not establish causation.',
+}
+
 beforeEach(() => {
   vi.stubGlobal('fetch', vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
     const url = String(input)
@@ -95,6 +117,7 @@ beforeEach(() => {
         geometry: { type: 'Polygon', coordinates: [[[90, 23], [91, 23], [91, 24], [90, 24], [90, 23]]] },
       }],
     }
+    else if (url.includes('/environment/awd-correlation')) body = awdCorrelation
     else if (url.includes('/environment/data-trust')) body = environmentTrust
     else if (url.includes('/environment/districts') && url.includes('/monthly')) body = [
       {

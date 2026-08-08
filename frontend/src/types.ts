@@ -217,6 +217,29 @@ export interface EnvironmentMonthlyRecord {
   complete_period: boolean
 }
 
+export interface AwdCorrelationVariable {
+  label: string
+  unit: string
+  pooled: { pearson_r: number; pearson_p: number; spearman_rho: number; spearman_p: number }
+  within_division: { pearson_r: number; pearson_p: number }
+}
+
+export interface AwdCorrelationReport {
+  method: {
+    unit_of_analysis: string
+    aggregation: string
+    significance_test: string
+    pooled_vs_within_division: string
+  }
+  sample_size: number
+  years: string[]
+  divisions: string[]
+  variables: Record<string, AwdCorrelationVariable>
+  interpretation_guidance: string
+  limitations: string[]
+  disclaimer: string
+}
+
 export interface EBSAssignmentDraft {
   responsible_officer: string
   due_date: string

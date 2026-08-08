@@ -1,5 +1,6 @@
 import type {
   Alert,
+  AwdCorrelationReport,
   EBSPreview,
   EBSConnectionStatus,
   EBSCommitResult,
@@ -104,4 +105,5 @@ export const api = {
     getJson<EnvironmentMonthlyRecord[]>(
       `/api/v1/environment/districts/${encodeURIComponent(locationCode)}/monthly?limit=${limit}`,
     ),
+  awdCorrelation: () => getJson<AwdCorrelationReport>('/api/v1/environment/awd-correlation'),
 }
