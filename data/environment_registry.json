@@ -36,13 +36,13 @@
       "forecast": false,
       "automated_refresh": false,
       "district_data": true,
-      "disease_correlation": false
+      "disease_correlation": true
     },
     "limitations": [
       "NASA POWER values are a single unweighted grid-cell centroid per district, not area- or population-weighted; this is a materially weaker approximation for large or geographically diverse districts such as Bandarban.",
       "This is a static, one-time data pull as of August 2026 with no automated refresh; the series is capped at 2025-12-31.",
       "MERRA-2/NASA POWER data prior to 2017 has a documented discontinuity and wrong-sign trend bug in the same underlying data family; this window starts at 2017 specifically to avoid it.",
-      "This module presents climate observations only; it does not compute or claim any statistical correlation with AWD or any other disease.",
+      "An exploratory AWD-climate correlation analysis is available at /api/v1/environment/awd-correlation. It is an ecological-level, division-year analysis and does not establish causation; see that endpoint's own 'limitations' and 'disclaimer' fields, which apply independently of this dataset's own quality checks above.",
       "The 'Nawabganj' source district is resolved to Chapainawabganj (Rajshahi Division); this resolution is unverified and should be spot-checked."
     ]
   }

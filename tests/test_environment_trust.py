@@ -67,7 +67,7 @@ def test_registry_loads_and_validates_the_committed_file():
     entry = declaration()
     assert entry["evidence_type"] == "modelled_reanalysis_observation"
     assert len(entry["expected_location_codes"]) == 64
-    assert entry["capabilities"]["disease_correlation"] is False
+    assert entry["capabilities"]["disease_correlation"] is True
 
 
 def test_registry_rejects_missing_file(tmp_path: Path):

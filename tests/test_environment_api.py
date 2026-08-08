@@ -62,7 +62,7 @@ def test_environment_data_trust_reports_full_coverage(monkeypatch):
     assert response.status_code == 200
     report = response.json()
     assert report["coverage"]["location_count"] == 64
-    assert report["capabilities"]["disease_correlation"] is False
+    assert report["capabilities"]["disease_correlation"] is True
 
 
 def test_environment_endpoints_are_unaffected_by_the_disease_backend_switch(monkeypatch):

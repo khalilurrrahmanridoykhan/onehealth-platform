@@ -34,6 +34,7 @@ from onehealth.dhis2.ebs import (
 )
 from onehealth.dhis2.sync import records_from_dhis2
 from onehealth.services.alerts import generate_latest_alert
+from onehealth.services.awd_climate_correlation import build_awd_climate_correlation_report
 from onehealth.services.data_trust import (
     UnknownDiseaseError,
     build_data_trust_catalog,
@@ -282,6 +283,33 @@ def _environment_snapshot() -> SnapshotResult[tuple]:
     )
 
 
+# Correlation analysis re-runs a permutation test (a few thousand reshuffles
+# per variable), so it gets its own cache rather than recomputing on every
+# request -- but it is otherwise just a derived view over the same two
+# already-cached snapshots above, not a new data source.
+_awd_correlation_snapshots: SnapshotCache[dict] = SnapshotCache()
+
+
+def _awd_correlation_cache_key() -> tuple:
+    return (_record_cache_key(), _environment_cache_key())
+
+
+def _load_awd_correlation_uncached() -> dict:
+    monthly, _summary = _environment_snapshot().value
+    return build_awd_climate_correlation_report(list(_records()), list(monthly))
+
+
+def _awd_correlation_snapshot() -> SnapshotResult[dict]:
+    return _awd_correlation_snapshots.get_or_load(
+        _awd_correlation_cache_key(),
+        _load_awd_correlation_uncached,
+        ttl_seconds=_cache_seconds("ONEHEALTH_CACHE_TTL_SECONDS", 300),
+        stale_if_error_seconds=_cache_seconds(
+            "ONEHEALTH_CACHE_STALE_IF_ERROR_SECONDS", 86_400
+        ),
+    )
+
+
 def _expose_snapshot_headers(response: Response, snapshot: SnapshotResult[tuple]) -> None:
     """Expose non-secret delivery state without changing the trust-report contract."""
 
@@ -430,6 +458,20 @@ def environment_data_trust(response: Response) -> dict:
     monthly, summary = snapshot.value
     registry = load_environment_registry()
     return build_environment_trust_report(monthly, summary, registry)
+
+
+@app.get("/api/v1/environment/awd-correlation")
+def environment_awd_correlation(response: Response) -> dict:
+    """Exploratory AWD-climate correlation analysis.
+
+    Ecological-level (division-year), not causal -- see the report's own
+    "limitations" and "disclaimer" fields, always returned alongside the
+    numbers rather than in separate documentation only.
+    """
+
+    snapshot = _awd_correlation_snapshot()
+    _expose_snapshot_headers(response, snapshot)
+    return snapshot.value
 
 
 @app.get("/api/v1/locations")
