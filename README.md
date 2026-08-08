@@ -110,6 +110,7 @@ These examples are described in the official [DHIS2 One Health](https://dhis2.or
 - Renders programme evidence, freshness, quality, supported uses, and limitations in the customized dashboard
 - Includes automated tests and continuous integration
 - Adds a read-only district-level climate overlay (temperature, precipitation, extreme-heat days) sourced from NASA POWER via the companion climate-disease-synthesis project, with its own evidence report kept separate from the eight-programme disease registry
+- Includes an exploratory, ecological-level AWD-climate correlation analysis (division-year, pooled and within-division, permutation-tested), reported with its own limitations and disclaimer alongside every result
 
 ## Project status
 
@@ -146,7 +147,7 @@ These examples are described in the official [DHIS2 One Health](https://dhis2.or
 | Nipah literature integration | Implemented with national annual cases/deaths and division cumulative burden |
 | Native DHIS2 Nipah dashboard | Implemented with cases/deaths KPIs, historical trend, hotspot comparison, table, and map |
 | District-level environment (climate) data overlay | Implemented for 64 districts, monthly aggregates 2017–2025; visualization only, no disease-correlation statistics |
-| AWD–environment statistical correlation analysis | Planned; deferred until after the read-only overlay ships |
+| AWD–environment statistical correlation analysis | Implemented as an exploratory, ecological-level (division-year) analysis; see [docs/AWD_CLIMATE_CORRELATION.md](docs/AWD_CLIMATE_CORRELATION.md). Does not establish causation |
 | Operational validation | Not started |
 
 See the [roadmap](#roadmap) and [architecture documentation](docs/ARCHITECTURE.md) for the intended progression.
@@ -342,6 +343,7 @@ The current dashboard includes:
 - Interactive division risk map linked to location selection
 - Programme-specific Data Trust panel for evidence type, coverage, freshness, provenance, quality checks, supported uses, and limitations
 - Read-only district climate overlay (temperature, precipitation, extreme-heat days) with its own evidence panel
+- Exploratory AWD-climate correlation panel (pooled and within-division, with significance and full limitations shown alongside every number)
 - Six-stage EBS workflow with safe detection and follow-up event previews
 - Protected DHIS2 signal registry with search, detail, and event history
 - Operational alert queue with officer assignment written to DHIS2 Tracker
@@ -384,6 +386,7 @@ The current dashboard includes:
 | `GET` | `/api/v1/environment/districts/{location_code}` | Climate summary for one district |
 | `GET` | `/api/v1/environment/districts/{location_code}/monthly` | Monthly temperature and precipitation for one district |
 | `GET` | `/api/v1/environment/data-trust` | Environment dataset coverage, freshness, provenance, and quality report |
+| `GET` | `/api/v1/environment/awd-correlation` | Exploratory AWD-climate correlation analysis, with its own limitations and disclaimer |
 | `GET` | `/api/v1/ebs/schema` | EBS program-stage schema for the custom UI |
 | `GET` | `/api/v1/ebs/status` | Non-secret DHIS2 registry readiness and safety status |
 | `GET` | `/api/v1/ebs/signals` | Search saved Tracker signals when protected reads are enabled |
@@ -472,7 +475,7 @@ Do not commit credentials, protected health information, or identifiable patient
 5. Validate DHIS2 metadata, reads, previews, and guarded writes on the test instance.
 6. Add external identity-provider integration for production environments.
 7. Extend Measles coverage to the remaining divisions and districts when complete authoritative series are available.
-8. Analyze AWD–environment statistical correlation on top of the read-only district climate overlay (temperature, precipitation, extreme-heat days), now implemented.
+8. ~~Analyze AWD–environment statistical correlation on top of the read-only district climate overlay.~~ Implemented as an exploratory analysis; see [docs/AWD_CLIMATE_CORRELATION.md](docs/AWD_CLIMATE_CORRELATION.md). A follow-up with monthly-resolution AWD data (to actually test the seasonal flood/monsoon mechanism) remains open.
 9. Validate alert methods with public-health experts before operational use.
 
 ## Contributing
