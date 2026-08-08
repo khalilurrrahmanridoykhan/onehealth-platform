@@ -152,10 +152,26 @@ def test_non_division_rows_are_excluded(scenario):
     assert report["sample_size"] == 4
 
 
-def test_raises_on_missing_incidence(scenario):
+def test_falls_back_to_raw_cases_when_incidence_is_unavailable(scenario):
+    # incidence_per_100k doesn't round-trip through DHIS2 data values (only "cases"
+    # does), so it is None for every record when ONEHEALTH_BACKEND=dhis2 in
+    # production. This must degrade gracefully, not crash, and must disclose it.
     monthly, awd = scenario
     awd[-1] = replace(awd[-1], location_level="national")
-    broken = list(awd)
-    broken[0] = replace(broken[0], incidence_per_100k=None)
-    with pytest.raises(ValueError, match="incidence_per_100k"):
-        build_awd_climate_correlation_report(broken, monthly)
+    without_incidence = [replace(record, incidence_per_100k=None) for record in awd]
+
+    report = build_awd_climate_correlation_report(without_incidence, monthly)
+
+    assert report["sample_size"] == 4
+    assert report["awd_metric"]["unit"] == "raw cases (not population-normalized)"
+    assert report["limitations"][0].startswith("Population-normalized AWD incidence was not available")
+
+
+def test_uses_incidence_when_fully_available(scenario):
+    monthly, awd = scenario
+    awd[-1] = replace(awd[-1], location_level="national")
+
+    report = build_awd_climate_correlation_report(awd, monthly)
+
+    assert report["awd_metric"]["unit"] == "cases per 100,000 population"
+    assert not report["limitations"][0].startswith("Population-normalized AWD incidence was not available")

@@ -115,10 +115,20 @@ def build_awd_climate_correlation_report(
 
     division_codes = [record.location_code for record in division_years]
     years = [record.period_label for record in division_years]
-    awd_incidence = [record.incidence_per_100k for record in division_years]
-    if any(value is None for value in awd_incidence):
-        raise ValueError("AWD division records must have incidence_per_100k for correlation analysis")
-    awd_values: list[float] = [float(value) for value in awd_incidence]  # type: ignore[arg-type]
+
+    # incidence_per_100k is a CSV-only derived column: it does not round-trip through
+    # DHIS2 data values (only "cases" does), so it is None for every record when
+    # ONEHEALTH_BACKEND=dhis2. Degrade to raw cases rather than fail outright --
+    # disclosed explicitly below, since raw counts are not population-normalized.
+    use_incidence = bool(division_years) and all(
+        record.incidence_per_100k is not None for record in division_years
+    )
+    if use_incidence:
+        awd_values: list[float] = [float(record.incidence_per_100k) for record in division_years]  # type: ignore[arg-type]
+        awd_metric = {"label": "Estimated AWD incidence", "unit": "cases per 100,000 population"}
+    else:
+        awd_values = [float(record.cases) for record in division_years]
+        awd_metric = {"label": "Estimated AWD cases", "unit": "raw cases (not population-normalized)"}
 
     variables: dict[str, Any] = {}
     for variable_name, meta in CLIMATE_VARIABLES.items():
@@ -175,11 +185,19 @@ def build_awd_climate_correlation_report(
         "sample_size": len(division_years),
         "years": sorted(set(years)),
         "divisions": sorted(set(division_codes)),
+        "awd_metric": awd_metric,
         "variables": variables,
         "interpretation_guidance": "Rough convention only: |r| < 0.3 weak, 0.3-0.5 moderate, > 0.5 strong. "
         "Nine significance tests are reported in total; treat any single p < 0.05 with caution given "
         "multiple comparisons (see limitations).",
-        "limitations": LIMITATIONS,
+        "limitations": LIMITATIONS if use_incidence else [
+            "Population-normalized AWD incidence was not available from the active data backend "
+            "(incidence_per_100k does not round-trip through DHIS2 data values); results below use raw "
+            "AWD case counts instead, which are not adjusted for differing division populations. This "
+            "mainly weakens the pooled comparison across divisions; the within-division test is largely "
+            "unaffected, since a division's population is roughly stable from year to year.",
+            *LIMITATIONS,
+        ],
         "disclaimer": "Exploratory ecological-level correlation analysis. Does not establish causation and "
         "has not been validated for outbreak forecasting or resource-allocation use.",
     }

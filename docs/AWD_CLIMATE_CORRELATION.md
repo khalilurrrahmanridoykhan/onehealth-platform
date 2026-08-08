@@ -28,6 +28,10 @@ Does district-level climate (temperature, precipitation, extreme-heat days) rela
 
 **Significance**: two-sided permutation test (5,000 reshuffles, fixed seed `20260807`), not a parametric t-test — this avoids relying on distributional assumptions that don't obviously hold for a sample this small. No dependency on numpy/scipy was added; the correlation, ranking, and permutation code is pure Python, unit-tested against Python's own `statistics.correlation` as an independent cross-check (`tests/test_stats.py`, `tests/test_awd_climate_correlation.py`).
 
+## A note on which AWD metric is used
+
+`incidence_per_100k` (population-normalized) is preferred and is what the results below use, but it is a CSV-only derived column — it does not round-trip through DHIS2 data values, only raw `cases` does. When the platform is configured with `ONEHEALTH_BACKEND=dhis2` (the production default), the endpoint automatically falls back to raw case counts instead of failing, and says so via `awd_metric` and a leading `limitations` entry in its response. Raw counts are not adjusted for the large population differences between divisions (Dhaka's ~36M vs. Barishal's ~8M, for example), which weakens the **pooled** comparison in particular; the **within-division** test is largely unaffected, since a division's own population is roughly stable year to year. The results and interpretation below are from the incidence-normalized run (the CSV backend, reproducible with the command at the bottom of this page) — check the live `awd_metric` field before quoting numbers from the running dashboard directly.
+
 ## Results
 
 | Variable | Pooled Pearson *r* | Pooled *p* | Within-division Pearson *r* | Within-division *p* |
