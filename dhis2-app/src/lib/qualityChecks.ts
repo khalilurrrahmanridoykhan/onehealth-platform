@@ -161,9 +161,7 @@ function buildQuality(points: DataPoint[], programme: ProgrammeConfig, asOf: Dat
   )
 
   const observedLocations = new Set(points.map((point) => point.locationCode))
-  const missingLocations = programme.locations
-    .map((location) => location.code)
-    .filter((code) => !observedLocations.has(code))
+  const missingLocations = programme.expectedLocationCodes.filter((code) => !observedLocations.has(code))
   checks.push(
     check(
       'declared_location_coverage',

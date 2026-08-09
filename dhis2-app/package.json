@@ -1,6 +1,6 @@
 {
   "name": "onehealth-data-trust-app",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Evidence, coverage, freshness, and quality reporting for the OneHealth surveillance programmes, as a native DHIS2 App.",
   "license": "MIT",
   "private": true,

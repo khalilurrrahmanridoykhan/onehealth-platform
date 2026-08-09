@@ -102,4 +102,22 @@ describe('quality', () => {
     const check = report.quality.checks.find((c) => c.code === 'future_periods')!
     expect(check.status).toBe('WARNING')
   })
+
+  // Regression test: a queryable location (in `locations`, so it's included in
+  // the DHIS2 API request) that is NOT in `expectedLocationCodes` (because the
+  // programme is documented as never reporting there -- e.g. HPAI's source
+  // never separately reports Mymensingh) must not be flagged as missing.
+  test('a location that is queryable but not expected does not warn when absent', () => {
+    const hpai = programmeByCode('HPAI')!
+    expect(hpai.locations.some((location) => location.code === 'BD-MYM')).toBe(true)
+    expect(hpai.expectedLocationCodes).not.toContain('BD-MYM')
+
+    const points = hpai.expectedLocationCodes.map((code) => {
+      const location = hpai.locations.find((l) => l.code === code)!
+      return { period: '2025S1', locationCode: code, locationName: location.name, value: 1 }
+    })
+    const report = buildDataTrustReport(points, hpai, new Date('2026-08-09'))
+    const check = report.quality.checks.find((c) => c.code === 'declared_location_coverage')!
+    expect(check.status).toBe('PASS')
+  })
 })

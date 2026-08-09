@@ -40,7 +40,18 @@ export interface ProgrammeConfig {
   dataSetUid: string
   casesDataElementUid: string
   nationalCasesDataElementUid: string
+  // Every org unit this programme *might* report through -- used to build the
+  // dataValueSets query. Deliberately NOT the same list used for the
+  // declared_location_coverage quality check below: some programmes are
+  // documented as never reporting for a subset of these (e.g. HPAI's source
+  // never separately reports Mymensingh; Nipah's never separately reports
+  // Sylhet), so querying them is fine but treating their absence as a quality
+  // problem is a false positive.
   locations: ProgrammeLocation[]
+  // The subset of `locations` (by code) this programme is actually expected
+  // to have data for -- ported from data/evidence_registry.json's
+  // expected_location_codes, which is why it can be narrower than `locations`.
+  expectedLocationCodes: string[]
 }
 
 export const PROGRAMMES: ProgrammeConfig[] = [
@@ -67,6 +78,7 @@ export const PROGRAMMES: ProgrammeConfig[] = [
     dataSetUid: 'OhDngWeek01',
     casesDataElementUid: 'OhDngCase01',
     nationalCasesDataElementUid: 'OhDngNat001',
+    expectedLocationCodes: ['BD', 'BD-BAR', 'BD-CTG', 'BD-DHA', 'BD-KHU', 'BD-MYM', 'BD-RAJ', 'BD-RAN', 'BD-SYL'],
     locations: [
       { code: 'BD', uid: 'BdOrgUnit01', name: 'Bangladesh', level: 'national' },
       { code: 'BD-BAR', uid: 'BdDivBar001', name: 'Barishal', level: 'division' },
@@ -102,6 +114,7 @@ export const PROGRAMMES: ProgrammeConfig[] = [
     dataSetUid: 'OhMslWeek01',
     casesDataElementUid: 'OhMslCase01',
     nationalCasesDataElementUid: 'OhMslNat001',
+    expectedLocationCodes: ['BD', 'BD-BAR', 'BD-CTG', 'BD-DHA', 'BD-KHU', 'BD-RAJ', 'BD-RAN', 'BD-SYL'],
     locations: [
       { code: 'BD', uid: 'BdOrgUnit01', name: 'Bangladesh', level: 'national' },
       { code: 'BD-BAR', uid: 'BdDivBar001', name: 'Barishal', level: 'division' },
@@ -136,6 +149,7 @@ export const PROGRAMMES: ProgrammeConfig[] = [
     dataSetUid: 'OhHpaiSem01',
     casesDataElementUid: 'OhHpaiOut01',
     nationalCasesDataElementUid: 'OhHpaiNat01',
+    expectedLocationCodes: ['BD', 'BD-BAR', 'BD-CTG', 'BD-DHA', 'BD-KHU', 'BD-RAJ', 'BD-RAN', 'BD-SYL'],
     locations: [
       { code: 'BD', uid: 'BdOrgUnit01', name: 'Bangladesh', level: 'national' },
       { code: 'BD-BAR', uid: 'BdDivBar001', name: 'Barishal', level: 'division' },
@@ -176,6 +190,7 @@ export const PROGRAMMES: ProgrammeConfig[] = [
     dataSetUid: 'OhNipAnn001',
     casesDataElementUid: 'OhNipDivC01',
     nationalCasesDataElementUid: 'OhNipNatC01',
+    expectedLocationCodes: ['BD', 'BD-BAR', 'BD-CTG', 'BD-DHA', 'BD-KHU', 'BD-MYM', 'BD-RAJ', 'BD-RAN'],
     locations: [
       { code: 'BD', uid: 'BdOrgUnit01', name: 'Bangladesh', level: 'national' },
       { code: 'BD-BAR', uid: 'BdDivBar001', name: 'Barishal', level: 'division' },
@@ -215,6 +230,7 @@ export const PROGRAMMES: ProgrammeConfig[] = [
     dataSetUid: 'OhJeAnn0001',
     casesDataElementUid: 'OhJeDivC001',
     nationalCasesDataElementUid: 'OhJeNatC001',
+    expectedLocationCodes: ['BD', 'BD-CTG', 'BD-KHU', 'BD-RAJ', 'BD-RAN'],
     locations: [
       { code: 'BD', uid: 'BdOrgUnit01', name: 'Bangladesh', level: 'national' },
       { code: 'BD-CTG', uid: 'BdDivCtg001', name: 'Chattogram', level: 'division' },
@@ -246,6 +262,7 @@ export const PROGRAMMES: ProgrammeConfig[] = [
     dataSetUid: 'OhAwdAnn001',
     casesDataElementUid: 'OhAwdDivC01',
     nationalCasesDataElementUid: 'OhAwdNatC01',
+    expectedLocationCodes: ['BD', 'BD-BAR', 'BD-CTG', 'BD-DHA', 'BD-KHU', 'BD-MYM', 'BD-RAJ', 'BD-RAN', 'BD-SYL'],
     locations: [
       { code: 'BD', uid: 'BdOrgUnit01', name: 'Bangladesh', level: 'national' },
       { code: 'BD-BAR', uid: 'BdDivBar001', name: 'Barishal', level: 'division' },
@@ -281,6 +298,7 @@ export const PROGRAMMES: ProgrammeConfig[] = [
     dataSetUid: 'OhRabAnn001',
     casesDataElementUid: 'OhRabNatD01',
     nationalCasesDataElementUid: 'OhRabNatD01',
+    expectedLocationCodes: ['BD'],
     locations: [{ code: 'BD', uid: 'BdOrgUnit01', name: 'Bangladesh', level: 'national' }],
   },
   {
@@ -306,6 +324,7 @@ export const PROGRAMMES: ProgrammeConfig[] = [
     dataSetUid: 'OhMalAnn001',
     casesDataElementUid: 'OhMalNatC01',
     nationalCasesDataElementUid: 'OhMalNatC01',
+    expectedLocationCodes: ['BD'],
     locations: [{ code: 'BD', uid: 'BdOrgUnit01', name: 'Bangladesh', level: 'national' }],
   },
 ]
