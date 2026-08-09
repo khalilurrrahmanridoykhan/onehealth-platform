@@ -71,9 +71,15 @@ Install the built `.zip` the same way as any other DHIS2 app: **Apps → App Man
 
 ## Try it live -- public demo
 
-A shareable "try it live" link runs against **DHIS2's own public [play.dhis2.org](https://play.dhis2.org) demo server**, never a self-hosted instance -- a self-hosted "paste your DHIS2 URL and login" page is a phishing-shaped pattern regardless of intent, and most real instances won't even allow the cross-origin request. `play.dhis2.org` ships with publicly published demo credentials carrying superuser authority specifically so people can install and try apps.
+A shareable "try it live" link runs against **DHIS2's own public [play.dhis2.org](https://play.dhis2.org) demo server**, never a self-hosted instance -- a self-hosted "paste your DHIS2 URL and login" page is a phishing-shaped pattern regardless of intent, and most real instances won't even allow the cross-origin request. `play.dhis2.org` ships with publicly published demo credentials (`admin` / `district`, documented at [docs.dhis2.org](https://docs.dhis2.org)) carrying superuser authority specifically so people can install and try apps.
 
-`scripts/install-to-play-demo.sh` wraps the standard `POST /api/apps` install call against a chosen play instance. **play.dhis2.org instances are periodically reset/rebuilt by DHIS2**, which wipes any installed app -- this is not a "set once" persistent demo. Run the script, confirm the app loads, *then* share the link; don't assume a previously-shared link is still live without checking.
+`scripts/install-to-play-demo.sh` wraps the standard `POST /api/apps` install call against a chosen play instance. **`play.dhis2.org/demo` itself 302-redirects across hosts to the actual current-stable backend** (currently `play.im.dhis2.org/stable-2-43-1`) -- curl correctly refuses to resend Basic Auth across that host change, so `PLAY_URL` must point at the *resolved* backend host directly, not the `play.dhis2.org/demo` alias. Resolve it once with `curl -sI https://play.dhis2.org/demo/` (follow the `location` header, then follow it again -- it's two hops) before running the script.
+
+**Currently installed and verified live at:**
+`https://play.im.dhis2.org/stable-2-43-1/apps/data-quality-auditor`
+(log in with `admin` / `district` when prompted -- that's DHIS2's own login page, not anything hosted by this project)
+
+**play.dhis2.org instances are periodically reset/rebuilt by DHIS2**, which wipes any installed app -- this is not a "set once" persistent demo, and the link above may need reinstalling before you rely on it. Re-run the script and confirm the app loads before sharing the link again; don't assume it's still live without checking.
 
 The demo shows play's own public, non-sensitive demo datasets -- not anyone's real production data. That's expected: the demo's job is to let a stranger try the tool risk-free.
 

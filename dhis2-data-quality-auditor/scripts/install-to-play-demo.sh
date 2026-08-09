@@ -11,13 +11,21 @@ set -euo pipefail
 # sharing a demo link -- don't assume a previously-shared link is still live.
 #
 # Required environment variables:
-#   PLAY_URL       Base URL of the play instance, e.g. https://play.dhis2.org/40.0.0
+#   PLAY_URL       Base URL of the RESOLVED play instance backend, e.g.
+#                  https://play.im.dhis2.org/stable-2-43-1 -- NOT the
+#                  play.dhis2.org/demo short alias. That alias 302-redirects
+#                  ACROSS HOSTS to the real backend (currently
+#                  play.im.dhis2.org), and curl correctly refuses to resend
+#                  Basic Auth across a host change, so pointing this script at
+#                  the alias silently installs nothing. Resolve it first:
+#                    curl -sI https://play.dhis2.org/demo/   # follow `location` twice
 #   PLAY_USERNAME  Username for that instance's published demo admin account
 #   PLAY_PASSWORD  Password for that account
 #
-# Demo credentials for play.dhis2.org are published by DHIS2 itself and can
-# change over time -- look them up at https://play.dhis2.org before running
-# this rather than assuming any specific value here.
+# Demo credentials for play.dhis2.org are published by DHIS2 itself
+# (https://docs.dhis2.org) and can change over time -- verify before running
+# this rather than assuming any specific value here. As of this writing they
+# are admin / district.
 
 : "${PLAY_URL:?Set PLAY_URL to the play.dhis2.org instance base URL, e.g. https://play.dhis2.org/40.0.0}"
 : "${PLAY_USERNAME:?Set PLAY_USERNAME to that instance's demo admin username}"
@@ -32,14 +40,19 @@ if [ -z "$ZIP_PATH" ]; then
 fi
 
 BASE_URL="${PLAY_URL%/}"
+RESPONSE_FILE="$(mktemp)"
+trap 'rm -f "$RESPONSE_FILE"' EXIT
 
+# -L: play.dhis2.org's short aliases (e.g. /demo) 302-redirect to the actual
+# versioned instance path (e.g. /43.1) on the same host -- without -L curl
+# reports that redirect itself as a failure instead of following it.
 echo "Installing ${ZIP_PATH} to ${BASE_URL} ..."
-HTTP_STATUS=$(curl -sS -o /tmp/dqa-install-response.json -w '%{http_code}' \
+HTTP_STATUS=$(curl -sS -L -o "$RESPONSE_FILE" -w '%{http_code}' \
   -u "${PLAY_USERNAME}:${PLAY_PASSWORD}" \
   -F "file=@${ZIP_PATH}" \
   "${BASE_URL}/api/apps")
 
-cat /tmp/dqa-install-response.json
+cat "$RESPONSE_FILE"
 echo
 
 if [ "$HTTP_STATUS" -ge 200 ] && [ "$HTTP_STATUS" -lt 300 ]; then
@@ -50,9 +63,9 @@ else
 fi
 
 echo
-echo "Next steps to get the shareable demo link:"
-echo "1. Open ${BASE_URL}/dhis-web-app-management/index.html#/apps"
-echo "2. Confirm 'Data Quality Auditor' is listed and note its launch URL"
-echo "   (exact mount path varies by DHIS2 core version)."
-echo "3. Open that URL in a private/incognito window to confirm it loads with"
-echo "   no local session before sharing it."
+echo "The app's launch URL is normally: ${BASE_URL}/apps/data-quality-auditor"
+echo "(no trailing slash -- with one it 302s back to itself). Confirm with:"
+echo "  curl -I -u \"\$PLAY_USERNAME:\$PLAY_PASSWORD\" \"${BASE_URL}/apps/data-quality-auditor\""
+echo "Then open that URL in a private/incognito window (log in with the demo"
+echo "credentials when prompted -- that's DHIS2's own login page) before"
+echo "sharing it, since play instances reset periodically."
