@@ -55,9 +55,11 @@ Every add/edit/delete is a full read-modify-write of this one blob (`POST` on fi
 Two distinct, honestly-scoped mechanisms:
 
 1. **App visibility** is unrestricted -- viewing quality reports should stay broadly available to any authenticated user.
-2. **The "Manage Audits" entry point (add/edit/delete)** is shown only to users whose `GET /api/me.json?fields=authorities` response includes `ALL` (DHIS2 superuser).
+2. **The "Manage Audits" entry point (add/edit/delete)** is shown to users whose `GET /api/me.json?fields=authorities` response includes `ALL` (DHIS2 superuser) **or** `M_dhis-web-app-management` (the authority to install/manage apps at all).
 
-Mechanism 2 is **a UI convenience gate, not a real security boundary**. Classic DHIS2 `dataStore` has no built-in per-namespace ACL -- any authenticated user with direct API access can still write to this namespace regardless of what this app's UI shows them. This app does not rely on any version-specific dataStore ACL feature, since that would mean assuming undocumented behavior for a particular DHIS2 core version. If stronger enforcement matters for your instance, verify what your DHIS2 core version's Web API actually supports.
+Checking only `ALL` turned out to be too strict in practice: verified live against DHIS2's own official play.dhis2.org demo, its `admin` account does **not** carry the literal `ALL` authority -- it's granted a large enumerated set of specific authorities instead, `M_dhis-web-app-management` among them. `ALL` alone would have hidden Manage Audits from the very account meant to demonstrate it.
+
+Mechanism 2 is **a UI convenience gate, not a real security boundary**. Classic DHIS2 `dataStore` has no built-in per-namespace ACL -- any authenticated user with direct API access can still write to this namespace regardless of what this app's UI shows them. Being strict here buys no real protection, only broken usability, which is why the check was widened rather than left narrow. This app does not rely on any version-specific dataStore ACL feature, since that would mean assuming undocumented behavior for a particular DHIS2 core version. If stronger enforcement matters for your instance, verify what your DHIS2 core version's Web API actually supports.
 
 ## Install
 

@@ -56,7 +56,14 @@ export function useAudits(): UseAuditsResult {
       if (keyExists) {
         await engine.mutate({ resource: DATASTORE_RESOURCE, id: AUDITS_KEY, type: 'update', data: blob })
       } else {
-        await engine.mutate({ resource: DATASTORE_RESOURCE, id: AUDITS_KEY, type: 'create', data: blob })
+        // @dhis2/app-runtime's data engine rejects an `id` property on
+        // 'create' mutations at runtime ("Mutation type 'create' does not
+        // support property 'id'"), even though CreateMutation's TS type
+        // allows it (id is inherited as optional from ResourceQuery). For a
+        // 'create', the key has to be embedded directly in `resource`
+        // instead -- confirmed live against play.dhis2.org after the
+        // id-based version threw on the very first "Add audit" attempt.
+        await engine.mutate({ resource: `${DATASTORE_RESOURCE}/${AUDITS_KEY}`, type: 'create', data: blob })
         setKeyExists(true)
       }
       setState({ loading: false, error: null, audits })

@@ -11,15 +11,22 @@ interface MeResponse {
   me: { username: string; authorities: string[] }
 }
 
+// Checking only the literal 'ALL' authority is too strict in practice: many
+// real "admin" accounts -- including, confirmed live, DHIS2's own official
+// play.dhis2.org demo admin account -- are granted a large enumerated set of
+// specific authorities rather than the literal ALL wildcard. Since this gate
+// is already documented as a UI convenience, not a real security boundary
+// (classic DHIS2 dataStore has no per-namespace ACL regardless of what this
+// app's UI shows), being unnecessarily strict here only breaks usability
+// without adding real protection. M_dhis-web-app-management (the authority
+// to install/manage apps at all) is a reasonable, commonly-granted proxy for
+// "this account administers this instance" when ALL isn't present.
+const MANAGE_AUTHORITIES = ['ALL', 'M_dhis-web-app-management']
+
 export interface CurrentUserAuthorities {
   loading: boolean
   error: string | null
   username: string
-  // Gates the Manage Audits (add/edit/delete) entry point on ALL authority.
-  // This is a UI convenience gate, not a real security boundary: classic
-  // DHIS2 dataStore has no built-in per-namespace ACL, so any authenticated
-  // user with direct API access can still write to this namespace regardless
-  // of what this app's UI shows them. Documented plainly in README.md.
   canManage: boolean
 }
 
@@ -30,6 +37,6 @@ export function useCurrentUserAuthorities(): CurrentUserAuthorities {
     loading,
     error: error ? (error instanceof Error ? error.message : String(error)) : null,
     username: data?.me.username ?? '',
-    canManage: authorities.includes('ALL'),
+    canManage: MANAGE_AUTHORITIES.some((a) => authorities.includes(a)),
   }
 }
