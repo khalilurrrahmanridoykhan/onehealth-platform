@@ -10,6 +10,8 @@ data/staging/
 node_modules/
 frontend/dist/
 frontend/coverage/
+dhis2-app/build/
+dhis2-app/i18n/
 *.tsbuildinfo
 .env.production
 deploy/dhis2_home/dhis.conf
