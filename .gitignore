@@ -14,6 +14,8 @@ dhis2-app/build/
 dhis2-app/i18n/
 dhis2-data-quality-auditor/build/
 dhis2-data-quality-auditor/i18n/
+dhis2-data-share-hub/build/
+dhis2-data-share-hub/i18n/
 *.tsbuildinfo
 .env.production
 deploy/dhis2_home/dhis.conf
