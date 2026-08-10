@@ -8,11 +8,20 @@ import type { AuditConfig } from '../types/audit'
 // exactly, rather than against a hand-rolled, structurally looser interface.
 type Engine = ReturnType<typeof useDataEngine>
 
+// Field names confirmed live against play.dhis2.org (DHIS2 2.43.1): the
+// endpoint accepts extra fields beyond what a given DHIS2 version's response
+// actually populates, so every field here is read defensively (multiple
+// possible key names, all optional) rather than assumed exact -- only the
+// wrapper shape ({ outlierValues: [...] }) and its emptiness were directly
+// observed; a real DHIS2 instance with actual outliers in range would be
+// needed to confirm the per-item field names beyond what the docs describe.
 interface OutlierValue {
-  pe: string
-  ou: string
+  pe?: string
+  period?: string
+  ou?: string
   ouName?: string
-  value: number
+  orgUnitName?: string
+  value?: number
 }
 
 interface OutlierApiResponse {
@@ -21,15 +30,20 @@ interface OutlierApiResponse {
   }
 }
 
-// Prefers DHIS2's own native Data Analysis outlier-detection endpoint
-// (/api/dataAnalysis/outlierDetection, Z-Score / modified Z-Score / Min-Max
-// algorithms) over reinventing statistics from scratch -- this is a real,
-// existing core DHIS2 feature. Exact parameter names/availability vary by
-// DHIS2 core version, so this is written defensively: on any failure
-// (endpoint missing on this instance, unsupported version, bad params) it
-// returns null rather than throwing, and buildDataTrustReport in
-// qualityChecks.ts automatically falls back to the local IQR check
-// (computeOutlierFallback) in that case -- the report never blocks on this.
+// Prefers DHIS2's own native outlier-detection endpoint (Z-Score / modified
+// Z-Score / Min-Max algorithms) over reinventing statistics from scratch --
+// this is a real, existing core DHIS2 feature, confirmed live at
+// GET /api/outlierDetection?dx={id}&ou={id}&startDate=...&endDate=...&algorithm=...
+// (NOT /api/dataAnalysis/outlierDetection with a `de` param, which is what
+// this file originally guessed and which 404s on real DHIS2 -- the `dx`
+// dimension-item parameter name matches DHIS2's general analytics convention,
+// confirmed by directly testing both against a live instance).
+//
+// Still written defensively: on any failure (endpoint missing on an older
+// DHIS2 core version, unsupported params) it returns null rather than
+// throwing, and buildDataTrustReport in qualityChecks.ts automatically falls
+// back to the local IQR check (computeOutlierFallback) in that case -- the
+// report never blocks on this.
 //
 // Exported as a plain async function rather than a React hook because the
 // shared AuditReportsContext calls it imperatively, once per audit, from a
@@ -40,10 +54,9 @@ export async function fetchNativeOutlierCheck(engine: Engine, audit: AuditConfig
   try {
     const query = {
       result: {
-        resource: 'dataAnalysis/outlierDetection',
+        resource: 'outlierDetection',
         params: {
-          ds: audit.dataSetId,
-          de: audit.dataElementId,
+          dx: audit.dataElementId,
           ou: audit.orgUnits.map((ou) => ou.id),
           startDate: '2000-01-01',
           endDate: new Date().toISOString().slice(0, 10),
@@ -64,7 +77,7 @@ export async function fetchNativeOutlierCheck(engine: Engine, audit: AuditConfig
           ? "No outliers were flagged by this instance's native outlier-detection analysis (Z-Score)."
           : `${outliers.length} values were flagged by this instance's native outlier-detection analysis (Z-Score): ${outliers
               .slice(0, 5)
-              .map((o) => `${o.ouName ?? o.ou} ${o.pe}=${o.value}`)
+              .map((o) => `${o.ouName ?? o.orgUnitName ?? o.ou ?? '?'} ${o.pe ?? o.period ?? '?'}=${o.value ?? '?'}`)
               .join(', ')}${outliers.length > 5 ? ', ...' : ''}.`,
       dimension: 'Validity',
     }

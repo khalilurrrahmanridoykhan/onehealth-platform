@@ -18,7 +18,7 @@ Every audit runs the following checks, deliberately built to the rigor of **RDQA
 | `nonnegative_values` | Validity | A negative value where none should exist. |
 | `future_periods` | Integrity | A reporting period ending after the assessment date. |
 | `trend_spike_drop` *(v1.1, optional)* | Validity | A period-over-period change beyond an admin-set percent threshold -- catches the most common real-world DHIS2 data-entry error (an extra typed zero, a decimal slip). |
-| `outlier_detection` *(v1.1, optional)* | Validity | A statistical outlier, via this instance's own native outlier-detection analysis (`/api/dataAnalysis/outlierDetection`, Z-Score) where available, or an interquartile-range (IQR) fallback computed locally if that endpoint isn't available on this instance's DHIS2 core version. |
+| `outlier_detection` *(v1.1, optional)* | Validity | A statistical outlier, via this instance's own native outlier-detection analysis (`/api/outlierDetection`, Z-Score) where available, or an interquartile-range (IQR) fallback computed locally if that endpoint isn't available on this instance's DHIS2 core version. |
 | `instance_validation_rules` *(v1.1)* | Reliability | Surfaces whether this instance has its own `minMaxDataElements` bounds configured for the audited data element, on top of this app's own checks. |
 | `paired_indicator_ratio` *(v1.1, optional)* | Consistency | A period where a second "comparison" indicator's ratio (e.g. positives ÷ tests) falls outside an admin-set expected range -- the DHIS2-native equivalent of RDQA's cross-check step. |
 
@@ -29,6 +29,8 @@ The `trend_spike_drop`, `outlier_detection`, and `paired_indicator_ratio` checks
 ## Category option combo aggregation
 
 Any data element disaggregated by category (sex, age group, etc.) returns multiple `dataValueSets` rows per period + org unit -- one per category option combination. **Reported values are the sum across all category option combinations** for that period + org unit. This is stated here explicitly because it's a real modeling choice, not full disaggregated reporting: an audit on a disaggregated element reports the total, not a breakdown.
+
+**One granularity nuance this creates, confirmed live against play.dhis2.org:** the native `outlier_detection` check queries DHIS2's own `/api/outlierDetection` analysis, which operates on the *underlying per-category* values, not the summed total the rest of the report uses. In practice this means an outlier message can name a number that doesn't match the period's summed total shown elsewhere in the report -- e.g. a real example found while testing: the outlier check flagged a single category combination ("Outreach") at 700 for a period, while the report's own summed total for that period (across all categories) was 720. Both numbers are correct; they're just answering different questions -- "is any one category value anomalous" vs. "what's the total for this period" -- and are not meant to match. The `instance_validation_rules` check has the same property (it queries `minMaxDataElements`, which is also configured per category option combination, not against the summed total).
 
 ## Supported period types
 
