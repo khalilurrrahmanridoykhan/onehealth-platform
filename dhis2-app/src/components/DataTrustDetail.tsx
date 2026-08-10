@@ -5,7 +5,7 @@ import { useProgrammeDataTrust } from '../hooks/useProgrammeDataTrust'
 import { FreshnessTag, QualityTag } from './StatusTag'
 
 function humanize(value: string): string {
-  return value.replaceAll('_', ' ').replace(/^./, (letter) => letter.toUpperCase())
+  return value.replace(/_/g, ' ').replace(/^./, (letter: string) => letter.toUpperCase())
 }
 
 function SummaryRow({ label, value }: { label: string; value: ReactNode }) {
