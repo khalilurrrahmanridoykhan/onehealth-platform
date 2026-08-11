@@ -32,6 +32,20 @@ Any data element disaggregated by category (sex, age group, etc.) returns multip
 
 **One granularity nuance this creates, confirmed live against play.dhis2.org:** the native `outlier_detection` check queries DHIS2's own `/api/outlierDetection` analysis, which operates on the *underlying per-category* values, not the summed total the rest of the report uses. In practice this means an outlier message can name a number that doesn't match the period's summed total shown elsewhere in the report -- e.g. a real example found while testing: the outlier check flagged a single category combination ("Outreach") at 700 for a period, while the report's own summed total for that period (across all categories) was 720. Both numbers are correct; they're just answering different questions -- "is any one category value anomalous" vs. "what's the total for this period" -- and are not meant to match. The `instance_validation_rules` check has the same property (it queries `minMaxDataElements`, which is also configured per category option combination, not against the summed total).
 
+## Domain presets
+
+The "Add audit" form offers an optional **"Start from a preset"** picker (`src/lib/presets.ts`). A preset prefills freshness cadence, outlier/trend thresholds, source attribution, and (where applicable) a comparison-ratio label and expected range -- the settings an admin would otherwise have to know to fill in by hand. It never prefills a dataset, data element, org unit, or comparison-element ID: those are DHIS2 UIDs assigned per instance on import, so the admin always still picks the real ones from their own instance's metadata picker, exactly as with a plain audit.
+
+The first domain covered is **AMR (antimicrobial resistance) surveillance**, aligned to WHO's [GLASS framework](https://www.who.int/publications/i/item/9789240076600) and the DHIS2 AMR Metadata Package:
+
+| Preset | Maps to | Update cadence | Comparison ratio |
+|---|---|---|---|
+| Priority pathogen resistance rate | GLASS-AMR | 90 days (quarterly rollup) | resistant / tested isolates |
+| Antimicrobial consumption (AMC) | [GLASS-AMC](https://www.who.int/initiatives/glass/glass-amc-module) | 90 days | -- |
+| Antibiotic stewardship / prescribing compliance | Facility antibiogram / WHO AWaRe | 30 days (facility-level review) | compliant / total prescriptions |
+
+The thresholds each preset ships with (e.g. flag a >40% period-over-period swing in a resistance rate) are reasonable starting points grounded in how that indicator type is typically reported, not values validated against any specific instance's real data -- the same "configurable, not authoritative" stance the rest of this app's advanced checks already take. Adjust them after picking a preset if your instance's real data behaves differently.
+
 ## Supported period types
 
 `Daily`, `Weekly`, `Monthly`, `Quarterly`, `SixMonthly`, `Yearly`. A dataset using an unsupported period type (`BiWeekly`, `WeeklyWednesday`/`Thursday`/`Saturday`/`Sunday`, any `Financial*` variant, `SixMonthlyApril`) is blocked at the audit-creation form with an inline error, rather than silently mis-parsed later.

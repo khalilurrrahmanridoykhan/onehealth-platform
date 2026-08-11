@@ -16,6 +16,7 @@ import {
 import { useEffect, useMemo, useState } from 'react'
 import { useDataSetDetail, isNumericValueType } from '../hooks/useDataSetDetail'
 import { useDataSets } from '../hooks/useDataSets'
+import { AMR_PRESETS, type AuditPreset } from '../lib/presets'
 import { SUPPORTED_PERIOD_TYPES, newAuditDefaults, type AuditConfig, type FreshnessMode, type PeriodType } from '../types/audit'
 
 // This app's first-ever form UI -- OneHealth Data Trust uses zero @dhis2/ui
@@ -87,8 +88,29 @@ export function AuditForm({ audit, currentUsername, onClose, onSave }: Props) {
     audit?.expectedRatioMax !== null && audit?.expectedRatioMax !== undefined ? String(audit.expectedRatioMax) : '',
   )
 
+  const [presetId, setPresetId] = useState<string | null>(null)
+
   const [saving, setSaving] = useState(false)
   const [formError, setFormError] = useState<string | null>(null)
+
+  // Presets only ever prefill non-identifying fields -- thresholds, freshness
+  // cadence, source attribution, comparison label/range. They never touch
+  // dataSetId/dataElementId/orgUnits/comparisonDataElementId: those UIDs are
+  // instance-specific and always come from this instance's own metadata
+  // picker below, regardless of which preset (if any) was applied first.
+  function applyPreset(preset: AuditPreset) {
+    setPresetId(preset.id)
+    setDescription(preset.description)
+    setFreshnessMode(preset.freshnessMode)
+    setExpectedUpdateDays(String(preset.expectedUpdateDays))
+    setSourceName(preset.sourceName)
+    setSourceUrl(preset.sourceUrl ?? '')
+    setOutlierDetectionEnabled(preset.outlierDetectionEnabled)
+    setTrendChangeThresholdPercent(String(preset.trendChangeThresholdPercent))
+    setComparisonLabel(preset.comparisonLabel ?? '')
+    setExpectedRatioMin(preset.expectedRatioMin !== null ? String(preset.expectedRatioMin) : '')
+    setExpectedRatioMax(preset.expectedRatioMax !== null ? String(preset.expectedRatioMax) : '')
+  }
 
   const { dataSets, loading: dataSetsLoading } = useDataSets(datasetSearchTerm)
   const { detail, loading: detailLoading } = useDataSetDetail(dataSetId)
@@ -212,6 +234,26 @@ export function AuditForm({ audit, currentUsername, onClose, onSave }: Props) {
             onChange={({ value }) => setName(value ?? '')}
             placeholder="e.g. Malaria confirmed cases, Northern region"
           />
+
+          {!isEditing && (
+            <SimpleSingleSelectField
+              name="preset"
+              label="Start from a preset (optional)"
+              clearable
+              clearText="None -- plain audit"
+              helpText="Prefills freshness cadence, thresholds, and source attribution for a known surveillance domain. You still pick the actual dataset, data element, and org units for your instance below -- presets never assume a UID."
+              options={AMR_PRESETS.map((p) => ({ label: p.label, value: p.id }))}
+              value={presetId ?? ''}
+              onChange={(value) => {
+                if (!value) {
+                  setPresetId(null)
+                  return
+                }
+                const chosen = AMR_PRESETS.find((p) => p.id === value)
+                if (chosen) applyPreset(chosen)
+              }}
+            />
+          )}
 
           <SimpleSingleSelectField
             name="dataset"

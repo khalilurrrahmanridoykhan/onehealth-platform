@@ -1,6 +1,6 @@
 {
   "name": "data-quality-auditor-app",
-  "version": "1.0.3",
+  "version": "1.1.0",
   "description": "Admin-configurable coverage, freshness, plausibility, and RDQA-aligned quality reporting for any dataset on any DHIS2 instance, as a native DHIS2 App.",
   "license": "MIT",
   "private": true,
