@@ -2,7 +2,7 @@
 
 A native DHIS2 App: a point-of-care antibiotic prescribing checklist, aligned to WHO's **AWaRe** framework (Access / Watch / Reserve). A prescriber logs what they gave, for what, and whether it was empiric or culture-guided; a Watch- or Reserve-category choice requires a justification note before it can be submitted. A compliance summary shows the resulting mix and flags any entry missing a required justification.
 
-This is the fourth app in this monorepo, alongside [OneHealth Data Trust](../dhis2-app), [Data Quality Auditor](../dhis2-data-quality-auditor), and [Data Share Hub](../dhis2-data-share-hub). It does not modify any of the three.
+This app was developed alongside three sibling DHIS2 apps -- [OneHealth Data Trust](https://github.com/khalilurrrahmanridoykhan/onehealth-platform/tree/main/dhis2-app), [Data Quality Auditor](https://github.com/khalilurrrahmanridoykhan/onehealth-platform/tree/main/dhis2-data-quality-auditor), and [Data Share Hub](https://github.com/khalilurrrahmanridoykhan/onehealth-platform/tree/main/dhis2-data-share-hub) -- in the [`onehealth-platform`](https://github.com/khalilurrrahmanridoykhan/onehealth-platform) monorepo, which this app was split out from into its own repository. It does not modify any of the three.
 
 ## Why this instead of a WHONET importer
 
