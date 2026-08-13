@@ -1,0 +1,102 @@
+[
+  {
+    "geoCode": "div_10",
+    "dhis2OrgUnitUid": "BdDivBar001",
+    "dhis2OrgUnitName": "Barishal",
+    "confirmedInMappings": [
+      "AWD",
+      "DENGUE",
+      "HPAI",
+      "MEASLES",
+      "NIPAH"
+    ]
+  },
+  {
+    "geoCode": "div_20",
+    "dhis2OrgUnitUid": "BdDivCtg001",
+    "dhis2OrgUnitName": "Chattogram",
+    "confirmedInMappings": [
+      "AWD",
+      "DENGUE",
+      "HPAI",
+      "JE",
+      "MEASLES",
+      "NIPAH"
+    ]
+  },
+  {
+    "geoCode": "div_30",
+    "dhis2OrgUnitUid": "BdDivDha001",
+    "dhis2OrgUnitName": "Dhaka",
+    "confirmedInMappings": [
+      "AWD",
+      "DENGUE",
+      "HPAI",
+      "MEASLES",
+      "NIPAH"
+    ]
+  },
+  {
+    "geoCode": "div_40",
+    "dhis2OrgUnitUid": "BdDivKhu001",
+    "dhis2OrgUnitName": "Khulna",
+    "confirmedInMappings": [
+      "AWD",
+      "DENGUE",
+      "HPAI",
+      "JE",
+      "MEASLES",
+      "NIPAH"
+    ]
+  },
+  {
+    "geoCode": "div_45",
+    "dhis2OrgUnitUid": "BdDivMym001",
+    "dhis2OrgUnitName": "Mymensingh",
+    "confirmedInMappings": [
+      "AWD",
+      "DENGUE",
+      "HPAI",
+      "MEASLES",
+      "NIPAH"
+    ]
+  },
+  {
+    "geoCode": "div_50",
+    "dhis2OrgUnitUid": "BdDivRaj001",
+    "dhis2OrgUnitName": "Rajshahi",
+    "confirmedInMappings": [
+      "AWD",
+      "DENGUE",
+      "HPAI",
+      "JE",
+      "MEASLES",
+      "NIPAH"
+    ]
+  },
+  {
+    "geoCode": "div_55",
+    "dhis2OrgUnitUid": "BdDivRan001",
+    "dhis2OrgUnitName": "Rangpur",
+    "confirmedInMappings": [
+      "AWD",
+      "DENGUE",
+      "HPAI",
+      "JE",
+      "MEASLES",
+      "NIPAH"
+    ]
+  },
+  {
+    "geoCode": "div_60",
+    "dhis2OrgUnitUid": "BdDivSyl001",
+    "dhis2OrgUnitName": "Sylhet",
+    "confirmedInMappings": [
+      "AWD",
+      "DENGUE",
+      "HPAI",
+      "MEASLES",
+      "NIPAH"
+    ]
+  }
+]
