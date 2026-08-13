@@ -1,4 +1,4 @@
-import { CircularLoader, HeaderBar, NoticeBox } from '@dhis2/ui'
+import { AlertBar, CircularLoader, HeaderBar, NoticeBox } from '@dhis2/ui'
 import { useState } from 'react'
 import { AuditDetail } from './components/AuditDetail'
 import { AuditForm } from './components/AuditForm'
@@ -7,13 +7,16 @@ import { EmptyState } from './components/EmptyState'
 import { AuditReportsProvider } from './context/AuditReportsContext'
 import { useAudits } from './hooks/useAudits'
 import { useCurrentUserAuthorities } from './hooks/useCurrentUserAuthorities'
+import { useIsStandalone } from './hooks/useIsStandalone'
 import type { AuditConfig } from './types/audit'
 
 export default function App() {
   const { loading, error, audits, saveAudit, deleteAudit } = useAudits()
   const { canManage, username } = useCurrentUserAuthorities()
+  const isStandalone = useIsStandalone()
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [formState, setFormState] = useState<{ open: boolean; audit: AuditConfig | null }>({ open: false, audit: null })
+  const [saveError, setSaveError] = useState<string | null>(null)
 
   const selected = audits.find((a) => a.id === selectedId) ?? audits[0] ?? null
 
@@ -27,13 +30,22 @@ export default function App() {
 
   async function handleDelete(id: string) {
     if (!window.confirm('Delete this audit? This cannot be undone.')) return
-    await deleteAudit(id)
-    if (selectedId === id) setSelectedId(null)
+    try {
+      await deleteAudit(id)
+      if (selectedId === id) setSelectedId(null)
+    } catch (err) {
+      setSaveError(err instanceof Error ? err.message : String(err))
+    }
   }
 
   return (
     <>
-      <HeaderBar appName="Data Quality Auditor" />
+      {isStandalone && <HeaderBar appName="Data Quality Auditor" />}
+      {saveError && (
+        <AlertBar critical onHidden={() => setSaveError(null)}>
+          {`Could not save: ${saveError}`}
+        </AlertBar>
+      )}
       {/* Wraps both the sidebar and the detail pane so AuditList's status
           tags and AuditDetail's full report read from the same shared fetch
           queue -- never N independent fetches for N audits. */}
