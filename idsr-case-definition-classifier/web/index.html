@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>IDSR Case-Definition Classifier</title>
+  <meta name="description" content="A real, explainable rule engine implementing WHO IDSR standard case definitions for 18 priority diseases." />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <header class="page-header">
+    <div class="header-inner">
+      <h1>IDSR Case-Definition Classifier</h1>
+      <p class="subtitle">
+        A real, explainable rule engine implementing WHO's Integrated Disease Surveillance and Response
+        standard case definitions &mdash; 18 priority diseases (<span id="definition-count"></span>
+        case-definition checks, since malaria and dengue are each modeled as multiple definitions to
+        match their real source structure), suspected / probable / confirmed, with the exact matched
+        and missing criteria shown for every result.
+      </p>
+      <p class="source-note">
+        Source: Kenya Ministry of Health, Division of Disease Surveillance and Response &mdash;
+        <em>IDSR Standard Case Definitions</em> (a national adaptation of WHO AFRO's IDSR Technical
+        Guidelines, 3rd edition, 2019). This demo runs the real classifier library entirely in your
+        browser &mdash; nothing you enter here is sent anywhere.
+        &middot; <a href="https://github.com/khalilurrrahmanridoykhan/onehealth-platform/tree/main/idsr-case-definition-classifier">Source code</a>
+      </p>
+    </div>
+  </header>
+
+  <main class="layout">
+    <section class="form-panel" aria-label="Clinical findings">
+      <div class="panel-heading">
+        <h2>Clinical findings</h2>
+        <button id="reset" type="button" class="reset-button">Reset all</button>
+      </div>
+      <div id="form"></div>
+    </section>
+
+    <section class="results-panel" aria-label="Classification results">
+      <h2>Classification</h2>
+      <div id="results"></div>
+    </section>
+  </main>
+
+  <footer class="page-footer">
+    <p>
+      Not a diagnostic tool &mdash; a faithful implementation of a published clinical surveillance
+      standard, for demonstration purposes.
+    </p>
+  </footer>
+
+  <script type="module" src="./main.js"></script>
+</body>
+</html>
