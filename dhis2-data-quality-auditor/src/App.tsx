@@ -1,4 +1,4 @@
-import { AlertBar, CircularLoader, HeaderBar, NoticeBox } from '@dhis2/ui'
+import { AlertBar, CircularLoader, NoticeBox } from '@dhis2/ui'
 import { useState } from 'react'
 import { AuditDetail } from './components/AuditDetail'
 import { AuditForm } from './components/AuditForm'
@@ -7,13 +7,11 @@ import { EmptyState } from './components/EmptyState'
 import { AuditReportsProvider } from './context/AuditReportsContext'
 import { useAudits } from './hooks/useAudits'
 import { useCurrentUserAuthorities } from './hooks/useCurrentUserAuthorities'
-import { useIsStandalone } from './hooks/useIsStandalone'
 import type { AuditConfig } from './types/audit'
 
 export default function App() {
   const { loading, error, audits, saveAudit, deleteAudit } = useAudits()
   const { canManage, username } = useCurrentUserAuthorities()
-  const isStandalone = useIsStandalone()
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [formState, setFormState] = useState<{ open: boolean; audit: AuditConfig | null }>({ open: false, audit: null })
   const [saveError, setSaveError] = useState<string | null>(null)
@@ -40,7 +38,6 @@ export default function App() {
 
   return (
     <>
-      {isStandalone && <HeaderBar appName="Data Quality Auditor" />}
       {saveError && (
         <AlertBar critical onHidden={() => setSaveError(null)}>
           {`Could not save: ${saveError}`}
