@@ -1,0 +1,15 @@
+{
+  "type": "app",
+  "id": "be421663-abaa-48a8-9b6b-8e3644ce2c1d",
+  "name": "data-quality-auditor",
+  "title": "Data Quality Auditor",
+  "description": "Lets any DHIS2 admin point coverage, freshness, plausibility, and RDQA-aligned quality checks at any dataset on this instance -- no bundled programme list, no code changes.",
+  "coreCompatibility": ">=2.40",
+  "minDHIS2Version": "2.40",
+  "dataStoreNamespace": "dataQualityAuditor",
+  "direction": "auto",
+  "version": "1.1.0",
+  "entryPoints": {
+    "app": "index.html"
+  }
+}

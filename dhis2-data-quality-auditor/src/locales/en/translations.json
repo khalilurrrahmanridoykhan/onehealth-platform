@@ -1,0 +1,4 @@
+{
+    "__MANIFEST_APP_TITLE_Application title": "Data Quality Auditor",
+    "__MANIFEST_APP_DESCRIPTION_Application description": "Lets any DHIS2 admin point coverage, freshness, plausibility, and RDQA-aligned quality checks at any dataset on this instance -- no bundled programme list, no code changes."
+}
