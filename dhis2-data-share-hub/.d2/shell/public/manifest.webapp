@@ -1,0 +1,23 @@
+{
+  "app_hub_id": "a572f49c-55d2-4427-8d4c-a84975f61781",
+  "appType": "APP",
+  "short_name": "data-share-hub",
+  "name": "Data Share Hub",
+  "description": "Define a data slice once (dataset + data elements + org units + period range), then either export it as CSV immediately, or provision a scoped, revocable external API account for it -- with every share tracked in one registry.",
+  "version": "1.4.2",
+  "launch_path": "index.html",
+  "default_locale": "en",
+  "activities": {
+    "dhis": {
+      "href": "*",
+      "namespace": "dataShareHub"
+    }
+  },
+  "icons": {
+    "48": "dhis2-app-icon.png"
+  },
+  "manifest_generated_at": "Thu Aug 13 2026 17:04:10 GMT+0600 (Bangladesh Standard Time)",
+  "display": "standalone",
+  "theme_color": "#ffffff",
+  "background_color": "#ffffff"
+}

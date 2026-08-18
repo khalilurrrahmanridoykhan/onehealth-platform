@@ -1,0 +1,4 @@
+{
+    "__MANIFEST_APP_TITLE_Application title": "Data Share Hub",
+    "__MANIFEST_APP_DESCRIPTION_Application description": "Define a data slice once (dataset + data elements + org units + period range), then either export it as CSV immediately, or provision a scoped, revocable external API account for it -- with every share tracked in one registry."
+}
