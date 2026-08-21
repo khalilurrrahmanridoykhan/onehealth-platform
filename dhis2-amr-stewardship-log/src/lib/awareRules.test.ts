@@ -1,4 +1,12 @@
-import { computeComplianceSummary, requiresJustification, resolveAwareCategory } from './awareRules'
+import {
+  computeComplianceSummary,
+  computeFollowUpSummary,
+  DEFAULT_FOLLOW_UP_GRACE_HOURS,
+  isAwaitingFollowUp,
+  requiresJustification,
+  resolveAwareCategory,
+  selectEntriesNeedingFollowUp,
+} from './awareRules'
 import type { FormularyEntry, PrescribingEntry } from '../types/stewardship'
 
 describe('requiresJustification', () => {
@@ -42,6 +50,9 @@ function entry(overrides: Partial<PrescribingEntry>): PrescribingEntry {
     empiricOrCultureGuided: 'Empiric',
     justificationNote: null,
     enteredBy: 'tester',
+    deEscalationOutcome: null,
+    deEscalationDate: null,
+    deEscalationNote: null,
     ...overrides,
   }
 }
@@ -89,5 +100,120 @@ describe('computeComplianceSummary', () => {
     expect(summary.totalEntries).toBe(0)
     expect(summary.missingJustificationCount).toBe(0)
     expect(summary.topAntibiotics).toEqual([])
+  })
+
+  test('output is unaffected by follow-up fields -- computeComplianceSummary predates and stays independent of the follow-up feature', () => {
+    const summary = computeComplianceSummary([
+      entry({ awareCategory: 'Access', deEscalationOutcome: 'Narrowed', deEscalationDate: '2026-08-13', deEscalationNote: 'note' }),
+    ])
+    expect(summary.totalEntries).toBe(1)
+    expect(summary.countByCategory.Access).toBe(1)
+  })
+})
+
+// Fixed reference "now" throughout -- never new Date() -- so these tests are
+// deterministic regardless of when they run.
+const NOW = new Date('2026-08-13T00:00:00.000Z')
+
+describe('isAwaitingFollowUp', () => {
+  test('false for a culture-guided entry -- nothing to de-escalate', () => {
+    expect(isAwaitingFollowUp(entry({ empiricOrCultureGuided: 'Culture-guided', occurredAt: '2026-08-01T00:00:00.000Z' }), NOW)).toBe(
+      false,
+    )
+  })
+
+  test('false once an outcome has been recorded, no matter how old the entry', () => {
+    expect(
+      isAwaitingFollowUp(
+        entry({ empiricOrCultureGuided: 'Empiric', occurredAt: '2026-08-01T00:00:00.000Z', deEscalationOutcome: 'Narrowed' }),
+        NOW,
+      ),
+    ).toBe(false)
+  })
+
+  test('grace-window boundary: exactly at the default 48h is awaiting, just under is not', () => {
+    expect(DEFAULT_FOLLOW_UP_GRACE_HOURS).toBe(48)
+    const exactlyAtGrace = entry({ empiricOrCultureGuided: 'Empiric', occurredAt: '2026-08-11T00:00:00.000Z' })
+    const justUnderGrace = entry({ empiricOrCultureGuided: 'Empiric', occurredAt: '2026-08-11T01:00:00.000Z' })
+    expect(isAwaitingFollowUp(exactlyAtGrace, NOW)).toBe(true)
+    expect(isAwaitingFollowUp(justUnderGrace, NOW)).toBe(false)
+  })
+
+  test('a custom graceHours parameter is honored', () => {
+    const sixHoursOld = entry({ empiricOrCultureGuided: 'Empiric', occurredAt: '2026-08-12T18:00:00.000Z' })
+    expect(isAwaitingFollowUp(sixHoursOld, NOW, 4)).toBe(true)
+    expect(isAwaitingFollowUp(sixHoursOld, NOW, 8)).toBe(false)
+  })
+})
+
+describe('selectEntriesNeedingFollowUp', () => {
+  test('returns only the entries past the grace window with no recorded outcome', () => {
+    const overdue = entry({ eventId: 'overdue', empiricOrCultureGuided: 'Empiric', occurredAt: '2026-08-01T00:00:00.000Z' })
+    const fresh = entry({ eventId: 'fresh', empiricOrCultureGuided: 'Empiric', occurredAt: '2026-08-12T23:00:00.000Z' })
+    const cultureGuided = entry({ eventId: 'cg', empiricOrCultureGuided: 'Culture-guided', occurredAt: '2026-08-01T00:00:00.000Z' })
+    const selected = selectEntriesNeedingFollowUp([overdue, fresh, cultureGuided], NOW)
+    expect(selected.map((e) => e.eventId)).toEqual(['overdue'])
+  })
+})
+
+describe('computeFollowUpSummary', () => {
+  test('culture-guided entries are excluded from every denominator', () => {
+    const summary = computeFollowUpSummary(
+      [entry({ empiricOrCultureGuided: 'Culture-guided', occurredAt: '2026-08-01T00:00:00.000Z' })],
+      NOW,
+    )
+    expect(summary.empiricCount).toBe(0)
+    expect(summary.followUpRate).toBeNull()
+    expect(summary.deEscalationRate).toBeNull()
+  })
+
+  test('both rates are null (not 0) at a zero denominator', () => {
+    const summary = computeFollowUpSummary([], NOW)
+    expect(summary.empiricCount).toBe(0)
+    expect(summary.followUpRate).toBeNull()
+    expect(summary.deEscalationRate).toBeNull()
+  })
+
+  test('rate arithmetic: followUpRate over all empiric entries, deEscalationRate over recorded follow-ups only', () => {
+    const summary = computeFollowUpSummary(
+      [
+        entry({ empiricOrCultureGuided: 'Empiric', occurredAt: '2026-08-01T00:00:00.000Z', deEscalationOutcome: 'Narrowed' }),
+        entry({
+          empiricOrCultureGuided: 'Empiric',
+          occurredAt: '2026-08-01T00:00:00.000Z',
+          deEscalationOutcome: 'Continued (confirmed appropriate)',
+        }),
+        entry({ empiricOrCultureGuided: 'Empiric', occurredAt: '2026-08-01T00:00:00.000Z' }), // no outcome, overdue
+      ],
+      NOW,
+    )
+    expect(summary.empiricCount).toBe(3)
+    expect(summary.followUpsRecordedCount).toBe(2)
+    expect(summary.followUpRate).toBeCloseTo(2 / 3)
+    expect(summary.deEscalationRate).toBeCloseTo(1 / 2)
+    expect(summary.awaitingFollowUpCount).toBe(1)
+  })
+
+  test("'Discontinued' counts as de-escalation alongside 'Narrowed'", () => {
+    const summary = computeFollowUpSummary(
+      [
+        entry({ empiricOrCultureGuided: 'Empiric', occurredAt: '2026-08-01T00:00:00.000Z', deEscalationOutcome: 'Discontinued' }),
+        entry({ empiricOrCultureGuided: 'Empiric', occurredAt: '2026-08-01T00:00:00.000Z', deEscalationOutcome: 'Broadened' }),
+      ],
+      NOW,
+    )
+    expect(summary.deEscalationRate).toBeCloseTo(1 / 2)
+    expect(summary.countByOutcome.Discontinued).toBe(1)
+    expect(summary.countByOutcome.Broadened).toBe(1)
+  })
+
+  test('an entry still within the grace window is neither awaiting nor recorded', () => {
+    const summary = computeFollowUpSummary(
+      [entry({ empiricOrCultureGuided: 'Empiric', occurredAt: '2026-08-12T23:00:00.000Z' })],
+      NOW,
+    )
+    expect(summary.awaitingFollowUpCount).toBe(0)
+    expect(summary.withinGraceCount).toBe(1)
+    expect(summary.followUpsRecordedCount).toBe(0)
   })
 })

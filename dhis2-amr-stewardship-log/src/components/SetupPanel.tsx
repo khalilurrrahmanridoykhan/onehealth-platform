@@ -2,7 +2,7 @@ import { Button, InputField, MultiSelectField, MultiSelectOption, NoticeBox } fr
 import { useMemo, useState } from 'react'
 import { useOrgUnits } from '../hooks/useOrgUnits'
 import { useProvisionProgram } from '../hooks/useProvisionProgram'
-import type { StewardshipOrgUnit, StewardshipSettings } from '../types/stewardship'
+import { supportsFollowUp, type StewardshipOrgUnit, type StewardshipSettings } from '../types/stewardship'
 import { FormularyEditor } from './FormularyEditor'
 
 interface Props {
@@ -13,8 +13,11 @@ interface Props {
 // The "Configure Stewardship" screen -- gated by canManage in App.tsx, same
 // convention as every sibling app's admin-only entry point. Handles first-run
 // provisioning (findOrCreateProgram) transparently: an admin who has never
-// saved before triggers it on first Save, an admin editing an already-
-// provisioned install just keeps the org-unit assignment in sync.
+// saved before triggers it on first Save. findOrCreateProgram() is called on
+// *every* save, not just first-run -- it's idempotent (one GET) once a
+// program is fully provisioned, and it's also the only thing that adopts
+// data elements added by a later feature onto an already-provisioned
+// install (see useProvisionProgram.ts's adopt-and-extend path).
 export function SetupPanel({ settings, onSave }: Props) {
   const [formulary, setFormulary] = useState(settings.formulary)
   const [orgUnitSearchTerm, setOrgUnitSearchTerm] = useState('')
@@ -44,12 +47,8 @@ export function SetupPanel({ settings, onSave }: Props) {
     setSaving(true)
     try {
       const selectedOrgUnits = orgUnitOptions.filter((ou) => orgUnitIds.includes(ou.id))
-      let provisioned = settings.provisioned
-      if (provisioned) {
-        await syncProgramOrgUnits(provisioned.programId, orgUnitIds)
-      } else {
-        provisioned = await findOrCreateProgram(orgUnitIds)
-      }
+      const provisioned = await findOrCreateProgram(orgUnitIds)
+      await syncProgramOrgUnits(provisioned.programId, orgUnitIds)
       await onSave({ ...settings, provisioned, formulary, orgUnits: selectedOrgUnits })
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e))
@@ -71,6 +70,14 @@ export function SetupPanel({ settings, onSave }: Props) {
           DHIS2 program provisioned: <code>{settings.provisioned.programId}</code>. Entries are logged as real DHIS2 Tracker
           events under this program -- see README for exactly what was created and why.
         </div>
+      )}
+
+      {settings.provisioned && !supportsFollowUp(settings.provisioned) && (
+        <NoticeBox title="De-escalation follow-up not yet enabled on this install">
+          This install was provisioned before the follow-up feature existed. Saving now will add 3 new fields
+          (de-escalation outcome, review date, note) to the existing program stage -- your existing entries and data
+          are not affected.
+        </NoticeBox>
       )}
 
       <div>

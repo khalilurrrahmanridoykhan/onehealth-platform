@@ -2,7 +2,7 @@
 // DHIS2 Program/ProgramStage/DataElements and reading back Tracker import
 // results. Every shape here was confirmed live against play.dhis2.org
 // (stable-2-43-1) before being written, via a standalone curl spike -- see
-// the plan for the full trail. Two real corrections from what was assumed
+// the plan for the full trail. Three real corrections from what was assumed
 // going in:
 //
 // 1. POST /api/programs with a nested `programStages` array does NOT work --
@@ -19,21 +19,48 @@
 //    real 409 and a specific "no capture scope access" message -- DHIS2's
 //    own org-unit capture-scope check remains the real security boundary
 //    regardless of this sharing grant.
+// 3. (De-escalation follow-up feature) Updating an existing Tracker event's
+//    dataValues MERGES by dataElement, not a wholesale replace -- confirmed
+//    live: an update sent with only 2 of 5 dataValues left the other 3
+//    untouched on read-back. A separate, explicit `value: ""` DOES clear a
+//    field (distinct from omitting it, which leaves the existing value
+//    alone). Despite merge being confirmed safe, buildFollowUpEventPayload
+//    below still resends the complete known dataValues set unconditionally
+//    -- defensive by design, not because merge was found unsafe. Also
+//    confirmed: `valueType: 'DATE'` accepts a plain `"YYYY-MM-DD"` string,
+//    no full ISO datetime required.
 
-import type { AwareCategory, PrescribingEntry, ProvisionedProgram } from '../types/stewardship'
+import type { AwareCategory, DeEscalationOutcome, FollowUpCapableProgram, PrescribingEntry, ProvisionedProgram } from '../types/stewardship'
+import { DE_ESCALATION_OUTCOMES } from '../types/stewardship'
 
 export const PROGRAM_NAME = 'AMR Stewardship Log'
 export const PROGRAM_SHORT_NAME = 'AMR Stewardship Log'
 export const PROGRAM_STAGE_NAME = 'Prescribing entry'
 
-export type DataElementRole = 'antibiotic' | 'indication' | 'empiricOrCultureGuided' | 'awareCategory' | 'justificationNote'
+export type DataElementRole =
+  | 'antibiotic'
+  | 'indication'
+  | 'empiricOrCultureGuided'
+  | 'awareCategory'
+  | 'justificationNote'
+  | 'deEscalationOutcome'
+  | 'deEscalationDate'
+  | 'deEscalationNote'
 
 export interface DataElementDef {
   role: DataElementRole
   name: string
   shortName: string
-  valueType: 'TEXT' | 'LONG_TEXT'
+  valueType: 'TEXT' | 'LONG_TEXT' | 'DATE'
 }
+
+// The original 5, present on every install regardless of version.
+export const CORE_ROLES: DataElementRole[] = ['antibiotic', 'indication', 'empiricOrCultureGuided', 'awareCategory', 'justificationNote']
+
+// Added for the de-escalation follow-up feature -- absent on any install
+// provisioned before this feature shipped, until it's adopted-and-extended
+// (see useProvisionProgram.ts).
+export const FOLLOW_UP_ROLES: DataElementRole[] = ['deEscalationOutcome', 'deEscalationDate', 'deEscalationNote']
 
 export const DATA_ELEMENT_DEFS: DataElementDef[] = [
   { role: 'antibiotic', name: 'AMR Stewardship -- Antibiotic name', shortName: 'AMR SL Antibiotic', valueType: 'TEXT' },
@@ -49,6 +76,24 @@ export const DATA_ELEMENT_DEFS: DataElementDef[] = [
     role: 'justificationNote',
     name: 'AMR Stewardship -- Justification note',
     shortName: 'AMR SL Justification',
+    valueType: 'LONG_TEXT',
+  },
+  {
+    role: 'deEscalationOutcome',
+    name: 'AMR Stewardship -- De-escalation outcome',
+    shortName: 'AMR SL De-escalation',
+    valueType: 'TEXT',
+  },
+  {
+    role: 'deEscalationDate',
+    name: 'AMR Stewardship -- De-escalation review date',
+    shortName: 'AMR SL De-esc date',
+    valueType: 'DATE',
+  },
+  {
+    role: 'deEscalationNote',
+    name: 'AMR Stewardship -- De-escalation note',
+    shortName: 'AMR SL De-esc note',
     valueType: 'LONG_TEXT',
   },
 ]
@@ -119,9 +164,73 @@ export function buildEventPayload(provisioned: ProvisionedProgram, orgUnitId: st
   }
 }
 
-// Confirmed live shape of a POST /api/tracker response.
+// The subset of a queried Tracker event this app needs to safely build an
+// update -- fetched fresh by useSubmitFollowUp.ts immediately before
+// submitting, never reused from an already-loaded list, so a concurrent edit
+// by another user is preserved rather than clobbered.
+export interface ExistingEventForUpdate {
+  event: string
+  orgUnit: string
+  occurredAt: string
+  status: 'ACTIVE' | 'COMPLETED' | 'SCHEDULE' | 'OVERDUE' | 'SKIPPED'
+  dataValues: { dataElement: string; value: string }[]
+}
+
+export interface FollowUpFormValues {
+  deEscalationOutcome: DeEscalationOutcome
+  deEscalationDate: string
+  deEscalationNote: string | null
+}
+
+// Updates the same event in place (see plan Context: WITHOUT_REGISTRATION
+// caps a program at one stage, so "second visit" isn't representable as a
+// second stage -- one antibiotic course is one record, completed over time).
+// Starts from the existing dataValues and upserts the follow-up fields by
+// dataElement (replace-by-id, not append -- matters when re-recording an
+// already-recorded follow-up). Resends `existing`'s orgUnit/occurredAt/status
+// verbatim: occurredAt is the *prescribing* date and must never be
+// overwritten with today's date, which is what deEscalationDate is for.
+// Confirmed live that a Tracker event update MERGES dataValues by
+// dataElement rather than replacing the array wholesale (see module
+// comment) -- resending the full known set here is defensive by design, not
+// because merge was found unsafe.
+export function buildFollowUpEventPayload(
+  provisioned: FollowUpCapableProgram,
+  existing: ExistingEventForUpdate,
+  values: FollowUpFormValues,
+) {
+  const dataValues = existing.dataValues.filter(
+    (dv) =>
+      dv.dataElement !== provisioned.dataElementIds.deEscalationOutcome &&
+      dv.dataElement !== provisioned.dataElementIds.deEscalationDate &&
+      dv.dataElement !== provisioned.dataElementIds.deEscalationNote,
+  )
+  dataValues.push({ dataElement: provisioned.dataElementIds.deEscalationOutcome, value: values.deEscalationOutcome })
+  dataValues.push({ dataElement: provisioned.dataElementIds.deEscalationDate, value: values.deEscalationDate })
+  if (values.deEscalationNote) {
+    dataValues.push({ dataElement: provisioned.dataElementIds.deEscalationNote, value: values.deEscalationNote })
+  }
+  return {
+    events: [
+      {
+        event: existing.event,
+        program: provisioned.programId,
+        programStage: provisioned.programStageId,
+        orgUnit: existing.orgUnit,
+        occurredAt: existing.occurredAt,
+        status: existing.status,
+        dataValues,
+      },
+    ],
+  }
+}
+
+// Confirmed live shape of a POST /api/tracker response. `stats` is present on
+// both create and update responses (importStrategy=UPDATE spike confirmed
+// `stats.updated`).
 export interface TrackerImportResponse {
   status: 'OK' | 'ERROR' | 'WARNING'
+  stats?: { created?: number; updated?: number; deleted?: number; ignored?: number }
   validationReport?: { errorReports?: { message: string }[] }
   bundleReport?: { typeReportMap?: { EVENT?: { objectReports?: { uid: string }[] } } }
 }
@@ -133,6 +242,14 @@ export function extractCreatedEventId(response: TrackerImportResponse): string |
 export function extractTrackerErrorMessage(response: TrackerImportResponse): string | null {
   const messages = response.validationReport?.errorReports?.map((r) => r.message) ?? []
   return messages.length > 0 ? messages.join(' ') : null
+}
+
+// A response with status 'OK' but stats.updated: 0 is a silent no-op (e.g. a
+// stale/unrecognized event UID under importStrategy=UPDATE) and must surface
+// as an error to the caller, never as a success toast.
+export function extractUpdatedEventStats(response: TrackerImportResponse): { updated: number } | null {
+  const updated = response.stats?.updated
+  return typeof updated === 'number' ? { updated } : null
 }
 
 // Confirmed live shape of a single item in GET /api/tracker/events's
@@ -165,12 +282,18 @@ export function mapTrackerEventToEntry(
     empiricOrCultureGuided: undefined,
     awareCategory: undefined,
     justificationNote: undefined,
+    deEscalationOutcome: undefined,
+    deEscalationDate: undefined,
+    deEscalationNote: undefined,
   }
   for (const [role, id] of idToRole) values[role] = byRole.get(id)
 
   const awareCategory = values.awareCategory
   const isKnownCategory = (v: string | undefined): v is AwareCategory =>
     v === 'Access' || v === 'Watch' || v === 'Reserve' || v === 'Not classified'
+
+  const isKnownOutcome = (v: string | undefined): v is DeEscalationOutcome =>
+    (DE_ESCALATION_OUTCOMES as string[]).includes(v ?? '')
 
   return {
     eventId: raw.event,
@@ -186,5 +309,8 @@ export function mapTrackerEventToEntry(
         : null,
     justificationNote: values.justificationNote ?? null,
     enteredBy: raw.createdBy?.username ?? null,
+    deEscalationOutcome: isKnownOutcome(values.deEscalationOutcome) ? values.deEscalationOutcome : null,
+    deEscalationDate: values.deEscalationDate ?? null,
+    deEscalationNote: values.deEscalationNote ?? null,
   }
 }

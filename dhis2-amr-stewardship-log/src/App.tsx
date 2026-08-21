@@ -3,11 +3,13 @@ import { useState } from 'react'
 import { ComplianceSummary } from './components/ComplianceSummary'
 import { EmptyState } from './components/EmptyState'
 import { EntryList } from './components/EntryList'
+import { FollowUpForm } from './components/FollowUpForm'
 import { PrescribingForm } from './components/PrescribingForm'
 import { SetupPanel } from './components/SetupPanel'
 import { useCurrentUserAuthorities } from './hooks/useCurrentUserAuthorities'
 import { useRecentEntries } from './hooks/useRecentEntries'
 import { useStewardshipSettings } from './hooks/useStewardshipSettings'
+import { supportsFollowUp } from './types/stewardship'
 
 type ViewTab = 'log' | 'summary' | 'configure'
 
@@ -16,6 +18,9 @@ export default function App() {
   const { canManage } = useCurrentUserAuthorities()
   const { entries, refresh: refreshEntries } = useRecentEntries(settings)
   const [tab, setTab] = useState<ViewTab>('log')
+  const [selectedEventId, setSelectedEventId] = useState<string | null>(null)
+
+  const selectedEntry = selectedEventId ? (entries.find((e) => e.eventId === selectedEventId) ?? null) : null
 
   const isConfigured = settings.provisioned !== null && settings.orgUnits.length > 0
 
@@ -54,8 +59,24 @@ export default function App() {
 
               {tab === 'summary' && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
-                  <ComplianceSummary entries={entries} />
-                  <EntryList entries={entries} />
+                  <ComplianceSummary entries={entries} provisioned={settings.provisioned} />
+                  {selectedEntry && settings.provisioned && supportsFollowUp(settings.provisioned) && (
+                    <FollowUpForm
+                      entry={selectedEntry}
+                      provisioned={settings.provisioned}
+                      onSubmitted={() => {
+                        setSelectedEventId(null)
+                        refreshEntries()
+                      }}
+                      onCancel={() => setSelectedEventId(null)}
+                    />
+                  )}
+                  <EntryList
+                    entries={entries}
+                    provisioned={settings.provisioned}
+                    selectedEventId={selectedEventId}
+                    onSelectEntry={setSelectedEventId}
+                  />
                 </div>
               )}
 

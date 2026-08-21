@@ -3,7 +3,8 @@
 // "stay pure and trivially unit-testable" discipline as
 // dhis2-data-quality-auditor/src/lib/qualityChecks.ts.
 
-import type { AwareCategory, FormularyEntry, PrescribingEntry } from '../types/stewardship'
+import type { AwareCategory, DeEscalationOutcome, FormularyEntry, PrescribingEntry } from '../types/stewardship'
+import { DE_ESCALATION_OUTCOMES } from '../types/stewardship'
 
 // WHO AWaRe: Watch and Reserve antibiotics carry a higher resistance-driving
 // or last-line risk, so a prescriber choosing one is expected to record why
@@ -56,4 +57,94 @@ export function computeComplianceSummary(entries: PrescribingEntry[]): Complianc
     .slice(0, 5)
 
   return { totalEntries: entries.length, countByCategory, missingJustificationCount, topAntibiotics }
+}
+
+// Cultures typically take 48-72h to result, so a same-morning empiric entry
+// isn't yet a compliance failure -- it's just too soon to expect a
+// follow-up. graceHours is a named, testable parameter (not a hidden
+// constant) so the grace window can be tuned or tested at its boundary.
+export const DEFAULT_FOLLOW_UP_GRACE_HOURS = 48
+
+function hoursSince(occurredAt: string, now: Date): number {
+  return (now.getTime() - new Date(occurredAt).getTime()) / (1000 * 60 * 60)
+}
+
+// True only once an empiric entry has gone unreviewed past the grace
+// window. Never true for a culture-guided entry (nothing to de-escalate)
+// or for one that already has a recorded outcome.
+export function isAwaitingFollowUp(entry: PrescribingEntry, now: Date, graceHours = DEFAULT_FOLLOW_UP_GRACE_HOURS): boolean {
+  if (entry.empiricOrCultureGuided !== 'Empiric') return false
+  if (entry.deEscalationOutcome !== null) return false
+  return hoursSince(entry.occurredAt, now) >= graceHours
+}
+
+export function selectEntriesNeedingFollowUp(
+  entries: PrescribingEntry[],
+  now: Date,
+  graceHours = DEFAULT_FOLLOW_UP_GRACE_HOURS,
+): PrescribingEntry[] {
+  return entries.filter((entry) => isAwaitingFollowUp(entry, now, graceHours))
+}
+
+export interface FollowUpSummary {
+  empiricCount: number
+  followUpsRecordedCount: number
+  awaitingFollowUpCount: number
+  withinGraceCount: number
+  // null (not 0) at a zero denominator -- rendering "0%" for a brand-new
+  // install with no empiric entries yet reads as total failure; null is
+  // meant to render as "--" in the UI instead.
+  followUpRate: number | null
+  // Denominator is followUpsRecordedCount, not empiricCount: dividing by
+  // every empiric entry would blend "nobody reviewed it" (a follow-up
+  // problem) with "reviewed and correctly not narrowed" (a clinical
+  // judgment) into one uninterpretable number.
+  deEscalationRate: number | null
+  countByOutcome: Record<DeEscalationOutcome, number>
+}
+
+export function computeFollowUpSummary(
+  entries: PrescribingEntry[],
+  now: Date,
+  graceHours = DEFAULT_FOLLOW_UP_GRACE_HOURS,
+): FollowUpSummary {
+  const empiricEntries = entries.filter((entry) => entry.empiricOrCultureGuided === 'Empiric')
+  const countByOutcome = Object.fromEntries(DE_ESCALATION_OUTCOMES.map((outcome) => [outcome, 0])) as Record<
+    DeEscalationOutcome,
+    number
+  >
+
+  let followUpsRecordedCount = 0
+  let awaitingFollowUpCount = 0
+  let withinGraceCount = 0
+  // 'Discontinued' counts as de-escalation alongside 'Narrowed' -- stopping
+  // therapy on a negative culture is the strongest possible narrowing.
+  // countByOutcome is exposed so this definition can be recomputed
+  // differently downstream without touching this function.
+  let deEscalatedCount = 0
+
+  for (const entry of empiricEntries) {
+    if (entry.deEscalationOutcome !== null) {
+      followUpsRecordedCount++
+      countByOutcome[entry.deEscalationOutcome]++
+      if (entry.deEscalationOutcome === 'Narrowed' || entry.deEscalationOutcome === 'Discontinued') {
+        deEscalatedCount++
+      }
+    } else if (isAwaitingFollowUp(entry, now, graceHours)) {
+      awaitingFollowUpCount++
+    } else {
+      withinGraceCount++
+    }
+  }
+
+  const empiricCount = empiricEntries.length
+  return {
+    empiricCount,
+    followUpsRecordedCount,
+    awaitingFollowUpCount,
+    withinGraceCount,
+    followUpRate: empiricCount > 0 ? followUpsRecordedCount / empiricCount : null,
+    deEscalationRate: followUpsRecordedCount > 0 ? deEscalatedCount / followUpsRecordedCount : null,
+    countByOutcome,
+  }
 }

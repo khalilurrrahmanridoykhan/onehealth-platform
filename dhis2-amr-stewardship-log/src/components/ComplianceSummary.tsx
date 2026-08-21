@@ -1,9 +1,10 @@
 import { useMemo } from 'react'
-import { computeComplianceSummary } from '../lib/awareRules'
-import type { PrescribingEntry } from '../types/stewardship'
+import { computeComplianceSummary, computeFollowUpSummary } from '../lib/awareRules'
+import { supportsFollowUp, type PrescribingEntry, type ProvisionedProgram } from '../types/stewardship'
 
 interface Props {
   entries: PrescribingEntry[]
+  provisioned: ProvisionedProgram | null
 }
 
 // Client-computed, not a generated DHIS2 Dashboard/Visualization -- event
@@ -11,8 +12,11 @@ interface Props {
 // on a fresh install, so this recomputes directly from the same queried
 // events EntryList renders, the same technique qualityChecks.ts already
 // uses for its own coverage/quality numbers.
-export function ComplianceSummary({ entries }: Props) {
+export function ComplianceSummary({ entries, provisioned }: Props) {
   const summary = useMemo(() => computeComplianceSummary(entries), [entries])
+  const now = useMemo(() => new Date(), [entries])
+  const followUp = useMemo(() => computeFollowUpSummary(entries, now), [entries, now])
+  const showFollowUp = provisioned !== null && supportsFollowUp(provisioned)
 
   if (summary.totalEntries === 0) {
     return <div style={{ fontSize: 13, color: '#6e7a89' }}>No entries logged yet for the configured org units.</div>
@@ -37,6 +41,45 @@ export function ComplianceSummary({ entries }: Props) {
           warn={summary.missingJustificationCount > 0}
         />
       </div>
+
+      {showFollowUp && (
+        <div>
+          <div style={{ fontWeight: 500, marginBottom: 8 }}>De-escalation follow-up</div>
+          {followUp.empiricCount === 0 ? (
+            <div style={{ fontSize: 13, color: '#6e7a89' }}>No empiric entries yet -- follow-up tracking begins once one is logged.</div>
+          ) : (
+            <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+              <SummaryCard label="Empiric entries" value={String(followUp.empiricCount)} />
+              <SummaryCard
+                label="Follow-up rate"
+                value={followUp.followUpRate === null ? '--' : `${Math.round(followUp.followUpRate * 100)}%`}
+              />
+              <SummaryCard
+                label="De-escalation rate"
+                value={followUp.deEscalationRate === null ? '--' : `${Math.round(followUp.deEscalationRate * 100)}%`}
+              />
+              <SummaryCard
+                label="Awaiting follow-up"
+                value={String(followUp.awaitingFollowUpCount)}
+                warn={followUp.awaitingFollowUpCount > 0}
+              />
+            </div>
+          )}
+
+          {followUp.followUpsRecordedCount > 0 && (
+            <table style={{ borderCollapse: 'collapse', fontSize: 13, marginTop: 12 }}>
+              <tbody>
+                {Object.entries(followUp.countByOutcome).map(([outcome, count]) => (
+                  <tr key={outcome}>
+                    <td style={{ padding: '4px 16px 4px 0' }}>{outcome}</td>
+                    <td style={{ padding: '4px 0', color: '#6e7a89' }}>{count}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
+      )}
 
       {summary.topAntibiotics.length > 0 && (
         <div>

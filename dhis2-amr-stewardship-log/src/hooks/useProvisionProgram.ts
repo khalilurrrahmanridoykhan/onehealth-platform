@@ -22,15 +22,25 @@ interface CreateResponse {
   response: { uid: string }
 }
 
-// findOrCreateProgram() mirrors Data Share Hub's findOrCreateRole()
-// self-healing pattern: look up by name first, adopt it if every expected
-// data element is present, and re-provision from scratch if anything is
-// missing -- so an install from before a future data-element change heals
-// itself on next use instead of needing a manual fix.
+interface ProgramStageScan {
+  programId: string
+  programStageId: string
+  foundIds: Partial<Record<DataElementRole, string>>
+  missingRoles: DataElementRole[]
+}
+
+// findOrCreateProgram() adopts-and-extends rather than re-provisioning from
+// scratch: DHIS2 rejects a data element name that already exists, so a
+// partially-provisioned install (e.g. one that predates a later feature's
+// new fields) must never be run back through createNew(). scanExisting()
+// reports exactly which roles are missing; attachMissingDataElements()
+// creates only those and appends them to the existing ProgramStage. A fresh
+// install (no program found at all) still goes through createNew(), which
+// provisions all of DATA_ELEMENT_DEFS in one pass.
 export function useProvisionProgram() {
   const engine = useDataEngine()
 
-  const findExisting = useCallback(async (): Promise<ProvisionedProgram | null> => {
+  const scanExisting = useCallback(async (): Promise<ProgramStageScan | null> => {
     const response = (await engine.query({
       programs: {
         resource: 'programs',
@@ -45,18 +55,15 @@ export function useProvisionProgram() {
     const stage = program?.programStages[0]
     if (!program || !stage) return null
 
-    const dataElementIds: Partial<Record<DataElementRole, string>> = {}
+    const foundIds: Partial<Record<DataElementRole, string>> = {}
+    const missingRoles: DataElementRole[] = []
     for (const def of DATA_ELEMENT_DEFS) {
       const match = stage.programStageDataElements.find((psde) => psde.dataElement.name === def.name)
-      if (!match) return null
-      dataElementIds[def.role] = match.dataElement.id
+      if (match) foundIds[def.role] = match.dataElement.id
+      else missingRoles.push(def.role)
     }
 
-    return {
-      programId: program.id,
-      programStageId: stage.id,
-      dataElementIds: dataElementIds as Record<DataElementRole, string>,
-    }
+    return { programId: program.id, programStageId: stage.id, foundIds, missingRoles }
   }, [engine])
 
   const createNew = useCallback(
@@ -98,13 +105,61 @@ export function useProvisionProgram() {
     [engine],
   )
 
+  // Creates only the missing data elements, then read-modify-writes the
+  // ProgramStage: DHIS2's metadata PUT replaces the whole object, so sending
+  // a bare `{ programStageDataElements: [...new] }` would wipe the original
+  // roles from the stage rather than add to them.
+  const attachMissingDataElements = useCallback(
+    async (scan: ProgramStageScan): Promise<Record<DataElementRole, string>> => {
+      const newIds: Partial<Record<DataElementRole, string>> = {}
+      for (const role of scan.missingRoles) {
+        const def = DATA_ELEMENT_DEFS.find((d) => d.role === role)
+        if (!def) continue
+        const response = (await engine.mutate({
+          resource: 'dataElements',
+          type: 'create',
+          data: buildDataElementPayload(def),
+        })) as unknown as CreateResponse
+        newIds[role] = response.response.uid
+      }
+
+      const stageResponse = (await engine.query({
+        stage: { resource: 'programStages', id: scan.programStageId },
+      })) as unknown as { stage: Record<string, unknown> & { programStageDataElements: unknown[] } }
+
+      const appended = scan.missingRoles.map((role) => ({ dataElement: { id: newIds[role] } }))
+      await engine.mutate({
+        resource: 'programStages',
+        id: scan.programStageId,
+        type: 'update',
+        data: {
+          ...stageResponse.stage,
+          programStageDataElements: [...stageResponse.stage.programStageDataElements, ...appended],
+        },
+      })
+
+      return { ...scan.foundIds, ...newIds } as Record<DataElementRole, string>
+    },
+    [engine],
+  )
+
   const findOrCreateProgram = useCallback(
     async (orgUnitIds: string[]): Promise<ProvisionedProgram> => {
-      const existing = await findExisting()
-      if (existing) return existing
-      return createNew(orgUnitIds)
+      const scan = await scanExisting()
+      if (!scan) return createNew(orgUnitIds)
+
+      if (scan.missingRoles.length === 0) {
+        return {
+          programId: scan.programId,
+          programStageId: scan.programStageId,
+          dataElementIds: scan.foundIds as Record<DataElementRole, string>,
+        }
+      }
+
+      const dataElementIds = await attachMissingDataElements(scan)
+      return { programId: scan.programId, programStageId: scan.programStageId, dataElementIds }
     },
-    [findExisting, createNew],
+    [scanExisting, createNew, attachMissingDataElements],
   )
 
   // A program's own `organisationUnits` assignment wasn't isolated in the
