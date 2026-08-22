@@ -82,12 +82,3 @@ Same single-blob-per-key, read-modify-write pattern as every sibling (`POST` on 
 ## Try it live -- public demo
 
 Installed on `play.dhis2.org`'s currently-published demo instance the same way as its siblings. Play instances reset periodically -- re-run `scripts/install-to-play-demo.sh` before sharing a link rather than assuming a previously-shared one is still live.
-
-## Relationship to sibling apps
-
-| App | Reads/writes | What it's for |
-|---|---|---|
-| [OneHealth Data Trust](https://github.com/khalilurrrahmanridoykhan/onehealth-platform/tree/main/dhis2-app) | Aggregate `dataValueSets` | Evidence/quality reporting for 8 fixed disease programmes on one instance |
-| [Data Quality Auditor](https://github.com/khalilurrrahmanridoykhan/dhis2-data-quality-auditor) | Aggregate `dataValueSets` + `dataStore` | Admin-configurable RDQA-style quality checks on any dataset, any instance |
-| [Data Share Hub](https://github.com/khalilurrrahmanridoykhan/dhis2-data-share-hub) | Aggregate data, users, sharing, dashboards | Guided external data sharing -- CSV export or a scoped API account |
-| **AMR Stewardship Log** (this repo) | **Tracker events, programs** | **Point-of-care antibiotic prescribing checklist, AWaRe-aligned** |
