@@ -1,14 +1,18 @@
 import {
   computeApprovalSummary,
   computeComplianceSummary,
+  computeDurationSummary,
   computeFollowUpSummary,
   DEFAULT_APPROVAL_REVIEW_SLA_HOURS,
+  DEFAULT_DURATION_OVERRUN_TOLERANCE_DAYS,
   DEFAULT_FOLLOW_UP_GRACE_HOURS,
   isAwaitingFollowUp,
+  isDurationOverrun,
   isOverduePendingApproval,
   isPendingApproval,
   requiresJustification,
   resolveAwareCategory,
+  resolveTypicalDurationDays,
   selectEntriesNeedingFollowUp,
   selectEntriesPendingApproval,
 } from './awareRules'
@@ -27,9 +31,9 @@ describe('requiresJustification', () => {
 })
 
 const formulary: FormularyEntry[] = [
-  { id: '1', antibioticName: 'Amoxicillin', awareCategory: 'Access', note: null },
-  { id: '2', antibioticName: 'Ceftriaxone', awareCategory: 'Watch', note: null },
-  { id: '3', antibioticName: 'Vancomycin', awareCategory: 'Reserve', note: null },
+  { id: '1', antibioticName: 'Amoxicillin', awareCategory: 'Access', note: null, typicalDurationDays: 7 },
+  { id: '2', antibioticName: 'Ceftriaxone', awareCategory: 'Watch', note: null, typicalDurationDays: null },
+  { id: '3', antibioticName: 'Vancomycin', awareCategory: 'Reserve', note: null, typicalDurationDays: null },
 ]
 
 describe('resolveAwareCategory', () => {
@@ -40,6 +44,20 @@ describe('resolveAwareCategory', () => {
 
   test('falls back to Not classified for an antibiotic not in the formulary -- the free-text "Other" path', () => {
     expect(resolveAwareCategory(formulary, 'Some brand-new drug')).toBe('Not classified')
+  })
+})
+
+describe('resolveTypicalDurationDays', () => {
+  test('returns the set value, case-insensitively and trimmed matched', () => {
+    expect(resolveTypicalDurationDays(formulary, '  amoxicillin ')).toBe(7)
+  })
+
+  test('returns null when the formulary entry exists but has no typicalDurationDays set', () => {
+    expect(resolveTypicalDurationDays(formulary, 'Ceftriaxone')).toBeNull()
+  })
+
+  test('returns null for an antibiotic not in the formulary at all', () => {
+    expect(resolveTypicalDurationDays(formulary, 'Some brand-new drug')).toBeNull()
   })
 })
 
@@ -62,6 +80,8 @@ function entry(overrides: Partial<PrescribingEntry>): PrescribingEntry {
     approvalReviewedBy: null,
     approvalDate: null,
     approvalNote: null,
+    actualStopDate: null,
+    actualStopNote: null,
     ...overrides,
   }
 }
@@ -328,20 +348,92 @@ describe('computeApprovalSummary', () => {
   })
 })
 
-describe('follow-up and approval features are independent', () => {
-  test('an entry with both a recorded follow-up outcome and a pending approval produces correct, non-interfering numbers in each summary', () => {
+describe('isDurationOverrun', () => {
+  test('false for a still-open course, no matter how old', () => {
+    expect(isDurationOverrun(entry({ antibioticName: 'Amoxicillin', actualStopDate: null }), formulary)).toBe(false)
+  })
+
+  test('false when no guideline is set for the antibiotic', () => {
+    const noGuideline = entry({ antibioticName: 'Ceftriaxone', occurredAt: '2026-08-01T00:00:00.000Z', actualStopDate: '2026-08-20' })
+    expect(isDurationOverrun(noGuideline, formulary)).toBe(false)
+  })
+
+  test('boundary: exactly typical + tolerance is not overrun, one day beyond is', () => {
+    expect(DEFAULT_DURATION_OVERRUN_TOLERANCE_DAYS).toBe(1)
+    // Amoxicillin typicalDurationDays = 7, tolerance = 1 -> 8 days is fine, 9 is overrun.
+    const atBoundary = entry({ antibioticName: 'Amoxicillin', occurredAt: '2026-08-01T00:00:00.000Z', actualStopDate: '2026-08-09' })
+    const overBoundary = entry({ antibioticName: 'Amoxicillin', occurredAt: '2026-08-01T00:00:00.000Z', actualStopDate: '2026-08-10' })
+    expect(isDurationOverrun(atBoundary, formulary)).toBe(false)
+    expect(isDurationOverrun(overBoundary, formulary)).toBe(true)
+  })
+})
+
+describe('computeDurationSummary', () => {
+  test('overrunRate is null (not 0) at a zero completedCount denominator', () => {
+    const summary = computeDurationSummary([], formulary, NOW)
+    expect(summary.withGuidelineCount).toBe(0)
+    expect(summary.overrunRate).toBeNull()
+  })
+
+  test('entries without a guideline are excluded from withGuidelineCount but still counted in totalEntries', () => {
+    const summary = computeDurationSummary([entry({ antibioticName: 'Ceftriaxone' })], formulary, NOW)
+    expect(summary.totalEntries).toBe(1)
+    expect(summary.withGuidelineCount).toBe(0)
+    expect(summary.withoutGuidelineCount).toBe(1)
+  })
+
+  test('arithmetic across with/without guideline, completed/still-open, overrun/not', () => {
+    const summary = computeDurationSummary(
+      [
+        // Completed, on target (7 days, within tolerance).
+        entry({ eventId: 'a', antibioticName: 'Amoxicillin', occurredAt: '2026-08-01T00:00:00.000Z', actualStopDate: '2026-08-08' }),
+        // Completed, overrun (well past 7+1 days).
+        entry({ eventId: 'b', antibioticName: 'Amoxicillin', occurredAt: '2026-08-01T00:00:00.000Z', actualStopDate: '2026-08-20' }),
+        // Still open.
+        entry({ eventId: 'c', antibioticName: 'Amoxicillin', occurredAt: '2026-08-12T00:00:00.000Z', actualStopDate: null }),
+        // No guideline set.
+        entry({ eventId: 'd', antibioticName: 'Ceftriaxone', occurredAt: '2026-08-01T00:00:00.000Z', actualStopDate: null }),
+      ],
+      formulary,
+      NOW,
+    )
+    expect(summary.totalEntries).toBe(4)
+    expect(summary.withGuidelineCount).toBe(3)
+    expect(summary.withoutGuidelineCount).toBe(1)
+    expect(summary.completedCount).toBe(2)
+    expect(summary.stillOpenCount).toBe(1)
+    expect(summary.overrunCount).toBe(1)
+    expect(summary.overrunRate).toBeCloseTo(0.5)
+  })
+
+  test('stillOpenPastGuidelineCount flags a still-open course whose elapsed time already exceeds typical+tolerance', () => {
+    const summary = computeDurationSummary(
+      [entry({ antibioticName: 'Amoxicillin', occurredAt: '2026-08-01T00:00:00.000Z', actualStopDate: null })],
+      formulary,
+      NOW,
+    )
+    // NOW is 2026-08-13, occurredAt 2026-08-01 -> 12 days elapsed, well past 7+1.
+    expect(summary.stillOpenPastGuidelineCount).toBe(1)
+  })
+})
+
+describe('follow-up, approval, and duration features are independent', () => {
+  test('an entry carrying all three features\' fields at once produces correct, non-interfering numbers in each summary', () => {
     const entries = [
       entry({
+        antibioticName: 'Amoxicillin',
         awareCategory: 'Reserve',
         empiricOrCultureGuided: 'Empiric',
         deEscalationOutcome: 'Narrowed',
         deEscalationDate: '2026-08-12',
         approvalStatus: null,
+        actualStopDate: '2026-08-09',
         occurredAt: '2026-08-01T00:00:00.000Z',
       }),
     ]
     const followUp = computeFollowUpSummary(entries, NOW)
     const approval = computeApprovalSummary(entries, NOW)
+    const duration = computeDurationSummary(entries, formulary, NOW)
 
     expect(followUp.empiricCount).toBe(1)
     expect(followUp.followUpsRecordedCount).toBe(1)
@@ -351,5 +443,10 @@ describe('follow-up and approval features are independent', () => {
     expect(approval.pendingCount).toBe(1)
     expect(approval.overduePendingCount).toBe(1)
     expect(approval.reviewRate).toBeCloseTo(0)
+
+    expect(duration.withGuidelineCount).toBe(1)
+    expect(duration.completedCount).toBe(1)
+    expect(duration.overrunCount).toBe(0)
+    expect(duration.overrunRate).toBeCloseTo(0)
   })
 })

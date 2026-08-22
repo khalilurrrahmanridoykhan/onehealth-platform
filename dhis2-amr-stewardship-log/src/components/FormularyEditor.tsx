@@ -19,7 +19,10 @@ export function FormularyEditor({ formulary, onChange }: Props) {
   }
 
   function addEntry() {
-    onChange([...formulary, { id: crypto.randomUUID(), antibioticName: '', awareCategory: 'Not classified', note: null }])
+    onChange([
+      ...formulary,
+      { id: crypto.randomUUID(), antibioticName: '', awareCategory: 'Not classified', note: null, typicalDurationDays: null },
+    ])
   }
 
   return (
@@ -50,6 +53,19 @@ export function FormularyEditor({ formulary, onChange }: Props) {
               options={AWARE_CATEGORIES.map((c) => ({ label: c, value: c }))}
               value={entry.awareCategory}
               onChange={(value) => updateEntry(entry.id, { awareCategory: (value as FormularyEntry['awareCategory']) })}
+            />
+          </div>
+          <div style={{ flex: 1 }}>
+            <InputField
+              label="Typical duration (days)"
+              type="number"
+              dense
+              value={entry.typicalDurationDays != null ? String(entry.typicalDurationDays) : ''}
+              onChange={({ value }) => {
+                const parsed = value ? Number(value) : NaN
+                updateEntry(entry.id, { typicalDurationDays: Number.isFinite(parsed) ? parsed : null })
+              }}
+              helpText="Optional."
             />
           </div>
           <div style={{ flex: 2 }}>

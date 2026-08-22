@@ -6,6 +6,22 @@
 import type { ApprovalStatus, AwareCategory, DeEscalationOutcome, FormularyEntry, PrescribingEntry } from '../types/stewardship'
 import { APPROVAL_STATUSES, DE_ESCALATION_OUTCOMES } from '../types/stewardship'
 
+// occurredAt carries a full timestamp (the moment of prescribing) while
+// actualStopDate is DATE-only ("YYYY-MM-DD"); comparing the two as whole
+// days can be off by up to a day purely from that truncation even when the
+// *true* elapsed course exactly matches the formulary's guideline. This is a
+// measurement-precision buffer, not a clinical or operational SLA window --
+// deliberately its own constant, not DEFAULT_FOLLOW_UP_GRACE_HOURS (culture
+// turnaround) or DEFAULT_APPROVAL_REVIEW_SLA_HOURS (review staffing), both
+// of which model a completely different, hour-scale concern.
+export const DEFAULT_DURATION_OVERRUN_TOLERANCE_DAYS = 1
+
+function daysBetween(startIsoOrDate: string, endIsoOrDate: string): number {
+  const start = new Date(startIsoOrDate.slice(0, 10)).getTime()
+  const end = new Date(endIsoOrDate.slice(0, 10)).getTime()
+  return Math.round((end - start) / (1000 * 60 * 60 * 24))
+}
+
 // WHO AWaRe: Watch and Reserve antibiotics carry a higher resistance-driving
 // or last-line risk, so a prescriber choosing one is expected to record why
 // (e.g. a positive culture, a documented allergy to the Access-category
@@ -17,13 +33,26 @@ export function requiresJustification(category: AwareCategory): boolean {
   return category === 'Watch' || category === 'Reserve'
 }
 
-// Case-insensitive, trimmed match against the admin's own formulary. Falls
-// back to 'Not classified' for a free-text "Other" entry not in the
+// Shared case-insensitive, trimmed lookup -- how this app matches an
+// antibiotic name against the formulary, used by both the AWaRe category
+// resolver and the typical-duration resolver below.
+function findFormularyEntry(formulary: FormularyEntry[], antibioticName: string): FormularyEntry | undefined {
+  const needle = antibioticName.trim().toLowerCase()
+  return formulary.find((entry) => entry.antibioticName.trim().toLowerCase() === needle)
+}
+
+// Falls back to 'Not classified' for a free-text "Other" entry not in the
 // formulary, rather than guessing.
 export function resolveAwareCategory(formulary: FormularyEntry[], antibioticName: string): AwareCategory {
-  const needle = antibioticName.trim().toLowerCase()
-  const match = formulary.find((entry) => entry.antibioticName.trim().toLowerCase() === needle)
-  return match?.awareCategory ?? 'Not classified'
+  return findFormularyEntry(formulary, antibioticName)?.awareCategory ?? 'Not classified'
+}
+
+// A formulary row saved before typicalDurationDays existed will have this
+// key genuinely `undefined` at runtime despite the type saying
+// `number | null` -- read defensively with `??`, same discipline
+// FormularyEditor.tsx already applies to `note`.
+export function resolveTypicalDurationDays(formulary: FormularyEntry[], antibioticName: string): number | null {
+  return findFormularyEntry(formulary, antibioticName)?.typicalDurationDays ?? null
 }
 
 export interface ComplianceSummary {
@@ -228,5 +257,78 @@ export function computeApprovalSummary(
     rejectedCount,
     reviewRate: reserveCount > 0 ? decidedCount / reserveCount : null,
     countByStatus,
+  }
+}
+
+// False for a still-open course (nothing "actual" to compare yet) or one
+// whose antibiotic has no typicalDurationDays set (nothing to compare
+// against). True only once actual duration exceeds typical + tolerance.
+export function isDurationOverrun(
+  entry: PrescribingEntry,
+  formulary: FormularyEntry[],
+  toleranceDays = DEFAULT_DURATION_OVERRUN_TOLERANCE_DAYS,
+): boolean {
+  if (entry.actualStopDate === null) return false
+  const typical = resolveTypicalDurationDays(formulary, entry.antibioticName)
+  if (typical === null) return false
+  return daysBetween(entry.occurredAt, entry.actualStopDate) > typical + toleranceDays
+}
+
+export interface DurationSummary {
+  totalEntries: number
+  withGuidelineCount: number
+  withoutGuidelineCount: number
+  completedCount: number
+  stillOpenCount: number
+  overrunCount: number
+  // overrunCount / completedCount; null (not 0) at a zero denominator, same
+  // "render as --" convention as followUpRate/deEscalationRate/reviewRate.
+  overrunRate: number | null
+  // Still-open entries whose elapsed time since occurredAt already exceeds
+  // typical+tolerance -- a likely-in-progress overrun, kept distinct from
+  // overrunCount (which only counts *confirmed* overruns on a course that's
+  // actually been closed out).
+  stillOpenPastGuidelineCount: number
+}
+
+// Filters by "does a guideline exist," not by an AWaRe/empiric field on the
+// entry -- genuinely different from computeFollowUpSummary's empiric-only
+// and computeApprovalSummary's Reserve-only filtering, since duration
+// tracking applies to any logged entry with a formulary-defined guideline.
+export function computeDurationSummary(
+  entries: PrescribingEntry[],
+  formulary: FormularyEntry[],
+  now: Date,
+  toleranceDays = DEFAULT_DURATION_OVERRUN_TOLERANCE_DAYS,
+): DurationSummary {
+  let withGuidelineCount = 0
+  let completedCount = 0
+  let stillOpenCount = 0
+  let overrunCount = 0
+  let stillOpenPastGuidelineCount = 0
+
+  for (const entry of entries) {
+    const typical = resolveTypicalDurationDays(formulary, entry.antibioticName)
+    if (typical === null) continue
+    withGuidelineCount++
+    if (entry.actualStopDate !== null) {
+      completedCount++
+      if (isDurationOverrun(entry, formulary, toleranceDays)) overrunCount++
+    } else {
+      stillOpenCount++
+      const elapsedDays = daysBetween(entry.occurredAt, now.toISOString())
+      if (elapsedDays > typical + toleranceDays) stillOpenPastGuidelineCount++
+    }
+  }
+
+  return {
+    totalEntries: entries.length,
+    withGuidelineCount,
+    withoutGuidelineCount: entries.length - withGuidelineCount,
+    completedCount,
+    stillOpenCount,
+    overrunCount,
+    overrunRate: completedCount > 0 ? overrunCount / completedCount : null,
+    stillOpenPastGuidelineCount,
   }
 }

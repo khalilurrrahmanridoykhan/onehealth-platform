@@ -1,10 +1,18 @@
 import { useMemo } from 'react'
-import { computeApprovalSummary, computeComplianceSummary, computeFollowUpSummary } from '../lib/awareRules'
-import { supportsApproval, supportsFollowUp, type PrescribingEntry, type ProvisionedProgram } from '../types/stewardship'
+import { computeApprovalSummary, computeComplianceSummary, computeDurationSummary, computeFollowUpSummary } from '../lib/awareRules'
+import {
+  supportsApproval,
+  supportsDuration,
+  supportsFollowUp,
+  type FormularyEntry,
+  type PrescribingEntry,
+  type ProvisionedProgram,
+} from '../types/stewardship'
 
 interface Props {
   entries: PrescribingEntry[]
   provisioned: ProvisionedProgram | null
+  formulary: FormularyEntry[]
 }
 
 // Client-computed, not a generated DHIS2 Dashboard/Visualization -- event
@@ -12,13 +20,15 @@ interface Props {
 // on a fresh install, so this recomputes directly from the same queried
 // events EntryList renders, the same technique qualityChecks.ts already
 // uses for its own coverage/quality numbers.
-export function ComplianceSummary({ entries, provisioned }: Props) {
+export function ComplianceSummary({ entries, provisioned, formulary }: Props) {
   const summary = useMemo(() => computeComplianceSummary(entries), [entries])
   const now = useMemo(() => new Date(), [entries])
   const followUp = useMemo(() => computeFollowUpSummary(entries, now), [entries, now])
   const approval = useMemo(() => computeApprovalSummary(entries, now), [entries, now])
+  const duration = useMemo(() => computeDurationSummary(entries, formulary, now), [entries, formulary, now])
   const showFollowUp = provisioned !== null && supportsFollowUp(provisioned)
   const showApproval = provisioned !== null && supportsApproval(provisioned)
+  const showDuration = provisioned !== null && supportsDuration(provisioned)
 
   if (summary.totalEntries === 0) {
     return <div style={{ fontSize: 13, color: '#6e7a89' }}>No entries logged yet for the configured org units.</div>
@@ -102,6 +112,31 @@ export function ComplianceSummary({ entries, provisioned }: Props) {
                 label="Overdue pending"
                 value={String(approval.overduePendingCount)}
                 warn={approval.overduePendingCount > 0}
+              />
+            </div>
+          )}
+        </div>
+      )}
+
+      {showDuration && (
+        <div>
+          <div style={{ fontWeight: 500, marginBottom: 8 }}>Therapy duration</div>
+          {duration.withGuidelineCount === 0 ? (
+            <div style={{ fontSize: 13, color: '#6e7a89' }}>No entries with a set guideline duration yet.</div>
+          ) : (
+            <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+              <SummaryCard label="With guideline" value={String(duration.withGuidelineCount)} />
+              <SummaryCard label="Completed courses" value={String(duration.completedCount)} />
+              <SummaryCard label="Still open" value={String(duration.stillOpenCount)} />
+              <SummaryCard label="Overrun" value={String(duration.overrunCount)} warn={duration.overrunCount > 0} />
+              <SummaryCard
+                label="Overrun rate"
+                value={duration.overrunRate === null ? '--' : `${Math.round(duration.overrunRate * 100)}%`}
+              />
+              <SummaryCard
+                label="Still open, past guideline"
+                value={String(duration.stillOpenPastGuidelineCount)}
+                warn={duration.stillOpenPastGuidelineCount > 0}
               />
             </div>
           )}

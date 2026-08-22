@@ -22,6 +22,17 @@ export interface FormularyEntry {
   antibioticName: string
   awareCategory: AwareCategory
   note: string | null
+  // Admin-defined guideline course length for this antibiotic, in days.
+  // Added for the therapy duration tracking feature -- lives here, not as a
+  // Tracker dataElement, since it's app config data about the formulary
+  // itself, not a per-entry fact (the same relationship awareCategory
+  // already has). A formulary row saved before this field existed will have
+  // this key genuinely `undefined` at runtime despite the type saying
+  // `number | null` -- every read must go through
+  // resolveTypicalDurationDays() in awareRules.ts, which reads `?? null`
+  // defensively, the same discipline FormularyEditor.tsx already applies to
+  // `note`.
+  typicalDurationDays: number | null
 }
 
 export interface StewardshipOrgUnit {
@@ -56,6 +67,10 @@ export interface ProvisionedProgram {
     approvalReviewedBy?: string
     approvalDate?: string
     approvalNote?: string
+    // Added in schemaVersion 4 (therapy duration tracking). Same
+    // optional-forward-compatibility reasoning as the two prior waves above.
+    actualStopDate?: string
+    actualStopNote?: string
   }
 }
 
@@ -95,8 +110,17 @@ export function supportsApproval(p: ProvisionedProgram): p is ApprovalCapablePro
   )
 }
 
+export type DurationCapableProgram = ProvisionedProgram & {
+  dataElementIds: ProvisionedProgram['dataElementIds'] &
+    Required<Pick<ProvisionedProgram['dataElementIds'], 'actualStopDate' | 'actualStopNote'>>
+}
+
+export function supportsDuration(p: ProvisionedProgram): p is DurationCapableProgram {
+  return p.dataElementIds.actualStopDate !== undefined && p.dataElementIds.actualStopNote !== undefined
+}
+
 export interface StewardshipSettings {
-  schemaVersion: 1 | 2 | 3
+  schemaVersion: 1 | 2 | 3 | 4
   provisioned: ProvisionedProgram | null
   // Admin-defined -- no bundled antibiotic/AWaRe data ships with this app.
   // See README for why a bundled WHO AWaRe starter list was deliberately
@@ -117,7 +141,7 @@ export interface StewardshipSettings {
 }
 
 export function emptyStewardshipSettings(): StewardshipSettings {
-  return { schemaVersion: 3, provisioned: null, formulary: [], orgUnits: [], reviewerGroupId: null }
+  return { schemaVersion: 4, provisioned: null, formulary: [], orgUnits: [], reviewerGroupId: null }
 }
 
 // Not persisted by this app -- always read live from DHIS2's own Tracker API
@@ -150,4 +174,10 @@ export interface PrescribingEntry {
   approvalReviewedBy: string | null
   approvalDate: string | null
   approvalNote: string | null
+  // Only meaningful once a course has actually ended; null means "still
+  // open," not "no guideline exists" -- guideline lookup is a separate,
+  // formulary-side concern (see resolveTypicalDurationDays in
+  // awareRules.ts), not a field on the entry itself.
+  actualStopDate: string | null
+  actualStopNote: string | null
 }

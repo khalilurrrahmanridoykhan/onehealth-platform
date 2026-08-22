@@ -2,6 +2,7 @@ import { CircularLoader, HeaderBar, NoticeBox, Tab, TabBar } from '@dhis2/ui'
 import { useState } from 'react'
 import { ApprovalForm } from './components/ApprovalForm'
 import { ComplianceSummary } from './components/ComplianceSummary'
+import { DurationForm } from './components/DurationForm'
 import { EmptyState } from './components/EmptyState'
 import { EntryList } from './components/EntryList'
 import { FollowUpForm } from './components/FollowUpForm'
@@ -10,14 +11,15 @@ import { SetupPanel } from './components/SetupPanel'
 import { useCurrentUserAuthorities } from './hooks/useCurrentUserAuthorities'
 import { useRecentEntries } from './hooks/useRecentEntries'
 import { useStewardshipSettings } from './hooks/useStewardshipSettings'
-import { supportsApproval, supportsFollowUp } from './types/stewardship'
+import { supportsApproval, supportsDuration, supportsFollowUp } from './types/stewardship'
 
 type ViewTab = 'log' | 'summary' | 'configure'
 
-// A single entry can need both a follow-up (Empiric) and a review
-// (Reserve) at once -- e.g. empiric vancomycin -- so a bare selected-id
-// isn't enough to know which form to render; the action kind disambiguates.
-type SelectedAction = { kind: 'followUp' | 'approval'; eventId: string } | null
+// A single entry can need a follow-up (Empiric), a review (Reserve), and a
+// stop-date record all at once -- e.g. empiric vancomycin -- so a bare
+// selected-id isn't enough to know which form to render; the action kind
+// disambiguates.
+type SelectedAction = { kind: 'followUp' | 'approval' | 'duration'; eventId: string } | null
 
 export default function App() {
   const { loading, error, settings, save } = useStewardshipSettings()
@@ -71,7 +73,7 @@ export default function App() {
 
               {tab === 'summary' && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
-                  <ComplianceSummary entries={entries} provisioned={settings.provisioned} />
+                  <ComplianceSummary entries={entries} provisioned={settings.provisioned} formulary={settings.formulary} />
                   {selectedAction?.kind === 'followUp' && selectedEntry && settings.provisioned && supportsFollowUp(settings.provisioned) && (
                     <FollowUpForm
                       entry={selectedEntry}
@@ -99,12 +101,26 @@ export default function App() {
                         onCancel={() => setSelectedAction(null)}
                       />
                     )}
+                  {selectedAction?.kind === 'duration' && selectedEntry && settings.provisioned && supportsDuration(settings.provisioned) && (
+                    <DurationForm
+                      entry={selectedEntry}
+                      provisioned={settings.provisioned}
+                      formulary={settings.formulary}
+                      onSubmitted={() => {
+                        setSelectedAction(null)
+                        refreshEntries()
+                      }}
+                      onCancel={() => setSelectedAction(null)}
+                    />
+                  )}
                   <EntryList
                     entries={entries}
                     provisioned={settings.provisioned}
+                    formulary={settings.formulary}
                     selectedEventId={selectedAction?.eventId ?? null}
                     onSelectFollowUp={(eventId) => setSelectedAction({ kind: 'followUp', eventId })}
                     onSelectApproval={(eventId) => setSelectedAction({ kind: 'approval', eventId })}
+                    onSelectDuration={(eventId) => setSelectedAction({ kind: 'duration', eventId })}
                     canReview={canReview}
                   />
                 </div>

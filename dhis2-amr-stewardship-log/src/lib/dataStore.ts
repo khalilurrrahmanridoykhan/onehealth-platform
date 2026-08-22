@@ -10,13 +10,13 @@ export const DATASTORE_NAMESPACE = 'amrStewardshipLog'
 export const SETTINGS_KEY = 'settings'
 export const DATASTORE_RESOURCE = `dataStore/${DATASTORE_NAMESPACE}`
 
-// Bumped to 3 for the restricted-antibiotic approval feature (adds 4 more
-// optional dataElementIds plus optional reviewerGroupId). Same
-// forward-compatible-by-construction reasoning as the v1->v2 bump: a v2 blob
-// still type-checks on read as-is, no migration function needed. The next
-// Configure-and-Save (findOrCreateProgram()) extends the DHIS2-side program
-// stage and the blob is rewritten with schemaVersion 3 at that point.
-export const CURRENT_SCHEMA_VERSION = 3 as const
+// Bumped to 4 for the therapy duration tracking feature (adds 2 more
+// optional dataElementIds). Same forward-compatible-by-construction
+// reasoning as the v2/v3 bumps: a v3 blob still type-checks on read as-is,
+// no migration function needed. The next Configure-and-Save
+// (findOrCreateProgram()) extends the DHIS2-side program stage and the blob
+// is rewritten with schemaVersion 4 at that point.
+export const CURRENT_SCHEMA_VERSION = 4 as const
 
 export function isNotFoundError(error: unknown): boolean {
   if (!(error instanceof Error)) return false

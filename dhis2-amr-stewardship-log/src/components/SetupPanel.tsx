@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useOrgUnits } from '../hooks/useOrgUnits'
 import { useProvisionProgram } from '../hooks/useProvisionProgram'
 import { useUserGroups, type UserGroupSummary } from '../hooks/useUserGroups'
-import { supportsApproval, supportsFollowUp, type StewardshipOrgUnit, type StewardshipSettings } from '../types/stewardship'
+import { supportsApproval, supportsDuration, supportsFollowUp, type StewardshipOrgUnit, type StewardshipSettings } from '../types/stewardship'
 import { FormularyEditor } from './FormularyEditor'
 
 interface Props {
@@ -120,6 +120,14 @@ export function SetupPanel({ settings, onSave }: Props) {
           This install was provisioned before the approval feature existed. Saving now will add 4 new fields
           (approval status, reviewer, date, note) to the existing program stage -- your existing entries and data
           are not affected.
+        </NoticeBox>
+      )}
+
+      {settings.provisioned && !supportsDuration(settings.provisioned) && (
+        <NoticeBox title="Therapy duration tracking not yet enabled on this install">
+          This install was provisioned before the therapy duration tracking feature existed. Saving now will add 2
+          new fields (actual stop date, note) to the existing program stage -- your existing entries and data are
+          not affected.
         </NoticeBox>
       )}
 

@@ -33,12 +33,17 @@
 //    reuses the exact same merge-safe update pattern as
 //    buildFollowUpEventPayload -- no new Tracker-update behavior to verify,
 //    this was already confirmed by finding 3.
+// 5. (Therapy duration tracking feature) buildDurationEventPayload reuses
+//    the exact same merge-safe update pattern as buildFollowUpEventPayload/
+//    buildApprovalEventPayload -- no new Tracker-update behavior to verify,
+//    already confirmed by finding 3.
 
 import type {
   ApprovalCapableProgram,
   ApprovalStatus,
   AwareCategory,
   DeEscalationOutcome,
+  DurationCapableProgram,
   FollowUpCapableProgram,
   PrescribingEntry,
   ProvisionedProgram,
@@ -62,6 +67,8 @@ export type DataElementRole =
   | 'approvalReviewedBy'
   | 'approvalDate'
   | 'approvalNote'
+  | 'actualStopDate'
+  | 'actualStopNote'
 
 export interface DataElementDef {
   role: DataElementRole
@@ -81,6 +88,10 @@ export const FOLLOW_UP_ROLES: DataElementRole[] = ['deEscalationOutcome', 'deEsc
 // Added for the restricted-antibiotic approval feature -- same
 // absent-until-adopted-and-extended story as FOLLOW_UP_ROLES.
 export const APPROVAL_ROLES: DataElementRole[] = ['approvalStatus', 'approvalReviewedBy', 'approvalDate', 'approvalNote']
+
+// Added for the therapy duration tracking feature -- same
+// absent-until-adopted-and-extended story as FOLLOW_UP_ROLES/APPROVAL_ROLES.
+export const DURATION_ROLES: DataElementRole[] = ['actualStopDate', 'actualStopNote']
 
 export const DATA_ELEMENT_DEFS: DataElementDef[] = [
   { role: 'antibiotic', name: 'AMR Stewardship -- Antibiotic name', shortName: 'AMR SL Antibiotic', valueType: 'TEXT' },
@@ -138,6 +149,18 @@ export const DATA_ELEMENT_DEFS: DataElementDef[] = [
     role: 'approvalNote',
     name: 'AMR Stewardship -- Restricted approval note',
     shortName: 'AMR SL Approval note',
+    valueType: 'LONG_TEXT',
+  },
+  {
+    role: 'actualStopDate',
+    name: 'AMR Stewardship -- Actual stop date',
+    shortName: 'AMR SL Stop date',
+    valueType: 'DATE',
+  },
+  {
+    role: 'actualStopNote',
+    name: 'AMR Stewardship -- Actual stop note',
+    shortName: 'AMR SL Stop note',
     valueType: 'LONG_TEXT',
   },
 ]
@@ -318,6 +341,43 @@ export function buildApprovalEventPayload(
   }
 }
 
+export interface DurationFormValues {
+  actualStopDate: string
+  actualStopNote: string | null
+}
+
+// Same merge-safe update-in-place pattern as buildFollowUpEventPayload/
+// buildApprovalEventPayload -- upserts (replace-by-dataElement, not append)
+// so correcting an already-recorded stop date doesn't accumulate duplicate
+// dataValues. No enum decision here (just a date + optional note), but the
+// upsert discipline still matters the same way.
+export function buildDurationEventPayload(
+  provisioned: DurationCapableProgram,
+  existing: ExistingEventForUpdate,
+  values: DurationFormValues,
+) {
+  const dataValues = existing.dataValues.filter(
+    (dv) => dv.dataElement !== provisioned.dataElementIds.actualStopDate && dv.dataElement !== provisioned.dataElementIds.actualStopNote,
+  )
+  dataValues.push({ dataElement: provisioned.dataElementIds.actualStopDate, value: values.actualStopDate })
+  if (values.actualStopNote) {
+    dataValues.push({ dataElement: provisioned.dataElementIds.actualStopNote, value: values.actualStopNote })
+  }
+  return {
+    events: [
+      {
+        event: existing.event,
+        program: provisioned.programId,
+        programStage: provisioned.programStageId,
+        orgUnit: existing.orgUnit,
+        occurredAt: existing.occurredAt,
+        status: existing.status,
+        dataValues,
+      },
+    ],
+  }
+}
+
 // Confirmed live shape of a POST /api/tracker response. `stats` is present on
 // both create and update responses (importStrategy=UPDATE spike confirmed
 // `stats.updated`).
@@ -382,6 +442,8 @@ export function mapTrackerEventToEntry(
     approvalReviewedBy: undefined,
     approvalDate: undefined,
     approvalNote: undefined,
+    actualStopDate: undefined,
+    actualStopNote: undefined,
   }
   for (const [role, id] of idToRole) values[role] = byRole.get(id)
 
@@ -416,5 +478,7 @@ export function mapTrackerEventToEntry(
     approvalReviewedBy: values.approvalReviewedBy ?? null,
     approvalDate: values.approvalDate ?? null,
     approvalNote: values.approvalNote ?? null,
+    actualStopDate: values.actualStopDate ?? null,
+    actualStopNote: values.actualStopNote ?? null,
   }
 }

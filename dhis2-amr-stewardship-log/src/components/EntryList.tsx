@@ -1,23 +1,42 @@
 import { Button, Checkbox, Tag } from '@dhis2/ui'
 import { useMemo, useState } from 'react'
-import { isAwaitingFollowUp } from '../lib/awareRules'
-import { supportsApproval, supportsFollowUp, type PrescribingEntry, type ProvisionedProgram } from '../types/stewardship'
+import { isAwaitingFollowUp, isDurationOverrun } from '../lib/awareRules'
+import {
+  supportsApproval,
+  supportsDuration,
+  supportsFollowUp,
+  type FormularyEntry,
+  type PrescribingEntry,
+  type ProvisionedProgram,
+} from '../types/stewardship'
 import { ApprovalTag, AwareTag, OutcomeTag } from './StatusTag'
 
 interface Props {
   entries: PrescribingEntry[]
   provisioned: ProvisionedProgram | null
+  formulary: FormularyEntry[]
   selectedEventId: string | null
   onSelectFollowUp: (eventId: string) => void
   onSelectApproval: (eventId: string) => void
+  onSelectDuration: (eventId: string) => void
   canReview: boolean
 }
 
-export function EntryList({ entries, provisioned, selectedEventId, onSelectFollowUp, onSelectApproval, canReview }: Props) {
+export function EntryList({
+  entries,
+  provisioned,
+  formulary,
+  selectedEventId,
+  onSelectFollowUp,
+  onSelectApproval,
+  onSelectDuration,
+  canReview,
+}: Props) {
   const [awaitingOnly, setAwaitingOnly] = useState(false)
   const now = useMemo(() => new Date(), [entries])
   const showFollowUpColumn = provisioned !== null && supportsFollowUp(provisioned)
   const showApprovalColumn = provisioned !== null && supportsApproval(provisioned)
+  const showDurationColumn = provisioned !== null && supportsDuration(provisioned)
 
   const visibleEntries = useMemo(() => {
     if (!awaitingOnly) return entries
@@ -50,6 +69,7 @@ export function EntryList({ entries, provisioned, selectedEventId, onSelectFollo
               <th style={{ padding: '6px 12px' }}>Justification</th>
               {showFollowUpColumn && <th style={{ padding: '6px 12px' }}>Follow-up</th>}
               {showApprovalColumn && <th style={{ padding: '6px 12px' }}>Restricted review</th>}
+              {showDurationColumn && <th style={{ padding: '6px 12px' }}>Actual duration</th>}
               <th style={{ padding: '6px 12px' }}>Entered by</th>
             </tr>
           </thead>
@@ -100,6 +120,22 @@ export function EntryList({ entries, provisioned, selectedEventId, onSelectFollo
                             </Button>
                           )}
                         </div>
+                      )}
+                    </td>
+                  )}
+                  {showDurationColumn && (
+                    <td
+                      style={{
+                        padding: '6px 12px',
+                        color: entry.actualStopDate && isDurationOverrun(entry, formulary) ? '#c22a2a' : undefined,
+                      }}
+                    >
+                      {entry.actualStopDate ? (
+                        `${entry.actualStopDate.slice(0, 10)}${isDurationOverrun(entry, formulary) ? ' (overrun)' : ''}`
+                      ) : (
+                        <Button small secondary onClick={() => onSelectDuration(entry.eventId)}>
+                          Record stop date
+                        </Button>
                       )}
                     </td>
                   )}
