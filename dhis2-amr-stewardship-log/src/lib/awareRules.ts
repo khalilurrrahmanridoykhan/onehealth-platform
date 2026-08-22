@@ -274,6 +274,26 @@ export function isDurationOverrun(
   return daysBetween(entry.occurredAt, entry.actualStopDate) > typical + toleranceDays
 }
 
+// False for a completed course (nothing "still open" to flag -- that's
+// isDurationOverrun's job) or one whose antibiotic has no typicalDurationDays
+// set. True once elapsed time since occurredAt already exceeds
+// typical + tolerance while the course remains open. Extracted from
+// computeDurationSummary's own inline stillOpenPastGuidelineCount branch so
+// it's independently reusable by the overdue-notifications feature (see
+// lib/notifications.ts), which has no other reason to duplicate this
+// comparison.
+export function isDurationOverrunStillOpen(
+  entry: PrescribingEntry,
+  formulary: FormularyEntry[],
+  now: Date,
+  toleranceDays = DEFAULT_DURATION_OVERRUN_TOLERANCE_DAYS,
+): boolean {
+  if (entry.actualStopDate !== null) return false
+  const typical = resolveTypicalDurationDays(formulary, entry.antibioticName)
+  if (typical === null) return false
+  return daysBetween(entry.occurredAt, now.toISOString()) > typical + toleranceDays
+}
+
 export interface DurationSummary {
   totalEntries: number
   withGuidelineCount: number
@@ -316,8 +336,7 @@ export function computeDurationSummary(
       if (isDurationOverrun(entry, formulary, toleranceDays)) overrunCount++
     } else {
       stillOpenCount++
-      const elapsedDays = daysBetween(entry.occurredAt, now.toISOString())
-      if (elapsedDays > typical + toleranceDays) stillOpenPastGuidelineCount++
+      if (isDurationOverrunStillOpen(entry, formulary, now, toleranceDays)) stillOpenPastGuidelineCount++
     }
   }
 

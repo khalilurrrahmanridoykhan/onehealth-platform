@@ -16,6 +16,19 @@ export const DATASTORE_RESOURCE = `dataStore/${DATASTORE_NAMESPACE}`
 // no migration function needed. The next Configure-and-Save
 // (findOrCreateProgram()) extends the DHIS2-side program stage and the blob
 // is rewritten with schemaVersion 4 at that point.
+//
+// The overdue-notifications feature (notificationGroupId,
+// lastOverdueNotificationCheckAt on StewardshipSettings) deliberately did
+// NOT bump this to 5. Every prior bump was specifically about
+// dataElementIds growing on ProvisionedProgram -- the signal
+// findOrCreateProgram()'s adopt-and-extend logic and SetupPanel's "install
+// predates feature X" notices key off. Overdue notifications add no
+// dataElementIds and touch no Tracker/programStage metadata at all; it's
+// the same shape of change as formulary[].typicalDurationDays (added within
+// this same v4 bump but not itself the reason for it) -- a plain optional
+// top-level field, read defensively with `??`, with no DHIS2-side state a
+// reader needs to distinguish. Bumping here would conflate two meanings of
+// "schema version" this codebase has deliberately kept separate.
 export const CURRENT_SCHEMA_VERSION = 4 as const
 
 export function isNotFoundError(error: unknown): boolean {

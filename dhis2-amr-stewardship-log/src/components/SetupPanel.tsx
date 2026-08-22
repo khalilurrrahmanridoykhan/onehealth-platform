@@ -27,12 +27,16 @@ export function SetupPanel({ settings, onSave }: Props) {
   const [reviewerGroupId, setReviewerGroupId] = useState<string | null>(settings.reviewerGroupId ?? null)
   const [reviewerGroupSearchTerm, setReviewerGroupSearchTerm] = useState('')
   const [resolvedReviewerGroup, setResolvedReviewerGroup] = useState<UserGroupSummary | null>(null)
+  const [notificationGroupId, setNotificationGroupId] = useState<string | null>(settings.notificationGroupId ?? null)
+  const [notificationGroupSearchTerm, setNotificationGroupSearchTerm] = useState('')
+  const [resolvedNotificationGroup, setResolvedNotificationGroup] = useState<UserGroupSummary | null>(null)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   const engine = useDataEngine()
   const { orgUnits: searchResults, loading: searchLoading } = useOrgUnits(orgUnitSearchTerm)
   const { userGroups: groupSearchResults, loading: groupSearchLoading } = useUserGroups(reviewerGroupSearchTerm)
+  const { userGroups: notificationGroupSearchResults, loading: notificationGroupSearchLoading } = useUserGroups(notificationGroupSearchTerm)
   const { findOrCreateProgram, syncProgramOrgUnits } = useProvisionProgram()
 
   // Keeps already-selected org units visible (with their names) even when
@@ -73,6 +77,34 @@ export function SetupPanel({ settings, onSave }: Props) {
     return [...byId.values()]
   }, [resolvedReviewerGroup, groupSearchResults])
 
+  // notificationGroupId is stored as a bare id, with no cached name --
+  // resolve its display name once on mount, same pattern as reviewerGroupId
+  // above (independent effect, independent state -- these are two separate
+  // groups).
+  useEffect(() => {
+    if (!settings.notificationGroupId) return
+    let cancelled = false
+    engine
+      .query({ group: { resource: 'userGroups', id: settings.notificationGroupId, params: { fields: 'id,name' } } })
+      .then((response) => {
+        if (!cancelled) setResolvedNotificationGroup((response as unknown as { group: UserGroupSummary }).group)
+      })
+      .catch(() => {
+        // Group may have been deleted since -- leave unresolved, the
+        // SingleSelectField just shows nothing selected until re-picked.
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [engine, settings.notificationGroupId])
+
+  const notificationGroupOptions = useMemo<UserGroupSummary[]>(() => {
+    const byId = new Map<string, UserGroupSummary>()
+    if (resolvedNotificationGroup) byId.set(resolvedNotificationGroup.id, resolvedNotificationGroup)
+    for (const g of notificationGroupSearchResults) byId.set(g.id, g)
+    return [...byId.values()]
+  }, [resolvedNotificationGroup, notificationGroupSearchResults])
+
   async function handleSave() {
     setError(null)
     if (orgUnitIds.length === 0) {
@@ -84,7 +116,23 @@ export function SetupPanel({ settings, onSave }: Props) {
       const selectedOrgUnits = orgUnitOptions.filter((ou) => orgUnitIds.includes(ou.id))
       const provisioned = await findOrCreateProgram(orgUnitIds)
       await syncProgramOrgUnits(provisioned.programId, orgUnitIds)
-      await onSave({ ...settings, provisioned, formulary, orgUnits: selectedOrgUnits, reviewerGroupId })
+      // Seed the cursor to "now" only on the null -> non-null transition of
+      // notificationGroupId, never on every save while already enabled --
+      // over-seeding on every save (e.g. an unrelated formulary edit) would
+      // silently suppress entries that genuinely became newly-overdue
+      // between two saves.
+      const notificationJustEnabled = notificationGroupId !== null && (settings.notificationGroupId ?? null) === null
+      await onSave({
+        ...settings,
+        provisioned,
+        formulary,
+        orgUnits: selectedOrgUnits,
+        reviewerGroupId,
+        notificationGroupId,
+        lastOverdueNotificationCheckAt: notificationJustEnabled
+          ? new Date().toISOString()
+          : (settings.lastOverdueNotificationCheckAt ?? null),
+      })
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e))
     } finally {
@@ -179,6 +227,38 @@ export function SetupPanel({ settings, onSave }: Props) {
           clearText="Clear"
         >
           {reviewerGroupOptions.map((g) => (
+            <SingleSelectOption key={g.id} label={g.name} value={g.id} />
+          ))}
+        </SingleSelectField>
+      </div>
+
+      <div>
+        <h3 style={{ margin: '0 0 8px' }}>Overdue notifications</h3>
+        <div style={{ fontSize: 13, color: '#6e7a89', marginBottom: 8 }}>
+          Members of this DHIS2 user group receive an in-app message digest whenever this app -- opened by an
+          app-management admin viewing the Compliance Summary tab -- detects entries newly overdue for follow-up,
+          review, or a duration check. This runs opportunistically, only when someone with access happens to open
+          the app; it is not a scheduled or guaranteed-timing notification. Email delivery is not controlled by
+          this app -- it depends entirely on each recipient's own account notification setting. Independent from
+          the reviewer group above: who should be told about a growing backlog isn't necessarily who may
+          Approve/Reject. Leave unset to disable this feature.
+        </div>
+        <InputField
+          label="Search user groups"
+          dense
+          value={notificationGroupSearchTerm}
+          onChange={({ value }) => setNotificationGroupSearchTerm(value ?? '')}
+        />
+        <SingleSelectField
+          label="Notification group"
+          loading={notificationGroupSearchLoading}
+          noMatchText="No user groups found."
+          selected={notificationGroupId ?? undefined}
+          onChange={({ selected }) => setNotificationGroupId(selected || null)}
+          clearable
+          clearText="Clear"
+        >
+          {notificationGroupOptions.map((g) => (
             <SingleSelectOption key={g.id} label={g.name} value={g.id} />
           ))}
         </SingleSelectField>

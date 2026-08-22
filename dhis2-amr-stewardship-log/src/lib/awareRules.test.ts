@@ -8,6 +8,7 @@ import {
   DEFAULT_FOLLOW_UP_GRACE_HOURS,
   isAwaitingFollowUp,
   isDurationOverrun,
+  isDurationOverrunStillOpen,
   isOverduePendingApproval,
   isPendingApproval,
   requiresJustification,
@@ -365,6 +366,27 @@ describe('isDurationOverrun', () => {
     const overBoundary = entry({ antibioticName: 'Amoxicillin', occurredAt: '2026-08-01T00:00:00.000Z', actualStopDate: '2026-08-10' })
     expect(isDurationOverrun(atBoundary, formulary)).toBe(false)
     expect(isDurationOverrun(overBoundary, formulary)).toBe(true)
+  })
+})
+
+describe('isDurationOverrunStillOpen', () => {
+  test('false for a completed course, no matter how overrun -- that is isDurationOverrun\'s job', () => {
+    const completed = entry({ antibioticName: 'Amoxicillin', occurredAt: '2026-08-01T00:00:00.000Z', actualStopDate: '2026-08-20' })
+    expect(isDurationOverrunStillOpen(completed, formulary, NOW)).toBe(false)
+  })
+
+  test('false when no guideline is set for the antibiotic', () => {
+    const noGuideline = entry({ antibioticName: 'Ceftriaxone', occurredAt: '2026-08-01T00:00:00.000Z', actualStopDate: null })
+    expect(isDurationOverrunStillOpen(noGuideline, formulary, NOW)).toBe(false)
+  })
+
+  test('true only once a still-open course has elapsed past typical + tolerance', () => {
+    // Amoxicillin typicalDurationDays = 7, tolerance = 1.
+    const stillWithinGuideline = entry({ antibioticName: 'Amoxicillin', occurredAt: '2026-08-11T00:00:00.000Z', actualStopDate: null })
+    const pastGuideline = entry({ antibioticName: 'Amoxicillin', occurredAt: '2026-08-01T00:00:00.000Z', actualStopDate: null })
+    // NOW is 2026-08-13: 2 days elapsed for the first (well within 7+1), 12 for the second (well past).
+    expect(isDurationOverrunStillOpen(stillWithinGuideline, formulary, NOW)).toBe(false)
+    expect(isDurationOverrunStillOpen(pastGuideline, formulary, NOW)).toBe(true)
   })
 })
 

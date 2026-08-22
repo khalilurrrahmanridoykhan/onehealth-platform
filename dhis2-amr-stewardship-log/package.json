@@ -1,6 +1,6 @@
 {
   "name": "amr-stewardship-log-app",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "A point-of-care antibiotic prescribing checklist, aligned to WHO AWaRe (Access/Watch/Reserve), as a native DHIS2 App.",
   "license": "MIT",
   "private": true,

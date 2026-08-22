@@ -138,10 +138,42 @@ export interface StewardshipSettings {
   // path always writes an explicit value, so only old, pre-existing blobs
   // ever rely on the optional-tolerant read.
   reviewerGroupId?: string | null
+  // Added for the overdue-notifications feature. The id of a DHIS2 user
+  // group that receives a digest message (via DHIS2's own messaging API)
+  // when this app detects entries newly overdue for follow-up, review, or a
+  // duration check. Deliberately a SEPARATE group from reviewerGroupId --
+  // who should hear about a growing backlog isn't necessarily who may
+  // Approve/Reject. Same optional-forward-compatibility reasoning as
+  // reviewerGroupId. null means "notifications are off."
+  notificationGroupId?: string | null
+  // Timestamp of the last time this app checked for newly-overdue entries
+  // and (if any were found) successfully sent a digest. ONE shared cursor
+  // across all three overdue categories, not one per category: each
+  // category's own "crossing time" is independently computable per entry
+  // (occurredAt + graceHours / slaHours / (typical+toleranceDays)), so one
+  // "last time we ran a check" gate works for all three -- see
+  // lib/notifications.ts's selectNewlyOverdueEntries(). Seeded to "now" the
+  // moment an admin first sets notificationGroupId (see SetupPanel.tsx),
+  // never left at null/epoch, so a cold enable doesn't dump an entire
+  // pre-existing backlog into one digest. Advanced only after a message
+  // send succeeds (see useOverdueNotifications.ts) -- a failed send leaves
+  // this alone so the next check retries the same window. Same known v1
+  // last-write-wins limitation as every other write through save() (see
+  // dataStore.ts / README): a background cursor-advance racing an admin's
+  // SetupPanel save is an accepted, documented risk, not solved here.
+  lastOverdueNotificationCheckAt?: string | null
 }
 
 export function emptyStewardshipSettings(): StewardshipSettings {
-  return { schemaVersion: 4, provisioned: null, formulary: [], orgUnits: [], reviewerGroupId: null }
+  return {
+    schemaVersion: 4,
+    provisioned: null,
+    formulary: [],
+    orgUnits: [],
+    reviewerGroupId: null,
+    notificationGroupId: null,
+    lastOverdueNotificationCheckAt: null,
+  }
 }
 
 // Not persisted by this app -- always read live from DHIS2's own Tracker API
