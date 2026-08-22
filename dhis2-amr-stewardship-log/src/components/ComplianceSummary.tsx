@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
-import { computeComplianceSummary, computeFollowUpSummary } from '../lib/awareRules'
-import { supportsFollowUp, type PrescribingEntry, type ProvisionedProgram } from '../types/stewardship'
+import { computeApprovalSummary, computeComplianceSummary, computeFollowUpSummary } from '../lib/awareRules'
+import { supportsApproval, supportsFollowUp, type PrescribingEntry, type ProvisionedProgram } from '../types/stewardship'
 
 interface Props {
   entries: PrescribingEntry[]
@@ -16,7 +16,9 @@ export function ComplianceSummary({ entries, provisioned }: Props) {
   const summary = useMemo(() => computeComplianceSummary(entries), [entries])
   const now = useMemo(() => new Date(), [entries])
   const followUp = useMemo(() => computeFollowUpSummary(entries, now), [entries, now])
+  const approval = useMemo(() => computeApprovalSummary(entries, now), [entries, now])
   const showFollowUp = provisioned !== null && supportsFollowUp(provisioned)
+  const showApproval = provisioned !== null && supportsApproval(provisioned)
 
   if (summary.totalEntries === 0) {
     return <div style={{ fontSize: 13, color: '#6e7a89' }}>No entries logged yet for the configured org units.</div>
@@ -77,6 +79,31 @@ export function ComplianceSummary({ entries, provisioned }: Props) {
                 ))}
               </tbody>
             </table>
+          )}
+        </div>
+      )}
+
+      {showApproval && (
+        <div>
+          <div style={{ fontWeight: 500, marginBottom: 8 }}>Restricted-antibiotic review</div>
+          {approval.reserveCount === 0 ? (
+            <div style={{ fontSize: 13, color: '#6e7a89' }}>No Reserve-category entries yet -- review tracking begins once one is logged.</div>
+          ) : (
+            <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+              <SummaryCard label="Reserve entries" value={String(approval.reserveCount)} />
+              <SummaryCard label="Pending review" value={String(approval.pendingCount)} warn={approval.pendingCount > 0} />
+              <SummaryCard label="Approved" value={String(approval.approvedCount)} />
+              <SummaryCard label="Rejected" value={String(approval.rejectedCount)} />
+              <SummaryCard
+                label="Review rate"
+                value={approval.reviewRate === null ? '--' : `${Math.round(approval.reviewRate * 100)}%`}
+              />
+              <SummaryCard
+                label="Overdue pending"
+                value={String(approval.overduePendingCount)}
+                warn={approval.overduePendingCount > 0}
+              />
+            </div>
           )}
         </div>
       )}

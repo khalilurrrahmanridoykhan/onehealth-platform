@@ -1,4 +1,5 @@
 import {
+  buildApprovalEventPayload,
   buildDataElementPayload,
   buildEventPayload,
   buildFollowUpEventPayload,
@@ -15,7 +16,7 @@ import {
   type RawTrackerEvent,
   type TrackerImportResponse,
 } from './provisioning'
-import type { FollowUpCapableProgram, ProvisionedProgram } from '../types/stewardship'
+import type { ApprovalCapableProgram, FollowUpCapableProgram, ProvisionedProgram } from '../types/stewardship'
 
 describe('buildDataElementPayload', () => {
   test('every data element is domainType TRACKER with aggregationType NONE -- this is event/case-level data, never aggregated', () => {
@@ -27,7 +28,7 @@ describe('buildDataElementPayload', () => {
     }
   })
 
-  test('there are exactly 8 defined roles, matching the checklist fields plus the 3 de-escalation follow-up fields', () => {
+  test('there are exactly 12 defined roles, matching the checklist fields plus the follow-up and approval fields', () => {
     expect(DATA_ELEMENT_DEFS.map((d) => d.role).sort()).toEqual(
       [
         'antibiotic',
@@ -38,6 +39,10 @@ describe('buildDataElementPayload', () => {
         'deEscalationOutcome',
         'deEscalationDate',
         'deEscalationNote',
+        'approvalStatus',
+        'approvalReviewedBy',
+        'approvalDate',
+        'approvalNote',
       ].sort(),
     )
   })
@@ -58,7 +63,7 @@ describe('buildProgramPayload', () => {
 })
 
 describe('buildProgramStagePayload', () => {
-  test('references the program by id and lists all 8 data elements', () => {
+  test('references the program by id and lists all 12 data elements', () => {
     const dataElementIds = {
       antibiotic: 'de1',
       indication: 'de2',
@@ -68,12 +73,16 @@ describe('buildProgramStagePayload', () => {
       deEscalationOutcome: 'de6',
       deEscalationDate: 'de7',
       deEscalationNote: 'de8',
+      approvalStatus: 'de9',
+      approvalReviewedBy: 'de10',
+      approvalDate: 'de11',
+      approvalNote: 'de12',
     }
     const payload = buildProgramStagePayload('prog1', dataElementIds)
     expect(payload.program).toEqual({ id: 'prog1' })
-    expect(payload.programStageDataElements).toHaveLength(8)
+    expect(payload.programStageDataElements).toHaveLength(12)
     expect(payload.programStageDataElements).toContainEqual({ dataElement: { id: 'de1' } })
-    expect(payload.programStageDataElements).toContainEqual({ dataElement: { id: 'de8' } })
+    expect(payload.programStageDataElements).toContainEqual({ dataElement: { id: 'de12' } })
   })
 })
 
@@ -83,7 +92,7 @@ describe('PROGRAM_SHARING_PAYLOAD', () => {
   })
 })
 
-const provisioned: FollowUpCapableProgram = {
+const provisioned: FollowUpCapableProgram & ApprovalCapableProgram = {
   programId: 'prog1',
   programStageId: 'stage1',
   dataElementIds: {
@@ -95,6 +104,10 @@ const provisioned: FollowUpCapableProgram = {
     deEscalationOutcome: 'de6',
     deEscalationDate: 'de7',
     deEscalationNote: 'de8',
+    approvalStatus: 'de9',
+    approvalReviewedBy: 'de10',
+    approvalDate: 'de11',
+    approvalNote: 'de12',
   },
 }
 
@@ -259,6 +272,98 @@ describe('buildFollowUpEventPayload', () => {
   })
 })
 
+describe('buildApprovalEventPayload', () => {
+  const existing: ExistingEventForUpdate = {
+    event: 'evt1',
+    orgUnit: 'ou1',
+    occurredAt: '2026-08-11T00:00:00.000',
+    status: 'COMPLETED',
+    dataValues: [
+      { dataElement: 'de1', value: 'Vancomycin' },
+      { dataElement: 'de2', value: 'Confirmed MRSA' },
+      { dataElement: 'de3', value: 'Culture-guided' },
+      { dataElement: 'de4', value: 'Reserve' },
+      // Regression guard, same as buildFollowUpEventPayload's: an unknown
+      // dataElement must survive an approval update untouched.
+      { dataElement: 'de-unknown', value: 'left alone' },
+    ],
+  }
+
+  test('preserves all pre-existing dataValues, including one with an unrecognized dataElement, and adds the approval fields', () => {
+    const payload = buildApprovalEventPayload(provisioned, existing, {
+      approvalStatus: 'Approved',
+      approvalReviewedBy: 'steward1',
+      approvalDate: '2026-08-13',
+      approvalNote: null,
+    })
+    const dataValues = payload.events[0].dataValues
+    expect(dataValues).toContainEqual({ dataElement: 'de1', value: 'Vancomycin' })
+    expect(dataValues).toContainEqual({ dataElement: 'de-unknown', value: 'left alone' })
+    expect(dataValues).toContainEqual({ dataElement: 'de9', value: 'Approved' })
+    expect(dataValues).toContainEqual({ dataElement: 'de10', value: 'steward1' })
+    expect(dataValues).toContainEqual({ dataElement: 'de11', value: '2026-08-13' })
+  })
+
+  test('preserves occurredAt, orgUnit, and status verbatim, and carries the original event uid', () => {
+    const payload = buildApprovalEventPayload(provisioned, existing, {
+      approvalStatus: 'Rejected',
+      approvalReviewedBy: 'steward1',
+      approvalDate: '2026-08-13',
+      approvalNote: null,
+    })
+    const event = payload.events[0]
+    expect(event.event).toBe('evt1')
+    expect(event.orgUnit).toBe('ou1')
+    expect(event.occurredAt).toBe('2026-08-11T00:00:00.000')
+    expect(event.status).toBe('COMPLETED')
+  })
+
+  test('omits the note data value entirely when none was given', () => {
+    const payload = buildApprovalEventPayload(provisioned, existing, {
+      approvalStatus: 'Approved',
+      approvalReviewedBy: 'steward1',
+      approvalDate: '2026-08-13',
+      approvalNote: null,
+    })
+    expect(payload.events[0].dataValues.find((dv) => dv.dataElement === 'de12')).toBeUndefined()
+  })
+
+  test('includes the note data value when given', () => {
+    const payload = buildApprovalEventPayload(provisioned, existing, {
+      approvalStatus: 'Rejected',
+      approvalReviewedBy: 'steward1',
+      approvalDate: '2026-08-13',
+      approvalNote: 'No documented allergy justifying Reserve choice',
+    })
+    expect(payload.events[0].dataValues).toContainEqual({
+      dataElement: 'de12',
+      value: 'No documented allergy justifying Reserve choice',
+    })
+  })
+
+  test('upserts (replaces by dataElement), not appends, when re-recording an already-decided review', () => {
+    const alreadyReviewed: ExistingEventForUpdate = {
+      ...existing,
+      dataValues: [
+        ...existing.dataValues,
+        { dataElement: 'de9', value: 'Rejected' },
+        { dataElement: 'de10', value: 'steward1' },
+        { dataElement: 'de11', value: '2026-08-12' },
+      ],
+    }
+    const payload = buildApprovalEventPayload(provisioned, alreadyReviewed, {
+      approvalStatus: 'Approved',
+      approvalReviewedBy: 'steward2',
+      approvalDate: '2026-08-14',
+      approvalNote: null,
+    })
+    const statusValues = payload.events[0].dataValues.filter((dv) => dv.dataElement === 'de9')
+    const reviewerValues = payload.events[0].dataValues.filter((dv) => dv.dataElement === 'de10')
+    expect(statusValues).toEqual([{ dataElement: 'de9', value: 'Approved' }])
+    expect(reviewerValues).toEqual([{ dataElement: 'de10', value: 'steward2' }])
+  })
+})
+
 describe('mapTrackerEventToEntry', () => {
   test('maps a raw queried event back to a PrescribingEntry using the provisioned dataElementIds', () => {
     const raw: RawTrackerEvent = {
@@ -288,6 +393,10 @@ describe('mapTrackerEventToEntry', () => {
       deEscalationOutcome: null,
       deEscalationDate: null,
       deEscalationNote: null,
+      approvalStatus: null,
+      approvalReviewedBy: null,
+      approvalDate: null,
+      approvalNote: null,
     })
   })
 
@@ -335,5 +444,39 @@ describe('mapTrackerEventToEntry', () => {
     }
     const mapped = mapTrackerEventToEntry(raw, provisioned, 'Test facility')
     expect(mapped.deEscalationOutcome).toBeNull()
+  })
+
+  test('round-trips the approval fields when present', () => {
+    const raw: RawTrackerEvent = {
+      event: 'evt5',
+      orgUnit: 'ou1',
+      occurredAt: '2026-08-11T00:00:00.000',
+      dataValues: [
+        { dataElement: 'de1', value: 'Vancomycin' },
+        { dataElement: 'de4', value: 'Reserve' },
+        { dataElement: 'de9', value: 'Approved' },
+        { dataElement: 'de10', value: 'steward1' },
+        { dataElement: 'de11', value: '2026-08-13' },
+        { dataElement: 'de12', value: 'Appropriate for confirmed MRSA' },
+      ],
+      createdBy: null,
+    }
+    const mapped = mapTrackerEventToEntry(raw, provisioned, 'Test facility')
+    expect(mapped.approvalStatus).toBe('Approved')
+    expect(mapped.approvalReviewedBy).toBe('steward1')
+    expect(mapped.approvalDate).toBe('2026-08-13')
+    expect(mapped.approvalNote).toBe('Appropriate for confirmed MRSA')
+  })
+
+  test('maps an unrecognized approval status string to null rather than throwing', () => {
+    const raw: RawTrackerEvent = {
+      event: 'evt6',
+      orgUnit: 'ou1',
+      occurredAt: '2026-08-11T00:00:00.000',
+      dataValues: [{ dataElement: 'de9', value: 'Some future status not yet known to this app' }],
+      createdBy: null,
+    }
+    const mapped = mapTrackerEventToEntry(raw, provisioned, 'Test facility')
+    expect(mapped.approvalStatus).toBeNull()
   })
 })

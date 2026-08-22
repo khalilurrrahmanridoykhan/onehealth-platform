@@ -3,8 +3,8 @@
 // "stay pure and trivially unit-testable" discipline as
 // dhis2-data-quality-auditor/src/lib/qualityChecks.ts.
 
-import type { AwareCategory, DeEscalationOutcome, FormularyEntry, PrescribingEntry } from '../types/stewardship'
-import { DE_ESCALATION_OUTCOMES } from '../types/stewardship'
+import type { ApprovalStatus, AwareCategory, DeEscalationOutcome, FormularyEntry, PrescribingEntry } from '../types/stewardship'
+import { APPROVAL_STATUSES, DE_ESCALATION_OUTCOMES } from '../types/stewardship'
 
 // WHO AWaRe: Watch and Reserve antibiotics carry a higher resistance-driving
 // or last-line risk, so a prescriber choosing one is expected to record why
@@ -146,5 +146,87 @@ export function computeFollowUpSummary(
     followUpRate: empiricCount > 0 ? followUpsRecordedCount / empiricCount : null,
     deEscalationRate: followUpsRecordedCount > 0 ? deEscalatedCount / followUpsRecordedCount : null,
     countByOutcome,
+  }
+}
+
+// An operational SLA for how quickly a steward should review a
+// Reserve-category entry -- a workflow/staffing choice, not a clinical or
+// biological one, so this is deliberately its own constant rather than
+// reusing DEFAULT_FOLLOW_UP_GRACE_HOURS (which models culture turnaround
+// time). Anchored at occurredAt, same as the follow-up grace window, but for
+// a different reason: unlike a follow-up outcome (which genuinely can't be
+// known until culture results are back), a Reserve category is known
+// instantly at logging time, so the review-backlog clock starts ticking
+// from the moment the entry was logged. 72h (covers a weekend) is a
+// reasonable default; tunable per-call like graceHours.
+export const DEFAULT_APPROVAL_REVIEW_SLA_HOURS = 72
+
+// True only for a Reserve-category entry with no recorded decision yet.
+// Never true for any other AWaRe category, regardless of approvalStatus.
+export function isPendingApproval(entry: PrescribingEntry): boolean {
+  return entry.awareCategory === 'Reserve' && entry.approvalStatus === null
+}
+
+// True only once a still-pending Reserve entry has gone unreviewed past the
+// SLA window.
+export function isOverduePendingApproval(
+  entry: PrescribingEntry,
+  now: Date,
+  slaHours = DEFAULT_APPROVAL_REVIEW_SLA_HOURS,
+): boolean {
+  if (!isPendingApproval(entry)) return false
+  return hoursSince(entry.occurredAt, now) >= slaHours
+}
+
+export function selectEntriesPendingApproval(entries: PrescribingEntry[]): PrescribingEntry[] {
+  return entries.filter((entry) => isPendingApproval(entry))
+}
+
+export interface ApprovalSummary {
+  reserveCount: number
+  pendingCount: number
+  overduePendingCount: number
+  approvedCount: number
+  rejectedCount: number
+  // decidedCount / reserveCount; null (not 0) at a zero denominator, same
+  // "render as --, not 0%" convention as followUpRate/deEscalationRate.
+  reviewRate: number | null
+  countByStatus: Record<ApprovalStatus, number>
+}
+
+export function computeApprovalSummary(
+  entries: PrescribingEntry[],
+  now: Date,
+  slaHours = DEFAULT_APPROVAL_REVIEW_SLA_HOURS,
+): ApprovalSummary {
+  const reserveEntries = entries.filter((entry) => entry.awareCategory === 'Reserve')
+  const countByStatus = Object.fromEntries(APPROVAL_STATUSES.map((status) => [status, 0])) as Record<ApprovalStatus, number>
+
+  let pendingCount = 0
+  let overduePendingCount = 0
+  let approvedCount = 0
+  let rejectedCount = 0
+
+  for (const entry of reserveEntries) {
+    if (entry.approvalStatus !== null) {
+      countByStatus[entry.approvalStatus]++
+      if (entry.approvalStatus === 'Approved') approvedCount++
+      else rejectedCount++
+    } else {
+      pendingCount++
+      if (isOverduePendingApproval(entry, now, slaHours)) overduePendingCount++
+    }
+  }
+
+  const reserveCount = reserveEntries.length
+  const decidedCount = approvedCount + rejectedCount
+  return {
+    reserveCount,
+    pendingCount,
+    overduePendingCount,
+    approvedCount,
+    rejectedCount,
+    reviewRate: reserveCount > 0 ? decidedCount / reserveCount : null,
+    countByStatus,
   }
 }

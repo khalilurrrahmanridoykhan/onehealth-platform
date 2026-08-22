@@ -3,12 +3,12 @@ import { useDataQuery } from '@dhis2/app-runtime'
 const query = {
   me: {
     resource: 'me',
-    params: { fields: 'username,authorities' },
+    params: { fields: 'username,authorities,userGroups[id]' },
   },
 }
 
 interface MeResponse {
-  me: { username: string; authorities: string[] }
+  me: { username: string; authorities: string[]; userGroups: { id: string }[] }
 }
 
 // Copied verbatim from the sibling apps' own useCurrentUserAuthorities.ts --
@@ -25,6 +25,11 @@ export interface CurrentUserAuthorities {
   error: string | null
   username: string
   canManage: boolean
+  // For the restricted-antibiotic approval feature's canReview check --
+  // membership is compared against the admin-configured reviewerGroupId in
+  // App.tsx, not resolved here (this hook doesn't know about
+  // StewardshipSettings).
+  userGroupIds: string[]
 }
 
 export function useCurrentUserAuthorities(): CurrentUserAuthorities {
@@ -35,5 +40,6 @@ export function useCurrentUserAuthorities(): CurrentUserAuthorities {
     error: error ? (error instanceof Error ? error.message : String(error)) : null,
     username: data?.me.username ?? '',
     canManage: MANAGE_AUTHORITIES.some((a) => authorities.includes(a)),
+    userGroupIds: (data?.me.userGroups ?? []).map((g) => g.id),
   }
 }

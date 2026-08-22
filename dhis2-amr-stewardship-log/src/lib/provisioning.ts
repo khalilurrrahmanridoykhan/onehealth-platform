@@ -29,9 +29,21 @@
 //    -- defensive by design, not because merge was found unsafe. Also
 //    confirmed: `valueType: 'DATE'` accepts a plain `"YYYY-MM-DD"` string,
 //    no full ISO datetime required.
+// 4. (Restricted-antibiotic approval feature) buildApprovalEventPayload
+//    reuses the exact same merge-safe update pattern as
+//    buildFollowUpEventPayload -- no new Tracker-update behavior to verify,
+//    this was already confirmed by finding 3.
 
-import type { AwareCategory, DeEscalationOutcome, FollowUpCapableProgram, PrescribingEntry, ProvisionedProgram } from '../types/stewardship'
-import { DE_ESCALATION_OUTCOMES } from '../types/stewardship'
+import type {
+  ApprovalCapableProgram,
+  ApprovalStatus,
+  AwareCategory,
+  DeEscalationOutcome,
+  FollowUpCapableProgram,
+  PrescribingEntry,
+  ProvisionedProgram,
+} from '../types/stewardship'
+import { APPROVAL_STATUSES, DE_ESCALATION_OUTCOMES } from '../types/stewardship'
 
 export const PROGRAM_NAME = 'AMR Stewardship Log'
 export const PROGRAM_SHORT_NAME = 'AMR Stewardship Log'
@@ -46,6 +58,10 @@ export type DataElementRole =
   | 'deEscalationOutcome'
   | 'deEscalationDate'
   | 'deEscalationNote'
+  | 'approvalStatus'
+  | 'approvalReviewedBy'
+  | 'approvalDate'
+  | 'approvalNote'
 
 export interface DataElementDef {
   role: DataElementRole
@@ -61,6 +77,10 @@ export const CORE_ROLES: DataElementRole[] = ['antibiotic', 'indication', 'empir
 // provisioned before this feature shipped, until it's adopted-and-extended
 // (see useProvisionProgram.ts).
 export const FOLLOW_UP_ROLES: DataElementRole[] = ['deEscalationOutcome', 'deEscalationDate', 'deEscalationNote']
+
+// Added for the restricted-antibiotic approval feature -- same
+// absent-until-adopted-and-extended story as FOLLOW_UP_ROLES.
+export const APPROVAL_ROLES: DataElementRole[] = ['approvalStatus', 'approvalReviewedBy', 'approvalDate', 'approvalNote']
 
 export const DATA_ELEMENT_DEFS: DataElementDef[] = [
   { role: 'antibiotic', name: 'AMR Stewardship -- Antibiotic name', shortName: 'AMR SL Antibiotic', valueType: 'TEXT' },
@@ -94,6 +114,30 @@ export const DATA_ELEMENT_DEFS: DataElementDef[] = [
     role: 'deEscalationNote',
     name: 'AMR Stewardship -- De-escalation note',
     shortName: 'AMR SL De-esc note',
+    valueType: 'LONG_TEXT',
+  },
+  {
+    role: 'approvalStatus',
+    name: 'AMR Stewardship -- Restricted approval status',
+    shortName: 'AMR SL Approval status',
+    valueType: 'TEXT',
+  },
+  {
+    role: 'approvalReviewedBy',
+    name: 'AMR Stewardship -- Restricted approval reviewed by',
+    shortName: 'AMR SL Approval reviewer',
+    valueType: 'TEXT',
+  },
+  {
+    role: 'approvalDate',
+    name: 'AMR Stewardship -- Restricted approval date',
+    shortName: 'AMR SL Approval date',
+    valueType: 'DATE',
+  },
+  {
+    role: 'approvalNote',
+    name: 'AMR Stewardship -- Restricted approval note',
+    shortName: 'AMR SL Approval note',
     valueType: 'LONG_TEXT',
   },
 ]
@@ -225,6 +269,55 @@ export function buildFollowUpEventPayload(
   }
 }
 
+export interface ApprovalFormValues {
+  approvalStatus: ApprovalStatus
+  approvalReviewedBy: string
+  approvalDate: string
+  approvalNote: string | null
+}
+
+// Same merge-safe update-in-place pattern as buildFollowUpEventPayload --
+// upserts (replace-by-dataElement, not append) so re-recording an
+// already-decided review (e.g. Rejected -> Approved) doesn't accumulate
+// duplicate dataValues. approvalReviewedBy stores the reviewing steward's
+// DHIS2 username, supplied by the caller: no Tracker event field
+// distinguishes "who made this specific update" from `createdBy` (which
+// stays fixed to the original prescriber -- see mapTrackerEventToEntry's
+// enteredBy), so this has to be app-supplied, not read back from the
+// platform.
+export function buildApprovalEventPayload(
+  provisioned: ApprovalCapableProgram,
+  existing: ExistingEventForUpdate,
+  values: ApprovalFormValues,
+) {
+  const dataValues = existing.dataValues.filter(
+    (dv) =>
+      dv.dataElement !== provisioned.dataElementIds.approvalStatus &&
+      dv.dataElement !== provisioned.dataElementIds.approvalReviewedBy &&
+      dv.dataElement !== provisioned.dataElementIds.approvalDate &&
+      dv.dataElement !== provisioned.dataElementIds.approvalNote,
+  )
+  dataValues.push({ dataElement: provisioned.dataElementIds.approvalStatus, value: values.approvalStatus })
+  dataValues.push({ dataElement: provisioned.dataElementIds.approvalReviewedBy, value: values.approvalReviewedBy })
+  dataValues.push({ dataElement: provisioned.dataElementIds.approvalDate, value: values.approvalDate })
+  if (values.approvalNote) {
+    dataValues.push({ dataElement: provisioned.dataElementIds.approvalNote, value: values.approvalNote })
+  }
+  return {
+    events: [
+      {
+        event: existing.event,
+        program: provisioned.programId,
+        programStage: provisioned.programStageId,
+        orgUnit: existing.orgUnit,
+        occurredAt: existing.occurredAt,
+        status: existing.status,
+        dataValues,
+      },
+    ],
+  }
+}
+
 // Confirmed live shape of a POST /api/tracker response. `stats` is present on
 // both create and update responses (importStrategy=UPDATE spike confirmed
 // `stats.updated`).
@@ -285,6 +378,10 @@ export function mapTrackerEventToEntry(
     deEscalationOutcome: undefined,
     deEscalationDate: undefined,
     deEscalationNote: undefined,
+    approvalStatus: undefined,
+    approvalReviewedBy: undefined,
+    approvalDate: undefined,
+    approvalNote: undefined,
   }
   for (const [role, id] of idToRole) values[role] = byRole.get(id)
 
@@ -294,6 +391,9 @@ export function mapTrackerEventToEntry(
 
   const isKnownOutcome = (v: string | undefined): v is DeEscalationOutcome =>
     (DE_ESCALATION_OUTCOMES as string[]).includes(v ?? '')
+
+  const isKnownApprovalStatus = (v: string | undefined): v is ApprovalStatus =>
+    (APPROVAL_STATUSES as string[]).includes(v ?? '')
 
   return {
     eventId: raw.event,
@@ -312,5 +412,9 @@ export function mapTrackerEventToEntry(
     deEscalationOutcome: isKnownOutcome(values.deEscalationOutcome) ? values.deEscalationOutcome : null,
     deEscalationDate: values.deEscalationDate ?? null,
     deEscalationNote: values.deEscalationNote ?? null,
+    approvalStatus: isKnownApprovalStatus(values.approvalStatus) ? values.approvalStatus : null,
+    approvalReviewedBy: values.approvalReviewedBy ?? null,
+    approvalDate: values.approvalDate ?? null,
+    approvalNote: values.approvalNote ?? null,
   }
 }

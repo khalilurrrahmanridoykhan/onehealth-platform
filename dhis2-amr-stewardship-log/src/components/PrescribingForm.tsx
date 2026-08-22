@@ -134,6 +134,7 @@ export function PrescribingForm({ settings, onSubmitted }: Props) {
         <div style={{ fontSize: 13, color: '#6e7a89' }}>
           AWaRe category: <strong>{awareCategory}</strong>
           {needsJustification && ' -- a justification note is required below.'}
+          {awareCategory === 'Reserve' && ' This entry will be logged immediately and is never blocked -- a steward will review it afterward.'}
         </div>
       )}
 

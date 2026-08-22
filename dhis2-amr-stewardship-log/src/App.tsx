@@ -1,5 +1,6 @@
 import { CircularLoader, HeaderBar, NoticeBox, Tab, TabBar } from '@dhis2/ui'
 import { useState } from 'react'
+import { ApprovalForm } from './components/ApprovalForm'
 import { ComplianceSummary } from './components/ComplianceSummary'
 import { EmptyState } from './components/EmptyState'
 import { EntryList } from './components/EntryList'
@@ -9,18 +10,29 @@ import { SetupPanel } from './components/SetupPanel'
 import { useCurrentUserAuthorities } from './hooks/useCurrentUserAuthorities'
 import { useRecentEntries } from './hooks/useRecentEntries'
 import { useStewardshipSettings } from './hooks/useStewardshipSettings'
-import { supportsFollowUp } from './types/stewardship'
+import { supportsApproval, supportsFollowUp } from './types/stewardship'
 
 type ViewTab = 'log' | 'summary' | 'configure'
 
+// A single entry can need both a follow-up (Empiric) and a review
+// (Reserve) at once -- e.g. empiric vancomycin -- so a bare selected-id
+// isn't enough to know which form to render; the action kind disambiguates.
+type SelectedAction = { kind: 'followUp' | 'approval'; eventId: string } | null
+
 export default function App() {
   const { loading, error, settings, save } = useStewardshipSettings()
-  const { canManage } = useCurrentUserAuthorities()
+  const { canManage, userGroupIds, username } = useCurrentUserAuthorities()
   const { entries, refresh: refreshEntries } = useRecentEntries(settings)
   const [tab, setTab] = useState<ViewTab>('log')
-  const [selectedEventId, setSelectedEventId] = useState<string | null>(null)
+  const [selectedAction, setSelectedAction] = useState<SelectedAction>(null)
 
-  const selectedEntry = selectedEventId ? (entries.find((e) => e.eventId === selectedEventId) ?? null) : null
+  const selectedEntry = selectedAction ? (entries.find((e) => e.eventId === selectedAction.eventId) ?? null) : null
+
+  // Fails closed: no reviewer group configured yet means canReview is false
+  // for everyone, including canManage admins -- approving is a distinct
+  // capability from configuring, same as this app's existing canManage
+  // framing, a UI convenience only (see SetupPanel.tsx / README).
+  const canReview = (settings.reviewerGroupId ?? null) !== null && userGroupIds.includes(settings.reviewerGroupId!)
 
   const isConfigured = settings.provisioned !== null && settings.orgUnits.length > 0
 
@@ -60,22 +72,40 @@ export default function App() {
               {tab === 'summary' && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
                   <ComplianceSummary entries={entries} provisioned={settings.provisioned} />
-                  {selectedEntry && settings.provisioned && supportsFollowUp(settings.provisioned) && (
+                  {selectedAction?.kind === 'followUp' && selectedEntry && settings.provisioned && supportsFollowUp(settings.provisioned) && (
                     <FollowUpForm
                       entry={selectedEntry}
                       provisioned={settings.provisioned}
                       onSubmitted={() => {
-                        setSelectedEventId(null)
+                        setSelectedAction(null)
                         refreshEntries()
                       }}
-                      onCancel={() => setSelectedEventId(null)}
+                      onCancel={() => setSelectedAction(null)}
                     />
                   )}
+                  {selectedAction?.kind === 'approval' &&
+                    selectedEntry &&
+                    settings.provisioned &&
+                    supportsApproval(settings.provisioned) &&
+                    canReview && (
+                      <ApprovalForm
+                        entry={selectedEntry}
+                        provisioned={settings.provisioned}
+                        reviewerUsername={username}
+                        onSubmitted={() => {
+                          setSelectedAction(null)
+                          refreshEntries()
+                        }}
+                        onCancel={() => setSelectedAction(null)}
+                      />
+                    )}
                   <EntryList
                     entries={entries}
                     provisioned={settings.provisioned}
-                    selectedEventId={selectedEventId}
-                    onSelectEntry={setSelectedEventId}
+                    selectedEventId={selectedAction?.eventId ?? null}
+                    onSelectFollowUp={(eventId) => setSelectedAction({ kind: 'followUp', eventId })}
+                    onSelectApproval={(eventId) => setSelectedAction({ kind: 'approval', eventId })}
+                    canReview={canReview}
                   />
                 </div>
               )}

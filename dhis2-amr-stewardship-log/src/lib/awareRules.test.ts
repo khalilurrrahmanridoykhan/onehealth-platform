@@ -1,11 +1,16 @@
 import {
+  computeApprovalSummary,
   computeComplianceSummary,
   computeFollowUpSummary,
+  DEFAULT_APPROVAL_REVIEW_SLA_HOURS,
   DEFAULT_FOLLOW_UP_GRACE_HOURS,
   isAwaitingFollowUp,
+  isOverduePendingApproval,
+  isPendingApproval,
   requiresJustification,
   resolveAwareCategory,
   selectEntriesNeedingFollowUp,
+  selectEntriesPendingApproval,
 } from './awareRules'
 import type { FormularyEntry, PrescribingEntry } from '../types/stewardship'
 
@@ -53,6 +58,10 @@ function entry(overrides: Partial<PrescribingEntry>): PrescribingEntry {
     deEscalationOutcome: null,
     deEscalationDate: null,
     deEscalationNote: null,
+    approvalStatus: null,
+    approvalReviewedBy: null,
+    approvalDate: null,
+    approvalNote: null,
     ...overrides,
   }
 }
@@ -215,5 +224,132 @@ describe('computeFollowUpSummary', () => {
     expect(summary.awaitingFollowUpCount).toBe(0)
     expect(summary.withinGraceCount).toBe(1)
     expect(summary.followUpsRecordedCount).toBe(0)
+  })
+})
+
+describe('isPendingApproval', () => {
+  test('true only for a Reserve entry with no recorded decision', () => {
+    expect(isPendingApproval(entry({ awareCategory: 'Reserve', approvalStatus: null }))).toBe(true)
+  })
+
+  test('false for a decided Reserve entry', () => {
+    expect(isPendingApproval(entry({ awareCategory: 'Reserve', approvalStatus: 'Approved' }))).toBe(false)
+    expect(isPendingApproval(entry({ awareCategory: 'Reserve', approvalStatus: 'Rejected' }))).toBe(false)
+  })
+
+  test('false for any non-Reserve category, regardless of approvalStatus', () => {
+    expect(isPendingApproval(entry({ awareCategory: 'Watch', approvalStatus: null }))).toBe(false)
+    expect(isPendingApproval(entry({ awareCategory: 'Access', approvalStatus: null }))).toBe(false)
+    expect(isPendingApproval(entry({ awareCategory: 'Not classified', approvalStatus: null }))).toBe(false)
+  })
+})
+
+describe('isOverduePendingApproval', () => {
+  test('SLA boundary: exactly at the default 72h is overdue, just under is not', () => {
+    expect(DEFAULT_APPROVAL_REVIEW_SLA_HOURS).toBe(72)
+    const exactlyAtSla = entry({ awareCategory: 'Reserve', occurredAt: '2026-08-10T00:00:00.000Z' })
+    const justUnderSla = entry({ awareCategory: 'Reserve', occurredAt: '2026-08-10T01:00:00.000Z' })
+    expect(isOverduePendingApproval(exactlyAtSla, NOW)).toBe(true)
+    expect(isOverduePendingApproval(justUnderSla, NOW)).toBe(false)
+  })
+
+  test('false for a decided entry no matter how old', () => {
+    const old = entry({ awareCategory: 'Reserve', occurredAt: '2026-08-01T00:00:00.000Z', approvalStatus: 'Approved' })
+    expect(isOverduePendingApproval(old, NOW)).toBe(false)
+  })
+
+  test('a custom slaHours parameter is honored', () => {
+    const sixHoursOld = entry({ awareCategory: 'Reserve', occurredAt: '2026-08-12T18:00:00.000Z' })
+    expect(isOverduePendingApproval(sixHoursOld, NOW, 4)).toBe(true)
+    expect(isOverduePendingApproval(sixHoursOld, NOW, 8)).toBe(false)
+  })
+})
+
+describe('selectEntriesPendingApproval', () => {
+  test('returns only Reserve entries with no recorded decision', () => {
+    const pending = entry({ eventId: 'pending', awareCategory: 'Reserve', approvalStatus: null })
+    const decided = entry({ eventId: 'decided', awareCategory: 'Reserve', approvalStatus: 'Approved' })
+    const notReserve = entry({ eventId: 'nr', awareCategory: 'Watch', approvalStatus: null })
+    const selected = selectEntriesPendingApproval([pending, decided, notReserve])
+    expect(selected.map((e) => e.eventId)).toEqual(['pending'])
+  })
+})
+
+describe('computeApprovalSummary', () => {
+  test('both reviewRate at a zero denominator is null, not 0', () => {
+    const summary = computeApprovalSummary([], NOW)
+    expect(summary.reserveCount).toBe(0)
+    expect(summary.reviewRate).toBeNull()
+  })
+
+  test('non-Reserve entries are excluded from every denominator', () => {
+    const summary = computeApprovalSummary([entry({ awareCategory: 'Watch', approvalStatus: null })], NOW)
+    expect(summary.reserveCount).toBe(0)
+    expect(summary.reviewRate).toBeNull()
+  })
+
+  test('rate arithmetic: reviewRate is decided / reserve', () => {
+    const summary = computeApprovalSummary(
+      [
+        entry({ awareCategory: 'Reserve', approvalStatus: 'Approved' }),
+        entry({ awareCategory: 'Reserve', approvalStatus: 'Rejected' }),
+        entry({ awareCategory: 'Reserve', approvalStatus: null, occurredAt: '2026-08-01T00:00:00.000Z' }),
+      ],
+      NOW,
+    )
+    expect(summary.reserveCount).toBe(3)
+    expect(summary.approvedCount).toBe(1)
+    expect(summary.rejectedCount).toBe(1)
+    expect(summary.pendingCount).toBe(1)
+    expect(summary.reviewRate).toBeCloseTo(2 / 3)
+    expect(summary.overduePendingCount).toBe(1)
+  })
+
+  test('countByStatus tallies each decided status', () => {
+    const summary = computeApprovalSummary(
+      [
+        entry({ awareCategory: 'Reserve', approvalStatus: 'Approved' }),
+        entry({ awareCategory: 'Reserve', approvalStatus: 'Approved' }),
+        entry({ awareCategory: 'Reserve', approvalStatus: 'Rejected' }),
+      ],
+      NOW,
+    )
+    expect(summary.countByStatus.Approved).toBe(2)
+    expect(summary.countByStatus.Rejected).toBe(1)
+  })
+
+  test('a pending entry still within the SLA window is neither overdue nor decided', () => {
+    const summary = computeApprovalSummary(
+      [entry({ awareCategory: 'Reserve', approvalStatus: null, occurredAt: '2026-08-12T23:00:00.000Z' })],
+      NOW,
+    )
+    expect(summary.pendingCount).toBe(1)
+    expect(summary.overduePendingCount).toBe(0)
+  })
+})
+
+describe('follow-up and approval features are independent', () => {
+  test('an entry with both a recorded follow-up outcome and a pending approval produces correct, non-interfering numbers in each summary', () => {
+    const entries = [
+      entry({
+        awareCategory: 'Reserve',
+        empiricOrCultureGuided: 'Empiric',
+        deEscalationOutcome: 'Narrowed',
+        deEscalationDate: '2026-08-12',
+        approvalStatus: null,
+        occurredAt: '2026-08-01T00:00:00.000Z',
+      }),
+    ]
+    const followUp = computeFollowUpSummary(entries, NOW)
+    const approval = computeApprovalSummary(entries, NOW)
+
+    expect(followUp.empiricCount).toBe(1)
+    expect(followUp.followUpsRecordedCount).toBe(1)
+    expect(followUp.followUpRate).toBeCloseTo(1)
+
+    expect(approval.reserveCount).toBe(1)
+    expect(approval.pendingCount).toBe(1)
+    expect(approval.overduePendingCount).toBe(1)
+    expect(approval.reviewRate).toBeCloseTo(0)
   })
 })

@@ -1,20 +1,23 @@
-import { Button, Checkbox } from '@dhis2/ui'
+import { Button, Checkbox, Tag } from '@dhis2/ui'
 import { useMemo, useState } from 'react'
 import { isAwaitingFollowUp } from '../lib/awareRules'
-import { supportsFollowUp, type PrescribingEntry, type ProvisionedProgram } from '../types/stewardship'
-import { AwareTag, OutcomeTag } from './StatusTag'
+import { supportsApproval, supportsFollowUp, type PrescribingEntry, type ProvisionedProgram } from '../types/stewardship'
+import { ApprovalTag, AwareTag, OutcomeTag } from './StatusTag'
 
 interface Props {
   entries: PrescribingEntry[]
   provisioned: ProvisionedProgram | null
   selectedEventId: string | null
-  onSelectEntry: (eventId: string) => void
+  onSelectFollowUp: (eventId: string) => void
+  onSelectApproval: (eventId: string) => void
+  canReview: boolean
 }
 
-export function EntryList({ entries, provisioned, selectedEventId, onSelectEntry }: Props) {
+export function EntryList({ entries, provisioned, selectedEventId, onSelectFollowUp, onSelectApproval, canReview }: Props) {
   const [awaitingOnly, setAwaitingOnly] = useState(false)
   const now = useMemo(() => new Date(), [entries])
   const showFollowUpColumn = provisioned !== null && supportsFollowUp(provisioned)
+  const showApprovalColumn = provisioned !== null && supportsApproval(provisioned)
 
   const visibleEntries = useMemo(() => {
     if (!awaitingOnly) return entries
@@ -46,6 +49,7 @@ export function EntryList({ entries, provisioned, selectedEventId, onSelectEntry
               <th style={{ padding: '6px 12px' }}>Mode</th>
               <th style={{ padding: '6px 12px' }}>Justification</th>
               {showFollowUpColumn && <th style={{ padding: '6px 12px' }}>Follow-up</th>}
+              {showApprovalColumn && <th style={{ padding: '6px 12px' }}>Restricted review</th>}
               <th style={{ padding: '6px 12px' }}>Entered by</th>
             </tr>
           </thead>
@@ -75,9 +79,27 @@ export function EntryList({ entries, provisioned, selectedEventId, onSelectEntry
                       ) : entry.deEscalationOutcome ? (
                         <OutcomeTag outcome={entry.deEscalationOutcome} />
                       ) : (
-                        <Button small secondary={!awaiting} destructive={awaiting} onClick={() => onSelectEntry(entry.eventId)}>
+                        <Button small secondary={!awaiting} destructive={awaiting} onClick={() => onSelectFollowUp(entry.eventId)}>
                           {awaiting ? 'Awaiting follow-up' : 'Record follow-up'}
                         </Button>
+                      )}
+                    </td>
+                  )}
+                  {showApprovalColumn && (
+                    <td style={{ padding: '6px 12px' }}>
+                      {entry.awareCategory !== 'Reserve' ? (
+                        '--'
+                      ) : entry.approvalStatus ? (
+                        <ApprovalTag status={entry.approvalStatus} />
+                      ) : (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                          <Tag neutral>Pending review</Tag>
+                          {canReview && (
+                            <Button small secondary onClick={() => onSelectApproval(entry.eventId)}>
+                              Review
+                            </Button>
+                          )}
+                        </div>
                       )}
                     </td>
                   )}

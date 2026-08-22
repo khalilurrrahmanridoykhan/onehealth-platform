@@ -9,6 +9,14 @@ export type DeEscalationOutcome = 'Narrowed' | 'Continued (confirmed appropriate
 
 export const DE_ESCALATION_OUTCOMES: DeEscalationOutcome[] = ['Narrowed', 'Continued (confirmed appropriate)', 'Broadened', 'Discontinued']
 
+// Stored the same way as DeEscalationOutcome (full display string, plain
+// TEXT). There is no 'Pending' member here -- absence of a stored value IS
+// pending, same convention as deEscalationOutcome === null meaning "no
+// follow-up yet".
+export type ApprovalStatus = 'Approved' | 'Rejected'
+
+export const APPROVAL_STATUSES: ApprovalStatus[] = ['Approved', 'Rejected']
+
 export interface FormularyEntry {
   id: string
   antibioticName: string
@@ -41,13 +49,28 @@ export interface ProvisionedProgram {
     deEscalationOutcome?: string
     deEscalationDate?: string
     deEscalationNote?: string
+    // Added in schemaVersion 3 (restricted-antibiotic approval). Same
+    // optional-forward-compatibility reasoning as the de-escalation fields
+    // above.
+    approvalStatus?: string
+    approvalReviewedBy?: string
+    approvalDate?: string
+    approvalNote?: string
   }
 }
 
-// Narrows a ProvisionedProgram to one where the follow-up data elements are
-// confirmed present -- used to gate the follow-up UI and payload builder.
+// Narrows a ProvisionedProgram to one where a given capability's data
+// elements are confirmed present. Each capability is scoped with Pick<> to
+// only its own fields, NOT a blanket Required<> over the whole
+// dataElementIds object -- an install can have follow-up provisioned but
+// not approval (or vice versa), which is a completely normal in-between
+// state. A blanket Required<> here would make FollowUpCapableProgram
+// wrongly demand the approval fields too as soon as they exist as optional
+// keys on dataElementIds, breaking supportsFollowUp() on any install that
+// hasn't also adopted approval yet.
 export type FollowUpCapableProgram = ProvisionedProgram & {
-  dataElementIds: Required<ProvisionedProgram['dataElementIds']>
+  dataElementIds: ProvisionedProgram['dataElementIds'] &
+    Required<Pick<ProvisionedProgram['dataElementIds'], 'deEscalationOutcome' | 'deEscalationDate' | 'deEscalationNote'>>
 }
 
 export function supportsFollowUp(p: ProvisionedProgram): p is FollowUpCapableProgram {
@@ -58,18 +81,43 @@ export function supportsFollowUp(p: ProvisionedProgram): p is FollowUpCapablePro
   )
 }
 
+export type ApprovalCapableProgram = ProvisionedProgram & {
+  dataElementIds: ProvisionedProgram['dataElementIds'] &
+    Required<Pick<ProvisionedProgram['dataElementIds'], 'approvalStatus' | 'approvalReviewedBy' | 'approvalDate' | 'approvalNote'>>
+}
+
+export function supportsApproval(p: ProvisionedProgram): p is ApprovalCapableProgram {
+  return (
+    p.dataElementIds.approvalStatus !== undefined &&
+    p.dataElementIds.approvalReviewedBy !== undefined &&
+    p.dataElementIds.approvalDate !== undefined &&
+    p.dataElementIds.approvalNote !== undefined
+  )
+}
+
 export interface StewardshipSettings {
-  schemaVersion: 1 | 2
+  schemaVersion: 1 | 2 | 3
   provisioned: ProvisionedProgram | null
   // Admin-defined -- no bundled antibiotic/AWaRe data ships with this app.
   // See README for why a bundled WHO AWaRe starter list was deliberately
   // not attempted in v1.
   formulary: FormularyEntry[]
   orgUnits: StewardshipOrgUnit[]
+  // Added in schemaVersion 3 (restricted-antibiotic approval). The id of the
+  // DHIS2 user group whose members may Approve/Reject a Reserve-category
+  // entry -- an app-level authorization *policy* pointer at existing DHIS2
+  // metadata, the same relationship orgUnits already has, not something this
+  // app provisions itself. OPTIONAL for the same forward-compatibility
+  // reason as dataElementIds' new fields: an old settings blob with the key
+  // entirely absent must still type-check on read with no migration
+  // function. null means "no reviewer group configured yet" -- every write
+  // path always writes an explicit value, so only old, pre-existing blobs
+  // ever rely on the optional-tolerant read.
+  reviewerGroupId?: string | null
 }
 
 export function emptyStewardshipSettings(): StewardshipSettings {
-  return { schemaVersion: 2, provisioned: null, formulary: [], orgUnits: [] }
+  return { schemaVersion: 3, provisioned: null, formulary: [], orgUnits: [], reviewerGroupId: null }
 }
 
 // Not persisted by this app -- always read live from DHIS2's own Tracker API
@@ -96,4 +144,10 @@ export interface PrescribingEntry {
   deEscalationOutcome: DeEscalationOutcome | null
   deEscalationDate: string | null
   deEscalationNote: string | null
+  // Only ever meaningful for entries whose awareCategory is 'Reserve'.
+  // approvalStatus === null means Pending -- not yet reviewed.
+  approvalStatus: ApprovalStatus | null
+  approvalReviewedBy: string | null
+  approvalDate: string | null
+  approvalNote: string | null
 }

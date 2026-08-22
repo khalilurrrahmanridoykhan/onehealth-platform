@@ -1,5 +1,5 @@
 import { Tag } from '@dhis2/ui'
-import type { AwareCategory, DeEscalationOutcome } from '../types/stewardship'
+import type { ApprovalStatus, AwareCategory, DeEscalationOutcome } from '../types/stewardship'
 
 const AWARE_PROPS: Record<AwareCategory, { positive?: boolean; negative?: boolean; neutral?: boolean }> = {
   Access: { positive: true },
@@ -25,4 +25,16 @@ const OUTCOME_PROPS: Record<DeEscalationOutcome, { positive?: boolean; negative?
 
 export function OutcomeTag({ outcome }: { outcome: DeEscalationOutcome }) {
   return <Tag {...OUTCOME_PROPS[outcome]}>{outcome}</Tag>
+}
+
+const APPROVAL_PROPS: Record<ApprovalStatus, { positive?: boolean; negative?: boolean }> = {
+  Approved: { positive: true },
+  Rejected: { negative: true },
+}
+
+// The Pending state has no tag here -- it's rendered inline in
+// EntryList.tsx as a plain neutral Tag, mirroring how "awaiting follow-up"
+// is already an inline-styled element there rather than a component here.
+export function ApprovalTag({ status }: { status: ApprovalStatus }) {
+  return <Tag {...APPROVAL_PROPS[status]}>{status}</Tag>
 }

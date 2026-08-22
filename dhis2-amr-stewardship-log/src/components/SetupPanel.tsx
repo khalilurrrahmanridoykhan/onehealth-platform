@@ -1,8 +1,10 @@
-import { Button, InputField, MultiSelectField, MultiSelectOption, NoticeBox } from '@dhis2/ui'
-import { useMemo, useState } from 'react'
+import { useDataEngine } from '@dhis2/app-runtime'
+import { Button, InputField, MultiSelectField, MultiSelectOption, NoticeBox, SingleSelectField, SingleSelectOption } from '@dhis2/ui'
+import { useEffect, useMemo, useState } from 'react'
 import { useOrgUnits } from '../hooks/useOrgUnits'
 import { useProvisionProgram } from '../hooks/useProvisionProgram'
-import { supportsFollowUp, type StewardshipOrgUnit, type StewardshipSettings } from '../types/stewardship'
+import { useUserGroups, type UserGroupSummary } from '../hooks/useUserGroups'
+import { supportsApproval, supportsFollowUp, type StewardshipOrgUnit, type StewardshipSettings } from '../types/stewardship'
 import { FormularyEditor } from './FormularyEditor'
 
 interface Props {
@@ -22,10 +24,15 @@ export function SetupPanel({ settings, onSave }: Props) {
   const [formulary, setFormulary] = useState(settings.formulary)
   const [orgUnitSearchTerm, setOrgUnitSearchTerm] = useState('')
   const [orgUnitIds, setOrgUnitIds] = useState(settings.orgUnits.map((ou) => ou.id))
+  const [reviewerGroupId, setReviewerGroupId] = useState<string | null>(settings.reviewerGroupId ?? null)
+  const [reviewerGroupSearchTerm, setReviewerGroupSearchTerm] = useState('')
+  const [resolvedReviewerGroup, setResolvedReviewerGroup] = useState<UserGroupSummary | null>(null)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
+  const engine = useDataEngine()
   const { orgUnits: searchResults, loading: searchLoading } = useOrgUnits(orgUnitSearchTerm)
+  const { userGroups: groupSearchResults, loading: groupSearchLoading } = useUserGroups(reviewerGroupSearchTerm)
   const { findOrCreateProgram, syncProgramOrgUnits } = useProvisionProgram()
 
   // Keeps already-selected org units visible (with their names) even when
@@ -38,6 +45,34 @@ export function SetupPanel({ settings, onSave }: Props) {
     return [...byId.values()]
   }, [settings.orgUnits, searchResults])
 
+  // reviewerGroupId is stored as a bare id, with no cached name (unlike
+  // orgUnits) -- resolve its display name once on mount so the current
+  // selection is visible even before the admin types anything into the
+  // search box.
+  useEffect(() => {
+    if (!settings.reviewerGroupId) return
+    let cancelled = false
+    engine
+      .query({ group: { resource: 'userGroups', id: settings.reviewerGroupId, params: { fields: 'id,name' } } })
+      .then((response) => {
+        if (!cancelled) setResolvedReviewerGroup((response as unknown as { group: UserGroupSummary }).group)
+      })
+      .catch(() => {
+        // Group may have been deleted since -- leave unresolved, the
+        // SingleSelectField just shows nothing selected until re-picked.
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [engine, settings.reviewerGroupId])
+
+  const reviewerGroupOptions = useMemo<UserGroupSummary[]>(() => {
+    const byId = new Map<string, UserGroupSummary>()
+    if (resolvedReviewerGroup) byId.set(resolvedReviewerGroup.id, resolvedReviewerGroup)
+    for (const g of groupSearchResults) byId.set(g.id, g)
+    return [...byId.values()]
+  }, [resolvedReviewerGroup, groupSearchResults])
+
   async function handleSave() {
     setError(null)
     if (orgUnitIds.length === 0) {
@@ -49,7 +84,7 @@ export function SetupPanel({ settings, onSave }: Props) {
       const selectedOrgUnits = orgUnitOptions.filter((ou) => orgUnitIds.includes(ou.id))
       const provisioned = await findOrCreateProgram(orgUnitIds)
       await syncProgramOrgUnits(provisioned.programId, orgUnitIds)
-      await onSave({ ...settings, provisioned, formulary, orgUnits: selectedOrgUnits })
+      await onSave({ ...settings, provisioned, formulary, orgUnits: selectedOrgUnits, reviewerGroupId })
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e))
     } finally {
@@ -80,6 +115,14 @@ export function SetupPanel({ settings, onSave }: Props) {
         </NoticeBox>
       )}
 
+      {settings.provisioned && !supportsApproval(settings.provisioned) && (
+        <NoticeBox title="Restricted-antibiotic approval not yet enabled on this install">
+          This install was provisioned before the approval feature existed. Saving now will add 4 new fields
+          (approval status, reviewer, date, note) to the existing program stage -- your existing entries and data
+          are not affected.
+        </NoticeBox>
+      )}
+
       <div>
         <h3 style={{ margin: '0 0 8px' }}>Org units</h3>
         {/* MultiSelectField's own `filterable` only filters client-side
@@ -103,6 +146,34 @@ export function SetupPanel({ settings, onSave }: Props) {
             <MultiSelectOption key={ou.id} label={ou.name} value={ou.id} />
           ))}
         </MultiSelectField>
+      </div>
+
+      <div>
+        <h3 style={{ margin: '0 0 8px' }}>Restricted-antibiotic reviewers</h3>
+        <div style={{ fontSize: 13, color: '#6e7a89', marginBottom: 8 }}>
+          Members of this DHIS2 user group may Approve/Reject a Reserve-category entry. This is a UI convenience only
+          -- like "Configure Stewardship" itself, it does not change who can write data server-side. Leave unset to
+          disable the Approve/Reject action for everyone (Reserve entries still log normally, just with no reviewer).
+        </div>
+        <InputField
+          label="Search user groups"
+          dense
+          value={reviewerGroupSearchTerm}
+          onChange={({ value }) => setReviewerGroupSearchTerm(value ?? '')}
+        />
+        <SingleSelectField
+          label="Reviewer group"
+          loading={groupSearchLoading}
+          noMatchText="No user groups found."
+          selected={reviewerGroupId ?? undefined}
+          onChange={({ selected }) => setReviewerGroupId(selected || null)}
+          clearable
+          clearText="Clear"
+        >
+          {reviewerGroupOptions.map((g) => (
+            <SingleSelectOption key={g.id} label={g.name} value={g.id} />
+          ))}
+        </SingleSelectField>
       </div>
 
       <div>

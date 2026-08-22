@@ -10,13 +10,13 @@ export const DATASTORE_NAMESPACE = 'amrStewardshipLog'
 export const SETTINGS_KEY = 'settings'
 export const DATASTORE_RESOURCE = `dataStore/${DATASTORE_NAMESPACE}`
 
-// Bumped to 2 for the de-escalation follow-up feature (adds 3 optional
-// dataElementIds to ProvisionedProgram). A v1 blob is forward-compatible by
-// construction -- the new fields are additive and optional, so it still
-// type-checks on read as-is. No migration function needed; the next
+// Bumped to 3 for the restricted-antibiotic approval feature (adds 4 more
+// optional dataElementIds plus optional reviewerGroupId). Same
+// forward-compatible-by-construction reasoning as the v1->v2 bump: a v2 blob
+// still type-checks on read as-is, no migration function needed. The next
 // Configure-and-Save (findOrCreateProgram()) extends the DHIS2-side program
-// stage and the blob is rewritten with schemaVersion 2 at that point.
-export const CURRENT_SCHEMA_VERSION = 2 as const
+// stage and the blob is rewritten with schemaVersion 3 at that point.
+export const CURRENT_SCHEMA_VERSION = 3 as const
 
 export function isNotFoundError(error: unknown): boolean {
   if (!(error instanceof Error)) return false
